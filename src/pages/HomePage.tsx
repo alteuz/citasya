@@ -73,7 +73,7 @@ export function HomePage() {
     <div className="relative w-full min-h-screen text-white flex flex-col justify-between overflow-hidden font-sans select-none">
       
       {/* ─── BASE BACKGROUND COLOR LAYER ─── */}
-      <div className="absolute inset-0 bg-[#0D0D1A] -z-30 pointer-events-none" />
+      <div className="absolute inset-0 bg-black -z-30 pointer-events-none" />
 
       {/* ─── VIDEO BACKGROUND ─── */}
       <video
@@ -98,7 +98,7 @@ export function HomePage() {
       <div 
         className="absolute inset-0 -z-10 pointer-events-none" 
         style={{
-          background: 'linear-gradient(180deg, rgba(13,13,26,0.55) 0%, rgba(13,13,26,0.2) 40%, rgba(13,13,26,0.7) 80%, rgba(13,13,26,0.92) 100%)'
+          background: 'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.7) 80%, rgba(0,0,0,0.92) 100%)'
         }}
       />
 
@@ -295,7 +295,7 @@ export function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: '-100%' }}
             transition={{ duration: 0.5, ease: transition }}
-            className="fixed inset-0 z-50 bg-[#0D0D1A] flex flex-col p-5 sm:p-8"
+            className="fixed inset-0 z-50 bg-black flex flex-col p-5 sm:p-8"
           >
             {/* Top row */}
             <div className="w-full flex items-center justify-between">
