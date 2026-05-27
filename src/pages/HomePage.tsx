@@ -67,19 +67,36 @@ export function HomePage() {
   ];
 
   return (
-    <div className="relative w-full min-h-screen bg-[#0D0D1A] text-white flex flex-col justify-between overflow-hidden font-sans select-none">
+    <div className="relative w-full min-h-screen text-white flex flex-col justify-between overflow-hidden font-sans select-none">
       
+      {/* ─── BASE BACKGROUND COLOR LAYER ─── */}
+      <div className="absolute inset-0 bg-[#0D0D1A] -z-30 pointer-events-none" />
+
+      {/* ─── VIDEO BACKGROUND ─── */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover -z-20 pointer-events-none"
+      >
+        <source 
+          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260517_222138_3e3205be-3364-417b-a64a-bfe087acbec4.mp4" 
+          type="video/mp4" 
+        />
+      </video>
+
       {/* ─── 3D ROTATING HOLOGRAPHIC LOGO BACKGROUND ─── */}
       <div 
-        className="absolute inset-0 -z-20 flex items-center justify-center pointer-events-none overflow-hidden"
+        className="absolute inset-0 -z-15 flex items-center justify-center pointer-events-none overflow-hidden"
         style={{ perspective: '1000px' }}
       >
         <motion.img
-          src="/logo-3d.png"
+          src="/app-logo-transparent.png"
           alt=""
           aria-hidden="true"
-          className="w-[280px] sm:w-[450px] md:w-[600px] object-contain opacity-35"
-          style={{ mixBlendMode: 'screen' }}
+          className="w-[280px] sm:w-[450px] md:w-[600px] object-contain opacity-25"
           animate={{ 
             rotateY: 360,
             y: [0, -20, 0]
