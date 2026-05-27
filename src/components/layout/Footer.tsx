@@ -36,9 +36,9 @@ export function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {/* Brand */}
           <div className="flex flex-col gap-4">
-            <Link to="/" className="flex items-center gap-2.5" aria-label={`${APP_NAME} — Inicio`}>
-              <img src="/logo.png" alt={`${APP_NAME} logo`} className="h-8 w-8 object-contain shrink-0" />
-              <span className="font-serif text-[20px] tracking-tight font-normal text-white">
+            <Link to="/" className="flex items-center gap-3" aria-label={`${APP_NAME} — Inicio`}>
+              <img src="/logo.png" alt={`${APP_NAME} logo`} className="h-10 w-10 object-contain shrink-0" />
+              <span className="font-serif text-[24px] tracking-tight font-normal text-white">
                 Citas<span className="text-accent-400">YA</span>
               </span>
             </Link>

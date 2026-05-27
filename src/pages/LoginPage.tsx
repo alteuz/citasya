@@ -40,9 +40,9 @@ export function LoginPage() {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2.5 mb-6">
-            <img src="/logo.png" alt="CitasYA" className="h-8 w-8 object-contain shrink-0" />
-            <span className="font-serif text-[22px] tracking-tight font-normal text-text-primary">
+          <Link to="/" className="inline-flex items-center gap-3 mb-6">
+            <img src="/logo.png" alt="CitasYA" className="h-12 w-12 object-contain shrink-0" />
+            <span className="font-serif text-[26px] tracking-tight font-normal text-text-primary">
               Citas<span className="text-accent-400">YA</span>
             </span>
           </Link>

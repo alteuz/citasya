@@ -10,6 +10,7 @@ interface NavLink {
 }
 
 const NAV_LINKS: readonly NavLink[] = [
+  { label: 'Inicio', href: '/' },
   { label: 'Buscar médico', href: '/buscar' },
   { label: 'Cómo funciona', href: '/#como-funciona' },
   { label: 'Directorio EPS', href: '/directorio-eps' },
@@ -39,25 +40,25 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-primary-950/95 backdrop-blur-md border-b border-primary-800">
+      <header className="sticky top-0 z-50 bg-[#0d0d1a]/55 backdrop-blur-md border-b border-white/5 py-4">
       <nav
         aria-label="Navegación principal"
         className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
       >
-        <div className="flex items-center justify-between h-16 md:h-18">
+        <div className="flex items-center justify-between h-14 md:h-16">
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2.5 shrink-0"
+            className="flex items-center gap-3 shrink-0"
             aria-label={`${APP_NAME} — Inicio`}
             onClick={closeMobileMenu}
           >
             <img
               src="/logo.png"
               alt={`${APP_NAME} logo`}
-              className="h-8 w-8 object-contain shrink-0"
+              className="h-10 w-10 object-contain shrink-0"
             />
-            <span className="font-serif text-[20px] tracking-tight font-normal text-white hidden sm:inline">
+            <span className="font-serif text-[24px] tracking-tight font-normal text-white hidden sm:inline">
               Citas<span className="text-accent-400">YA</span>
             </span>
           </Link>
@@ -69,8 +70,8 @@ export function Navbar() {
                 key={link.href}
                 to={link.href}
                 className={`
-                  text-sm font-medium transition-colors duration-200
-                  hover:text-white
+                  text-[13px] font-semibold tracking-widest uppercase transition-colors duration-200
+                  hover:text-accent-400
                   ${location.pathname === link.href ? 'text-white' : 'text-primary-300'}
                 `}
               >
@@ -80,14 +81,14 @@ export function Navbar() {
           </div>
 
           {/* Desktop Auth Actions */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-6">
             {isLoading ? (
               <div className="h-8 w-24 bg-primary-800 rounded-lg animate-skeleton" />
             ) : isAuthenticated ? (
               <>
                 <Link
                   to="/dashboard"
-                  className="text-sm font-medium text-primary-200 hover:text-white transition-colors"
+                  className="text-[13px] font-semibold tracking-widest uppercase text-primary-200 hover:text-accent-400 transition-colors"
                 >
                   <span className="flex items-center gap-2">
                     <span className="w-7 h-7 rounded-full bg-accent-400 text-white text-xs font-bold flex items-center justify-center">
@@ -99,7 +100,7 @@ export function Navbar() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="!text-white hover:!bg-primary-800"
+                  className="!text-white hover:!bg-primary-800 text-[13px] font-semibold tracking-widest uppercase"
                   onClick={() => { void handleLogout(); }}
                 >
                   Salir
@@ -109,12 +110,12 @@ export function Navbar() {
               <>
                 <Link
                   to="/iniciar-sesion"
-                  className="text-sm font-medium text-primary-200 hover:text-white transition-colors"
+                  className="text-[13px] font-semibold tracking-widest uppercase text-primary-200 hover:text-accent-400 transition-colors"
                 >
                   Iniciar sesión
                 </Link>
                 <Link to="/registrarse">
-                  <Button variant="secondary" size="sm" className="border-none rounded-full px-5">
+                  <Button variant="secondary" size="sm" className="border-none rounded-full px-5 text-xs font-bold uppercase tracking-wider">
                     Registrarse
                   </Button>
                 </Link>

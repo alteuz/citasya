@@ -4,13 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, X } from 'lucide-react';
 
 const Logo = ({ dark = false }: { dark?: boolean }) => (
-  <div className="flex items-center gap-2.5">
+  <div className="flex items-center gap-3">
     <img
       src="/logo.png"
       alt="CitasYA"
-      className="h-8 w-8 object-contain shrink-0"
+      className="h-10 w-10 object-contain shrink-0"
     />
-    <span className={`font-serif text-[20px] tracking-tight font-normal ${dark ? 'text-primary-950' : 'text-white'}`}>
+    <span className={`font-serif text-[24px] tracking-tight font-normal ${dark ? 'text-primary-950' : 'text-white'}`}>
       Citas<span className="text-[#00C9A7]">YA</span>
     </span>
   </div>

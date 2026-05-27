@@ -335,8 +335,10 @@ html:not(.high-contrast) .bg-primary-200 {
 /* Header & Navbar Dark Override */
 html:not(.high-contrast) header.bg-primary-950\/95,
 html:not(.high-contrast) header {
-  background-color: rgba(13, 13, 26, 0.95) !important;
-  border-color: #1e1d3d !important;
+  background-color: rgba(13, 13, 26, 0.55) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
 }
 
 html:not(.high-contrast) header .text-white {
