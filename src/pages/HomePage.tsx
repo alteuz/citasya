@@ -701,7 +701,9 @@ export function HomePage() {
       </section>
 
       {/* Footer */}
-      <Footer />
+      <div className="relative z-20">
+        <Footer />
+      </div>
 
     </div>
     </MotionConfig>
