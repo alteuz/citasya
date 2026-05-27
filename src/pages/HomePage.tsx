@@ -82,7 +82,7 @@ export function HomePage() {
         muted
         playsInline
         aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-cover -z-20 pointer-events-none"
+        className="absolute inset-0 w-full h-full object-contain -z-20 pointer-events-none"
         onEnded={(e) => {
           // Garantiza loop sin cortes en navegadores que ignoran el atributo loop
           const video = e.currentTarget;
