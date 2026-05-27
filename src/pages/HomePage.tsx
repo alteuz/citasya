@@ -124,7 +124,7 @@ export function HomePage() {
               initial="initial"
               animate="animate"
               onClick={() => navigate(link.path)}
-              className="text-[13px] font-semibold tracking-widest uppercase text-white/80 hover:text-[#00C9A7] transition-colors cursor-pointer"
+              className="nav-link-underline text-[13px] font-semibold tracking-widest uppercase text-white/80 hover:text-[#00C9A7] transition-colors cursor-pointer"
             >
               {link.label}
             </motion.button>
@@ -155,7 +155,8 @@ export function HomePage() {
           variants={fadeUp(2)} 
           initial="initial" 
           animate="animate" 
-          className="text-right"
+          whileHover={{ scale: 1.08, y: -4 }}
+          className="text-right cursor-default select-none"
         >
           <div className="font-sans font-semibold text-white leading-none tracking-tight" style={{ fontSize: 'clamp(1.6rem, 5vw, 3.5rem)' }}>
             <span className="text-[#00C9A7] text-[0.5em] align-super font-semibold">+</span >50
@@ -170,7 +171,8 @@ export function HomePage() {
           variants={fadeUp(3)} 
           initial="initial" 
           animate="animate" 
-          className="text-right"
+          whileHover={{ scale: 1.08, y: -4 }}
+          className="text-right cursor-default select-none"
         >
           <div className="font-sans font-semibold text-white leading-none tracking-tight" style={{ fontSize: 'clamp(1.6rem, 5vw, 3.5rem)' }}>
             <span className="text-[#00C9A7] text-[0.5em] align-super font-semibold">+</span >200
@@ -185,7 +187,8 @@ export function HomePage() {
           variants={fadeUp(4)} 
           initial="initial" 
           animate="animate" 
-          className="text-right"
+          whileHover={{ scale: 1.08, y: -4 }}
+          className="text-right cursor-default select-none"
         >
           <div className="font-sans font-semibold text-white leading-none tracking-tight" style={{ fontSize: 'clamp(1.6rem, 5vw, 3.5rem)' }}>
             <span className="text-[#00C9A7] text-[0.5em] align-super font-semibold">+</span >10K
@@ -216,11 +219,11 @@ export function HomePage() {
             onClick={() => navigate('/buscar')}
             className="flex items-center gap-3 cursor-pointer group select-none"
           >
-            <span className="text-base sm:text-xl text-[#00C9A7] font-semibold uppercase tracking-wide group-hover:opacity-85 transition-opacity">
+            <span className="text-base sm:text-xl text-[#00C9A7] font-semibold uppercase tracking-wide group-hover:opacity-85 transition-all duration-300">
               Agendar Cita
             </span>
-            <div className="w-[22px] h-[22px] rounded-full border border-[#00C9A7] flex items-center justify-center shrink-0 group-hover:bg-[#00C9A7]/10 transition-all duration-300">
-              <ArrowUpRight size={12} className="text-[#00C9A7]" />
+            <div className="w-[26px] h-[26px] rounded-full border border-[#00C9A7] flex items-center justify-center shrink-0 group-hover:bg-[#00C9A7] group-hover:scale-110 transition-all duration-300">
+              <ArrowUpRight size={12} className="text-[#00C9A7] group-hover:text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
             </div>
           </button>
         </motion.div>
@@ -228,16 +231,19 @@ export function HomePage() {
         {/* Row B: Description + Main Heading */}
         <div className="flex items-end justify-between gap-3 sm:gap-4">
           {/* Left Description Column */}
-          <div className="w-[110px] sm:w-[160px] shrink-0 flex flex-col gap-3">
+          <div className="w-[140px] xs:w-[160px] sm:w-[200px] shrink-0 flex flex-col gap-3">
             {/* Pill Badge */}
             <motion.div 
               variants={fadeUp(3)}
               initial="initial"
               animate="animate"
-              className="inline-flex items-center gap-1.5 bg-[#00C9A7]/12 border border-[#00C9A7]/30 rounded-full px-3 py-1.5 w-fit"
+              className="inline-flex items-center gap-2 bg-[#00C9A7]/12 border border-[#00C9A7]/30 rounded-full px-3.5 py-1.5 w-fit shadow-[0_0_15px_rgba(0,201,167,0.1)]"
             >
-              <div className="w-1.5 h-1.5 rounded-full bg-[#00C9A7]" />
-              <span className="text-[10px] font-semibold tracking-widest uppercase text-[#00C9A7]">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00C9A7] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00C9A7]"></span>
+              </span>
+              <span className="text-[10px] font-bold tracking-widest uppercase text-[#00C9A7]">
                 Disponible 24/7
               </span>
             </motion.div>
@@ -260,6 +266,7 @@ export function HomePage() {
                 variants={wordSlideUp(0.4)} 
                 initial="initial" 
                 animate="animate"
+                className="hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-105 transition-all duration-300 cursor-default inline-block origin-right"
               >
                 Agenda
               </motion.div>
@@ -269,7 +276,7 @@ export function HomePage() {
                 variants={wordSlideUp(0.54)} 
                 initial="initial" 
                 animate="animate" 
-                className="text-[#00C9A7] italic font-normal"
+                className="text-[#00C9A7] italic font-normal hover:drop-shadow-[0_0_25px_rgba(0,201,167,0.7)] hover:scale-105 transition-all duration-300 cursor-default inline-block origin-right"
               >
                 Sin
               </motion.div>
@@ -279,6 +286,7 @@ export function HomePage() {
                 variants={wordSlideUp(0.68)} 
                 initial="initial" 
                 animate="animate"
+                className="hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-105 transition-all duration-300 cursor-default inline-block origin-right"
               >
                 Filas.
               </motion.div>

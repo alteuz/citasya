@@ -156,15 +156,15 @@ export function AccessibilityWidget() {
       {/* Botón Flotante del Widget */}
       <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end">
         {isOpen && (
-          <div className="mb-4 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-primary-950 border border-primary-800 rounded-3xl p-6 shadow-2xl animate-fade-in text-white">
-            <div className="flex items-center justify-between mb-5 border-b border-primary-800 pb-3">
+          <div className="mb-4 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-[#0a091f]/95 backdrop-blur-xl border border-[#211f4d] rounded-3xl p-6 shadow-2xl animate-fade-in text-white accessibility-widget-panel">
+            <div className="flex items-center justify-between mb-5 border-b border-[#211f4d] pb-3">
               <h2 className="text-lg font-bold flex items-center gap-2">
                 <span className="text-xl">⚙️</span> Ajustes de Accesibilidad
               </h2>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="text-primary-300 hover:text-white p-1 rounded-lg focus-visible:outline-2 focus-visible:outline-accent-400"
+                className="text-[#cdc7f0] hover:text-white p-1 rounded-lg focus-visible:outline-2 focus-visible:outline-accent-400"
                 aria-label="Cerrar panel de accesibilidad"
               >
                 ✕
@@ -174,7 +174,7 @@ export function AccessibilityWidget() {
             <div className="space-y-5">
               {/* Ajuste de Tamaño de Texto */}
               <div>
-                <span className="block text-sm font-semibold text-primary-200 mb-2">
+                <span className="block text-sm font-semibold text-[#e8e5f7] mb-2">
                   Tamaño del texto:
                 </span>
                 <div className="grid grid-cols-3 gap-2">
@@ -186,8 +186,8 @@ export function AccessibilityWidget() {
                       className={`
                         py-2 text-xs font-bold rounded-xl transition-all cursor-pointer border
                         ${textSize === size
-                          ? 'bg-accent-400 text-primary-950 border-accent-400'
-                          : 'bg-primary-900 text-primary-200 border-primary-800 hover:bg-primary-800'
+                          ? 'bg-accent-400 text-[#0d0d1a] border-accent-400'
+                          : 'bg-[#131233] text-[#cdc7f0] border-[#25235c] hover:bg-[#1a1945]'
                         }
                       `}
                     >
@@ -200,10 +200,10 @@ export function AccessibilityWidget() {
               {/* Toggles Rápidos */}
               <div className="space-y-3 pt-2">
                 {/* Alto Contraste */}
-                <label className="flex items-center justify-between p-2.5 bg-primary-900 border border-primary-800 rounded-xl cursor-pointer hover:bg-primary-850 transition-colors">
+                <label className="flex items-center justify-between p-2.5 bg-[#131233] border border-[#25235c] rounded-xl cursor-pointer hover:bg-[#1a1945] transition-colors">
                   <div className="flex flex-col">
                     <span className="text-sm font-bold text-white">Alto Contraste</span>
-                    <span className="text-[10px] text-primary-300">Colores de alta visibilidad</span>
+                    <span className="text-[10px] text-[#9f99c7]">Colores de alta visibilidad</span>
                   </div>
                   <input
                     type="checkbox"
@@ -214,10 +214,10 @@ export function AccessibilityWidget() {
                 </label>
 
                 {/* Guía de Lectura */}
-                <label className="flex items-center justify-between p-2.5 bg-primary-900 border border-primary-800 rounded-xl cursor-pointer hover:bg-primary-850 transition-colors">
+                <label className="flex items-center justify-between p-2.5 bg-[#131233] border border-[#25235c] rounded-xl cursor-pointer hover:bg-[#1a1945] transition-colors">
                   <div className="flex flex-col">
                     <span className="text-sm font-bold text-white">Guía de Lectura</span>
-                    <span className="text-[10px] text-primary-300">Regla visual para seguir el texto</span>
+                    <span className="text-[10px] text-[#9f99c7]">Regla visual para seguir el texto</span>
                   </div>
                   <input
                     type="checkbox"
@@ -228,10 +228,10 @@ export function AccessibilityWidget() {
                 </label>
 
                 {/* Asistente de Voz */}
-                <label className="flex items-center justify-between p-2.5 bg-primary-900 border border-primary-800 rounded-xl cursor-pointer hover:bg-primary-850 transition-colors">
+                <label className="flex items-center justify-between p-2.5 bg-[#131233] border border-[#25235c] rounded-xl cursor-pointer hover:bg-[#1a1945] transition-colors">
                   <div className="flex flex-col">
                     <span className="text-sm font-bold text-white">Lector de Voz</span>
-                    <span className="text-[10px] text-primary-300">Escuchar texto al pasar el cursor</span>
+                    <span className="text-[10px] text-[#9f99c7]">Escuchar texto al pasar el cursor</span>
                   </div>
                   <input
                     type="checkbox"
@@ -242,10 +242,10 @@ export function AccessibilityWidget() {
                 </label>
 
                 {/* Animaciones */}
-                <label className="flex items-center justify-between p-2.5 bg-primary-900 border border-primary-800 rounded-xl cursor-pointer hover:bg-primary-850 transition-colors">
+                <label className="flex items-center justify-between p-2.5 bg-[#131233] border border-[#25235c] rounded-xl cursor-pointer hover:bg-[#1a1945] transition-colors">
                   <div className="flex flex-col">
                     <span className="text-sm font-bold text-white">Reducir Movimiento</span>
-                    <span className="text-[10px] text-primary-300">Desactiva efectos visuales rápidos</span>
+                    <span className="text-[10px] text-[#9f99c7]">Desactiva efectos visuales rápidos</span>
                   </div>
                   <input
                     type="checkbox"
@@ -257,12 +257,12 @@ export function AccessibilityWidget() {
               </div>
 
               {/* Botón de reinicio */}
-              <div className="pt-2 border-t border-primary-800 flex justify-end">
+              <div className="pt-2 border-t border-[#25235c] flex justify-end">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={resetAll}
-                  className="text-xs !text-primary-300 hover:!text-white hover:!bg-primary-900 font-bold"
+                  className="text-xs !text-[#cdc7f0] hover:!text-white hover:!bg-[#1a1945] font-bold"
                 >
                   Restablecer todo
                 </Button>
@@ -277,7 +277,7 @@ export function AccessibilityWidget() {
           onClick={() => setIsOpen(!isOpen)}
           aria-expanded={isOpen}
           aria-label="Panel de opciones de accesibilidad para adultos mayores"
-          className="w-14 h-14 rounded-full bg-accent-400 hover:bg-accent-300 text-primary-950 font-bold text-2xl flex items-center justify-center shadow-lg transition-all duration-300 ease-out hover:scale-105 active:scale-95 cursor-pointer focus-visible:outline-3 focus-visible:outline-white focus-visible:outline-offset-2"
+          className="w-14 h-14 rounded-full bg-accent-400 hover:bg-accent-300 text-primary-950 font-bold text-2xl flex items-center justify-center shadow-lg transition-all duration-300 ease-out hover:scale-105 active:scale-95 cursor-pointer focus-visible:outline-3 focus-visible:outline-white focus-visible:outline-offset-2 accessibility-trigger-btn"
         >
           {isOpen ? '✕' : '♿'}
         </button>

@@ -419,3 +419,74 @@ html:not(.high-contrast) ::-webkit-scrollbar-thumb:hover {
   background: #252367;
 }
 
+/* Accessibility Widget High Contrast overrides */
+html.high-contrast .accessibility-widget-panel {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 4px solid #000000 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+html.high-contrast .accessibility-widget-panel * {
+  color: #000000 !important;
+}
+
+html.high-contrast .accessibility-widget-panel button,
+html.high-contrast .accessibility-widget-panel label {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+html.high-contrast .accessibility-widget-panel button:hover,
+html.high-contrast .accessibility-widget-panel label:hover {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+html.high-contrast .accessibility-widget-panel button:hover *,
+html.high-contrast .accessibility-widget-panel label:hover * {
+  color: #ffffff !important;
+}
+
+/* Specific high-contrast button styling inside widget */
+html.high-contrast .accessibility-widget-panel button.bg-accent-400 {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #000000 !important;
+}
+
+html.high-contrast .accessibility-widget-panel button.bg-accent-400 * {
+  color: #ffffff !important;
+}
+
+/* Accessibility Trigger Button Contrast */
+html.high-contrast .accessibility-trigger-btn {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 3px solid #ffffff !important;
+  box-shadow: 0 0 0 3px #000000 !important;
+}
+
+/* Underline link animation for navigation links */
+.nav-link-underline {
+  position: relative;
+}
+.nav-link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #00C9A7;
+  transform: scale-x(0);
+  transform-origin: center;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nav-link-underline:hover::after {
+  transform: scale-x(1);
+}
+
+
