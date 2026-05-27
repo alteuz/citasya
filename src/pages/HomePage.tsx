@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, X } from 'lucide-react';
+import heroBgVideo from '@/assets/hero-bg.mp4';
 
 const Logo = ({ dark = false }: { dark?: boolean }) => (
   <div className="flex items-center gap-3">
@@ -89,7 +90,7 @@ export function HomePage() {
           void video.play();
         }}
       >
-        <source src="/hero-bg.mp4" type="video/mp4" />
+        <source src={heroBgVideo} type="video/mp4" />
       </video>
 
       {/* ─── 3D ROTATING HOLOGRAPHIC LOGO BACKGROUND ─── */}
