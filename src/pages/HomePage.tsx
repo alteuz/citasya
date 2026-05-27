@@ -1,244 +1,335 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { STATS, HOW_IT_WORKS_STEPS } from '@/lib/constants';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowUpRight, X } from 'lucide-react';
+
+const Logo = ({ dark = false }: { dark?: boolean }) => (
+  <div className="flex items-center gap-3">
+    <div className="w-8 h-8 rounded-full border-2 border-[#00C9A7] flex items-center justify-center shrink-0">
+      <div className="w-2.5 h-2.5 rounded-full bg-[#00C9A7]" />
+    </div>
+    <span className={`font-serif text-[20px] tracking-tight font-normal ${dark ? 'text-black' : 'text-white'}`}>
+      Citas<span className="text-[#00C9A7]">YA</span>
+    </span>
+  </div>
+);
 
 export function HomePage() {
   const navigate = useNavigate();
-  const [tiltStyle, setTiltStyle] = useState<React.CSSProperties>({});
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (document.documentElement.classList.contains('reduce-motion')) return;
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    
-    const rotateX = ((centerY - y) / centerY) * 12; // max 12 degrees
-    const rotateY = ((x - centerX) / centerX) * 12; // max 12 degrees
-    
-    setTiltStyle({
-      transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`,
-      transition: 'transform 0.1s ease-out',
-    });
-  };
+  // Motion transitions
+  const transition = [0.22, 1, 0.36, 1] as const;
 
-  const handleMouseLeave = () => {
-    setTiltStyle({
-      transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
-      transition: 'transform 0.5s ease-out',
-    });
-  };
+  const fadeDown = (index: number) => ({
+    initial: { opacity: 0, y: -20 },
+    animate: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        delay: index * 0.1,
+        duration: 0.6,
+        ease: transition
+      }
+    }
+  });
+
+  const fadeUp = (index: number) => ({
+    initial: { opacity: 0, y: 32 },
+    animate: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        delay: index * 0.12,
+        duration: 0.6,
+        ease: transition
+      }
+    }
+  });
+
+  const wordSlideUp = (delay: number) => ({
+    initial: { y: '110%' },
+    animate: { 
+      y: 0,
+      transition: {
+        delay,
+        duration: 0.7,
+        ease: transition
+      }
+    }
+  });
+
+  const navLinks = [
+    { label: 'Inicio', path: '/' },
+    { label: 'Especialidades', path: '/buscar' },
+    { label: 'EPS', path: '/directorio-eps' },
+    { label: 'Ayuda', path: '/buscar' }
+  ];
 
   return (
-    <div className="bg-primary-950 text-white min-h-screen animate-fade-in font-sans">
-      {/* ─── HERO SECTION ─── */}
-      <section className="pt-12 pb-20 md:pt-20 md:pb-32 overflow-hidden relative">
-        {/* Decorative background glows */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl -z-10 pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-[30rem] h-[30rem] bg-accent-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
-
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-            
-            {/* Left Column: Text & CTA */}
-            <div className="flex flex-col items-start text-left z-10">
-              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[5rem] font-bold tracking-tight leading-[1.1] mb-6 text-white">
-                Tu Salud,
-                <br />
-                <span className="text-primary-100 font-light">Reimaginada</span>
-              </h1>
-              
-              <p className="text-lg md:text-xl text-primary-200 max-w-lg mb-10 leading-relaxed font-light">
-                Agendamiento inteligente: Detección temprana, cuidado avanzado y soluciones personalizadas para un futuro más saludable.
-              </p>
-
-              <div className="flex items-center gap-4 mb-16">
-                <Button 
-                  variant="accent" 
-                  size="lg" 
-                  className="rounded-full px-8 py-4 text-primary-950 font-bold shadow-[0_0_20px_rgba(45,212,191,0.3)] hover:shadow-[0_0_25px_rgba(45,212,191,0.5)] transition-all"
-                  onClick={() => navigate('/buscar')}
-                >
-                  Agendar Cita
-                </Button>
-                
-                <button 
-                  className="w-14 h-14 rounded-full border border-primary-400 flex items-center justify-center text-primary-200 hover:bg-primary-800 hover:text-white transition-colors cursor-pointer group"
-                  aria-label="Ver video explicativo"
-                  onClick={() => {
-                    const el = document.getElementById('como-funciona');
-                    el?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                >
-                  <svg className="w-5 h-5 ml-1 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Floating Doctor Card (Reference match) */}
-              <div className="bg-white rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6 max-w-lg w-full relative shadow-2xl overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-bl-full -z-10 transition-colors group-hover:bg-accent-50" />
-                <div className="flex-1 text-center sm:text-left z-10">
-                  <p className="text-sm font-bold text-primary-950 mb-2">Cuidado Inteligente</p>
-                  <h3 className="text-2xl font-bold text-primary-900 leading-tight mb-6">
-                    Mantente un paso adelante con CitasYA
-                  </h3>
-                  <div className="flex items-center justify-between border-t border-primary-100 pt-4 mt-2">
-                    <div className="text-left">
-                      <p className="font-bold text-primary-950 text-sm">Dr. Alejandro Gómez</p>
-                      <p className="text-xs text-text-muted">Especialista general</p>
-                    </div>
-                    <button className="text-xs font-bold text-accent-600 hover:text-accent-700 uppercase tracking-wider">
-                      Conectar
-                    </button>
-                  </div>
-                </div>
-                {/* Doctor Image Placeholder / Avatar */}
-                <div className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 rounded-2xl bg-primary-100 overflow-hidden relative shadow-inner">
-                   <div className="absolute inset-0 bg-gradient-to-tr from-primary-200 to-primary-100 flex items-center justify-center">
-                     <span className="text-4xl">👨‍⚕️</span>
-                   </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column: 3D Art / Visual */}
-            <div 
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-              style={tiltStyle}
-              className="relative h-[400px] lg:h-[600px] w-full max-w-md mx-auto lg:max-w-none lg:mx-0 rounded-[2.5rem] bg-gradient-to-b from-primary-800 to-primary-900 border border-primary-700/50 shadow-2xl overflow-hidden flex flex-col items-center justify-center p-8 group hover:border-primary-600/50 transition-all duration-500 mt-8 lg:mt-0"
-            >
-               {/* Shine effect */}
-               <div className="absolute top-0 left-1/4 w-full h-1/2 bg-white/5 blur-[100px] -rotate-45 pointer-events-none" />
-               
-               <div className="absolute top-10 w-full px-10 flex justify-between items-start">
-                 <span className="text-2xl font-bold text-white tracking-widest opacity-90">BASE MÉDICA</span>
-               </div>
-               
-               {/* 3D Object Placeholder (Using the logo or an icon as the central shiny element) */}
-               <div className="relative z-10 transform group-hover:scale-105 transition-transform duration-700 ease-out flex items-center justify-center w-full h-full">
-                  {/* Glowing background behind logo */}
-                  <div className="absolute inset-0 bg-accent-400/20 blur-[80px] rounded-full scale-75" />
-                  <img 
-                    src="/logo.png" 
-                    alt="CitasYA Logo 3D" 
-                    className="w-1/2 lg:w-3/4 max-w-[200px] lg:max-w-[300px] drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] object-contain filter brightness-110"
-                  />
-               </div>
-
-               <div className="absolute bottom-10 right-10">
-                 <p className="text-sm text-primary-200 font-light">
-                   Desde <span className="font-bold text-white">2026</span> innovando en salud
-                 </p>
-               </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* ─── STATS SECTION ─── */}
-      <section className="py-12 md:py-16 bg-primary-900 border-y border-primary-800/50" aria-label="Estadísticas">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-0 sm:divide-x divide-primary-700/50">
-            {STATS.map((stat) => (
-              <div key={stat.label} className="text-center px-4">
-                <p className="text-4xl font-bold text-white mb-2">{stat.value}</p>
-                <p className="text-sm text-primary-300 font-medium uppercase tracking-wider">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── HOW IT WORKS ─── */}
-      <section
-        id="como-funciona"
-        className="py-20 md:py-32 bg-primary-950"
-        aria-labelledby="how-it-works-heading"
+    <div className="relative w-full min-h-screen bg-[#0D0D1A] text-white flex flex-col justify-between overflow-hidden font-sans select-none">
+      
+      {/* ─── VIDEO BACKGROUND ─── */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover -z-20 pointer-events-none"
       >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16 md:mb-24">
-            <Badge variant="accent" className="mb-6 bg-primary-800/50 text-accent-300 border border-primary-700">Proceso simple</Badge>
-            <h2
-              id="how-it-works-heading"
-              className="text-4xl md:text-5xl font-bold text-white mb-6"
+        <source 
+          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260517_222138_3e3205be-3364-417b-a64a-bfe087acbec4.mp4" 
+          type="video/mp4" 
+        />
+      </video>
+
+      {/* ─── GRADIENT OVERLAY ─── */}
+      <div 
+        className="absolute inset-0 -z-10 pointer-events-none" 
+        style={{
+          background: 'linear-gradient(180deg, rgba(13,13,26,0.55) 0%, rgba(13,13,26,0.2) 40%, rgba(13,13,26,0.7) 80%, rgba(13,13,26,0.92) 100%)'
+        }}
+      />
+
+      {/* ─── NAVIGATION BAR (Top) ─── */}
+      <nav className="relative z-30 w-full flex items-center justify-between px-5 sm:px-8 md:px-8 pt-5 md:pt-5">
+        {/* Left: Logo */}
+        <motion.div 
+          variants={fadeDown(0)} 
+          initial="initial" 
+          animate="animate"
+          className="cursor-pointer"
+          onClick={() => navigate('/')}
+        >
+          <Logo />
+        </motion.div>
+
+        {/* Center: Links (hidden on mobile, visible md+) */}
+        <div className="hidden md:flex items-center gap-8 lg:gap-10">
+          {navLinks.map((link, idx) => (
+            <motion.button
+              key={link.label}
+              variants={fadeDown(idx + 1)}
+              initial="initial"
+              animate="animate"
+              onClick={() => navigate(link.path)}
+              className="text-[13px] font-semibold tracking-widest uppercase text-white/80 hover:text-[#00C9A7] transition-colors cursor-pointer"
             >
-              ¿Cómo funciona?
-            </h2>
-            <p className="text-xl text-primary-200 max-w-2xl mx-auto font-light">
-              Agenda tu cita en 3 simples pasos, sin filas ni llamadas telefónicas.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-            {HOW_IT_WORKS_STEPS.map((step, index) => (
-              <div
-                key={step.step}
-                className="
-                  relative bg-primary-900/40 rounded-3xl p-10
-                  border border-primary-800/50 backdrop-blur-sm
-                  hover:bg-primary-800/60 hover:border-primary-600/50 hover:-translate-y-2
-                  transition-all duration-500 ease-out
-                  text-center group
-                "
-              >
-                {/* Connector line between cards on desktop */}
-                {index !== 2 && (
-                   <div className="hidden md:block absolute top-1/2 -right-8 w-8 h-px bg-gradient-to-r from-primary-600 to-transparent z-0" />
-                )}
-
-                {/* Step number */}
-                <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-700 to-primary-800 border border-primary-600 flex items-center justify-center text-white text-xl font-bold mb-8 shadow-lg group-hover:scale-110 transition-transform duration-500">
-                  {step.step}
-                </div>
-
-                {/* Icon */}
-                <div className="text-5xl mb-6 text-accent-400 opacity-90 group-hover:opacity-100 transition-opacity" aria-hidden="true">
-                  {step.icon}
-                </div>
-
-                <h3 className="text-xl font-bold text-white mb-4">
-                  {step.title}
-                </h3>
-                <p className="text-base text-primary-200 leading-relaxed font-light">
-                  {step.description}
-                </p>
-              </div>
-            ))}
-          </div>
+              {link.label}
+            </motion.button>
+          ))}
         </div>
-      </section>
 
-      {/* ─── CTA SECTION ─── */}
-      <section className="py-24 bg-gradient-to-b from-primary-950 to-primary-900 border-t border-primary-800/50" aria-label="Llamado a la acción">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center bg-primary-800/30 rounded-[3rem] p-12 border border-primary-700/50 backdrop-blur-md shadow-2xl">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Tu salud no puede esperar
-          </h2>
-          <p className="text-xl text-primary-200 mb-10 max-w-2xl mx-auto font-light">
-            Únete a miles de colombianos que ya gestionan sus citas médicas de forma digital, rápida y segura.
+        {/* Right: Hamburger button */}
+        <motion.button
+          variants={fadeDown(5)}
+          initial="initial"
+          animate="animate"
+          onClick={() => setIsMenuOpen(true)}
+          aria-label="Abrir menú de navegación"
+          className="w-9 h-9 rounded-full bg-white/15 backdrop-blur flex items-center justify-center cursor-pointer hover:bg-white/25 transition-colors"
+        >
+          <svg width="18" height="12" viewBox="0 0 18 12" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="0" y1="1" x2="18" y2="1" />
+            <line x1="0" y1="6" x2="18" y2="6" />
+            <line x1="0" y1="11" x2="18" y2="11" />
+          </svg>
+        </motion.button>
+      </nav>
+
+      {/* ─── STATS ROW (Middle Section) ─── */}
+      <div className="relative z-20 flex-1 flex items-center justify-end px-5 sm:px-8 md:px-8 gap-8 md:gap-10 mt-16 md:mt-0">
+        {/* Stat 1 */}
+        <motion.div 
+          variants={fadeUp(2)} 
+          initial="initial" 
+          animate="animate" 
+          className="text-right"
+        >
+          <div className="font-sans font-semibold text-white leading-none tracking-tight" style={{ fontSize: 'clamp(1.6rem, 5vw, 3.5rem)' }}>
+            <span className="text-[#00C9A7] text-[0.5em] align-super font-semibold">+</span >50
+          </div>
+          <div className="text-[10px] sm:text-xs font-semibold tracking-widest uppercase text-white/55 whitespace-pre-line leading-tight mt-2.5">
+            {"EPS\nDISPONIBLES"}
+          </div>
+        </motion.div>
+
+        {/* Stat 2 */}
+        <motion.div 
+          variants={fadeUp(3)} 
+          initial="initial" 
+          animate="animate" 
+          className="text-right"
+        >
+          <div className="font-sans font-semibold text-white leading-none tracking-tight" style={{ fontSize: 'clamp(1.6rem, 5vw, 3.5rem)' }}>
+            <span className="text-[#00C9A7] text-[0.5em] align-super font-semibold">+</span >200
+          </div>
+          <div className="text-[10px] sm:text-xs font-semibold tracking-widest uppercase text-white/55 whitespace-pre-line leading-tight mt-2.5">
+            {"ESPECIALIDADES\nMÉDICAS"}
+          </div>
+        </motion.div>
+
+        {/* Stat 3 */}
+        <motion.div 
+          variants={fadeUp(4)} 
+          initial="initial" 
+          animate="animate" 
+          className="text-right"
+        >
+          <div className="font-sans font-semibold text-white leading-none tracking-tight" style={{ fontSize: 'clamp(1.6rem, 5vw, 3.5rem)' }}>
+            <span className="text-[#00C9A7] text-[0.5em] align-super font-semibold">+</span >10K
+          </div>
+          <div className="text-[10px] sm:text-xs font-semibold tracking-widest uppercase text-white/55 whitespace-pre-line leading-tight mt-2.5">
+            {"CITAS\nAGENDADAS"}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* ─── BOTTOM SECTION ─── */}
+      <div className="relative z-20 px-5 sm:px-8 md:px-8 pb-8 md:pb-10 flex flex-col gap-5 md:gap-8 mt-auto">
+        
+        {/* Row A: Tagline + CTA */}
+        <motion.div 
+          variants={fadeUp(5)}
+          initial="initial"
+          animate="animate"
+          className="flex items-center justify-between gap-4 border-b border-white/10 pb-5 md:pb-6"
+        >
+          {/* Left: Tagline */}
+          <p className="text-[10px] sm:text-xs font-semibold tracking-widest uppercase text-white/60 leading-normal">
+            TU SALUD,<br />SIN FILAS<br />SIN ESPERAS<br />EN BOGOTÁ
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <Button 
-              variant="accent" 
-              size="lg" 
-              className="rounded-full px-10 py-4 text-primary-950 font-bold shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_25px_rgba(45,212,191,0.4)] transition-all w-full sm:w-auto"
-              onClick={() => navigate('/registrarse')}
+
+          {/* Right: CTA Button */}
+          <button 
+            onClick={() => navigate('/buscar')}
+            className="flex items-center gap-3 cursor-pointer group select-none"
+          >
+            <span className="text-base sm:text-xl text-[#00C9A7] font-semibold uppercase tracking-wide group-hover:opacity-85 transition-opacity">
+              Agendar Cita
+            </span>
+            <div className="w-[22px] h-[22px] rounded-full border border-[#00C9A7] flex items-center justify-center shrink-0 group-hover:bg-[#00C9A7]/10 transition-all duration-300">
+              <ArrowUpRight size={12} className="text-[#00C9A7]" />
+            </div>
+          </button>
+        </motion.div>
+
+        {/* Row B: Description + Main Heading */}
+        <div className="flex items-end justify-between gap-3 sm:gap-4">
+          {/* Left Description Column */}
+          <div className="w-[110px] sm:w-[160px] shrink-0 flex flex-col gap-3">
+            {/* Pill Badge */}
+            <motion.div 
+              variants={fadeUp(3)}
+              initial="initial"
+              animate="animate"
+              className="inline-flex items-center gap-1.5 bg-[#00C9A7]/12 border border-[#00C9A7]/30 rounded-full px-3 py-1.5 w-fit"
             >
-              Crear cuenta gratis
-              <span aria-hidden="true" className="ml-2">→</span>
-            </Button>
+              <div className="w-1.5 h-1.5 rounded-full bg-[#00C9A7]" />
+              <span className="text-[10px] font-semibold tracking-widest uppercase text-[#00C9A7]">
+                Disponible 24/7
+              </span>
+            </motion.div>
+
+            {/* Description Text */}
+            <motion.p 
+              variants={fadeUp(6)}
+              initial="initial"
+              animate="animate"
+              className="text-[9px] sm:text-[10px] font-semibold tracking-widest uppercase text-white/45 leading-relaxed"
+            >
+              Plataforma centralizada para gestionar tus citas con tu EPS en Bogotá. Rápido, seguro y accesible.
+            </motion.p>
+          </div>
+
+          {/* Right Heading Column */}
+          <div className="flex flex-col items-end select-none font-serif text-white uppercase text-right leading-[0.88] select-none" style={{ fontSize: 'clamp(2.2rem, 10vw, 9rem)' }}>
+            <div className="overflow-hidden">
+              <motion.div 
+                variants={wordSlideUp(0.4)} 
+                initial="initial" 
+                animate="animate"
+              >
+                Agenda
+              </motion.div>
+            </div>
+            <div className="overflow-hidden">
+              <motion.div 
+                variants={wordSlideUp(0.54)} 
+                initial="initial" 
+                animate="animate" 
+                className="text-[#00C9A7] italic font-normal"
+              >
+                Sin
+              </motion.div>
+            </div>
+            <div className="overflow-hidden">
+              <motion.div 
+                variants={wordSlideUp(0.68)} 
+                initial="initial" 
+                animate="animate"
+              >
+                Filas.
+              </motion.div>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+
+      {/* ─── MOBILE MENU OVERLAY ─── */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: '-100%' }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: '-100%' }}
+            transition={{ duration: 0.5, ease: transition }}
+            className="fixed inset-0 z-50 bg-white flex flex-col p-5 sm:p-8"
+          >
+            {/* Top row */}
+            <div className="w-full flex items-center justify-between">
+              <Logo dark />
+              
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                aria-label="Cerrar menú de navegación"
+                className="w-9 h-9 rounded-full bg-black flex items-center justify-center cursor-pointer hover:bg-black/80 transition-colors"
+              >
+                <X size={18} className="text-white" />
+              </button>
+            </div>
+
+            {/* Vertical list of links */}
+            <div className="flex flex-col gap-7 mt-16">
+              {navLinks.map((link) => (
+                <button
+                  key={link.label}
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    navigate(link.path);
+                  }}
+                  className="text-left text-3xl font-semibold tracking-widest uppercase text-black cursor-pointer hover:text-[#00C9A7] transition-colors"
+                >
+                  {link.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Bottom CTA */}
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
+                navigate('/buscar');
+              }}
+              className="mt-auto text-left text-xl font-semibold tracking-wide uppercase text-[#252367] flex items-center gap-1.5 cursor-pointer hover:opacity-85 transition-opacity"
+            >
+              Agendar Cita <span aria-hidden="true">↗</span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
