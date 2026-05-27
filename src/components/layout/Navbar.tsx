@@ -55,10 +55,10 @@ export function Navbar() {
             <img
               src="/logo.png"
               alt={`${APP_NAME} logo`}
-              className="h-10 w-auto brightness-110"
+              className="h-8 w-8 object-contain shrink-0"
             />
-            <span className="text-xl font-bold text-white hidden sm:inline">
-              Citas<span className="text-accent-400">,Ya</span>
+            <span className="font-serif text-[20px] tracking-tight font-normal text-white hidden sm:inline">
+              Citas<span className="text-accent-400">YA</span>
             </span>
           </Link>
 

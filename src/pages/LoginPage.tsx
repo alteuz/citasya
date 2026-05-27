@@ -40,8 +40,11 @@ export function LoginPage() {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 mb-6">
-            <img src="/logo.png" alt="CitasYA" className="h-12 w-auto" />
+          <Link to="/" className="inline-flex items-center gap-2.5 mb-6">
+            <img src="/logo.png" alt="CitasYA" className="h-8 w-8 object-contain shrink-0" />
+            <span className="font-serif text-[22px] tracking-tight font-normal text-text-primary">
+              Citas<span className="text-accent-400">YA</span>
+            </span>
           </Link>
           <h1 className="text-3xl font-bold text-primary-800 mb-2">
             Iniciar sesión
