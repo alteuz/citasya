@@ -92,10 +92,13 @@ export function HomePage() {
 
   return (
     <MotionConfig reducedMotion={shouldReduceMotion ? "always" : "user"}>
-      <div className="relative w-full min-h-screen text-white flex flex-col justify-between overflow-x-hidden font-sans select-none scroll-smooth bg-black">
-      
-      {/* ─── BASE BACKGROUND COLOR LAYER ─── */}
-      <div className="fixed inset-0 bg-black -z-30 pointer-events-none" />
+      <div className="relative w-full text-white overflow-x-hidden font-sans scroll-smooth bg-black">
+        
+        {/* ─── HERO SCREEN CONTAINER (100vh) ─── */}
+        <div className="relative w-full min-h-screen flex flex-col justify-between select-none">
+          
+          {/* ─── BASE BACKGROUND COLOR LAYER ─── */}
+          <div className="fixed inset-0 bg-black -z-30 pointer-events-none" />
 
       {/* ─── VIDEO BACKGROUND ─── */}
       <video
@@ -325,6 +328,7 @@ export function HomePage() {
             </div>
           </div>
         </div>
+      </div>
       </div>
 
       {/* ─── MOBILE MENU OVERLAY ─── */}
