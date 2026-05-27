@@ -8,9 +8,9 @@ const Logo = ({ dark = false }: { dark?: boolean }) => (
     <img
       src="/logo.png"
       alt="CitasYA"
-      className="h-10 w-10 object-contain shrink-0"
+      className="h-14 w-14 object-contain shrink-0"
     />
-    <span className={`font-serif text-[24px] tracking-tight font-normal ${dark ? 'text-primary-950' : 'text-white'}`}>
+    <span className={`font-serif text-[28px] tracking-tight font-normal ${dark ? 'text-primary-950' : 'text-white'}`}>
       Citas<span className="text-[#00C9A7]">YA</span>
     </span>
   </div>
@@ -311,16 +311,16 @@ export function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: '-100%' }}
             transition={{ duration: 0.5, ease: transition }}
-            className="fixed inset-0 z-50 bg-white flex flex-col p-5 sm:p-8"
+            className="fixed inset-0 z-50 bg-[#0D0D1A] flex flex-col p-5 sm:p-8"
           >
             {/* Top row */}
             <div className="w-full flex items-center justify-between">
-              <Logo dark />
+              <Logo />
               
               <button
                 onClick={() => setIsMenuOpen(false)}
                 aria-label="Cerrar menú de navegación"
-                className="w-9 h-9 rounded-full bg-black flex items-center justify-center cursor-pointer hover:bg-black/80 transition-colors"
+                className="w-9 h-9 rounded-full bg-white/10 backdrop-blur flex items-center justify-center cursor-pointer hover:bg-white/20 transition-colors"
               >
                 <X size={18} className="text-white" />
               </button>
@@ -335,7 +335,7 @@ export function HomePage() {
                     setIsMenuOpen(false);
                     navigate(link.path);
                   }}
-                  className="text-left text-3xl font-semibold tracking-widest uppercase text-black cursor-pointer hover:text-[#00C9A7] transition-colors"
+                  className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-[#00C9A7] transition-colors"
                 >
                   {link.label}
                 </button>
@@ -348,7 +348,7 @@ export function HomePage() {
                 setIsMenuOpen(false);
                 navigate('/buscar');
               }}
-              className="mt-auto text-left text-xl font-semibold tracking-wide uppercase text-[#252367] flex items-center gap-1.5 cursor-pointer hover:opacity-85 transition-opacity"
+              className="mt-auto text-left text-xl font-semibold tracking-wide uppercase text-[#00C9A7] flex items-center gap-1.5 cursor-pointer hover:opacity-85 transition-opacity"
             >
               Agendar Cita <span aria-hidden="true">↗</span>
             </button>

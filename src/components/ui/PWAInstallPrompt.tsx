@@ -54,7 +54,7 @@ export function PWAInstallPrompt() {
   if (!isVisible || isDismissed) return null;
 
   return (
-    <div className="fixed bottom-24 left-4 right-4 z-50 animate-fade-in sm:bottom-6 sm:left-6 sm:right-auto sm:max-w-sm">
+    <div className="fixed top-4 left-4 right-4 z-50 animate-fade-in sm:top-auto sm:bottom-6 sm:left-6 sm:right-auto sm:max-w-sm">
       <div className="bg-primary-800 text-white rounded-2xl p-4 shadow-elevated flex items-center gap-3">
         <span className="text-3xl shrink-0" aria-hidden="true">📱</span>
         <div className="flex-1 min-w-0">

@@ -40,12 +40,11 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-[#0d0d1a]/55 backdrop-blur-md border-b border-white/5 py-4">
+      <header className="sticky top-0 z-50 bg-[#0d0d1a]/55 backdrop-blur-md border-b border-white/5 py-3">
       <nav
         aria-label="Navegación principal"
-        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+        className="w-full px-5 sm:px-8 md:px-8 flex items-center justify-between"
       >
-        <div className="flex items-center justify-between h-14 md:h-16">
           {/* Logo */}
           <Link
             to="/"
@@ -56,9 +55,9 @@ export function Navbar() {
             <img
               src="/logo.png"
               alt={`${APP_NAME} logo`}
-              className="h-10 w-10 object-contain shrink-0"
+              className="h-14 w-14 object-contain shrink-0"
             />
-            <span className="font-serif text-[24px] tracking-tight font-normal text-white hidden sm:inline">
+            <span className="font-serif text-[28px] tracking-tight font-normal text-white">
               Citas<span className="text-accent-400">YA</span>
             </span>
           </Link>
@@ -146,7 +145,6 @@ export function Navbar() {
               )}
             </svg>
           </button>
-        </div>
       </nav>
     </header>
 
