@@ -5,7 +5,7 @@
  * Proporciona experiencia offline básica mostrando una página de fallback.
  */
 
-const CACHE_NAME = 'citasya-v2';
+const CACHE_NAME = 'citasya-v3';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
