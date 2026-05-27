@@ -514,7 +514,64 @@ html:not(.high-contrast) td,
 html:not(.high-contrast) .border-primary-50,
 html:not(.high-contrast) .border-primary-100,
 html:not(.high-contrast) .border-primary-200 {
-  border-color: #1c1b47 !important;
+  border-color: #211f4d !important;
+}
+
+/* Dark mode text and background overrides for accessibility/contrast */
+html:not(.high-contrast) .text-primary-800,
+html:not(.high-contrast) .text-primary-900,
+html:not(.high-contrast) .text-primary-950 {
+  color: #ffffff !important;
+}
+
+html:not(.high-contrast) .text-text-secondary,
+html:not(.high-contrast) .text-primary-700 {
+  color: #cdc7f0 !important;
+}
+
+html:not(.high-contrast) .text-text-muted,
+html:not(.high-contrast) .text-primary-600 {
+  color: #9f99c7 !important;
+}
+
+html:not(.high-contrast) .bg-primary-50 {
+  background-color: #151430 !important;
+}
+
+html:not(.high-contrast) .bg-primary-100 {
+  background-color: #1e1d3d !important;
+}
+
+html:not(.high-contrast) .bg-primary-200 {
+  background-color: #252367 !important;
+  color: #ffffff !important;
+}
+
+html:not(.high-contrast) .hover\:bg-primary-50\/50:hover {
+  background-color: rgba(33, 31, 77, 0.4) !important;
+}
+
+/* Inputs, selects, textareas in default dark mode */
+html:not(.high-contrast) input,
+html:not(.high-contrast) select,
+html:not(.high-contrast) textarea {
+  background-color: #131326 !important;
+  color: #ffffff !important;
+  border-color: #211f4d !important;
+}
+
+/* Secondary & Ghost buttons in default dark mode */
+html:not(.high-contrast) button.bg-surface-card {
+  color: #ffffff !important;
+  border-color: #211f4d !important;
+}
+
+html:not(.high-contrast) button.bg-surface-card:hover {
+  background-color: #1e1d3d !important;
+}
+
+html:not(.high-contrast) button.bg-transparent {
+  color: #cdc7f0 !important;
 }
 
 /* Global High Contrast button overrides */
