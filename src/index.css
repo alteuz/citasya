@@ -9,6 +9,7 @@
   /* ─── Colores primarios: Azul marino oscuro → Púrpura ─── */
   --color-primary-950: #0f0e2e;
   --color-primary-900: #1a1852;
+  --color-primary-850: #201e5d;
   --color-primary-800: #252367;
   --color-primary-700: #2d2b7a;
   --color-primary-600: #3d3a9e;
@@ -164,6 +165,7 @@ body {
 html.high-contrast {
   --color-primary-950: #000000;
   --color-primary-900: #000000;
+  --color-primary-850: #000000;
   --color-primary-800: #000000;
   --color-primary-700: #000000;
   --color-primary-600: #111111;
@@ -231,11 +233,12 @@ html:not(.high-contrast) {
 
   --color-text-primary: #ffffff;
   --color-text-secondary: #cdc7f0;
-  --color-text-muted: #7c779e;
+  --color-text-muted: #9f99c7;
   --color-text-inverse: #0d0d1a;
 
   --color-primary-950: #ffffff;
   --color-primary-900: #ffffff;
+  --color-primary-850: #f4f3fb;
   --color-primary-800: #e8e5f7;
   --color-primary-700: #cdc7f0;
   --color-primary-600: #a89ee3;
@@ -255,15 +258,33 @@ html:not(.high-contrast) {
   --color-accent-50: #102a25;
 }
 
+/* Primary Button Styling under Premium Dark Theme */
 html:not(.high-contrast) .bg-primary-800 {
-  background-color: #252367 !important;
+  background-color: #635fc7 !important;
   color: #ffffff !important;
 }
 
 html:not(.high-contrast) .bg-primary-800:hover {
-  background-color: #2d2b7a !important;
+  background-color: #7875d6 !important;
+  color: #ffffff !important;
 }
 
+/* Secondary Button Styling under Premium Dark Theme */
+html:not(.high-contrast) button.bg-surface-card.text-primary-800,
+html:not(.high-contrast) a button.bg-surface-card.text-primary-800,
+html:not(.high-contrast) .bg-surface-card.text-primary-800 {
+  background-color: #1e1d3d !important;
+  color: #ffffff !important;
+  border-color: #635fc7 !important;
+}
+
+html:not(.high-contrast) button.bg-surface-card.text-primary-800:hover,
+html:not(.high-contrast) .bg-surface-card.text-primary-800:hover {
+  background-color: #2d2b7a !important;
+  border-color: #7875d6 !important;
+}
+
+/* Accent buttons (Teal) */
 html:not(.high-contrast) .bg-accent-500 {
   background-color: #00C9A7 !important;
   color: #0d0d1a !important;
@@ -273,6 +294,7 @@ html:not(.high-contrast) .bg-accent-500:hover {
   background-color: #00a385 !important;
 }
 
+/* Form Inputs, Selects and Textareas */
 html:not(.high-contrast) input,
 html:not(.high-contrast) select,
 html:not(.high-contrast) textarea {
@@ -293,17 +315,89 @@ html:not(.high-contrast) option {
   color: #ffffff !important;
 }
 
+/* Tags and Badges */
 html:not(.high-contrast) .bg-primary-100.text-primary-700 {
   background-color: rgba(0, 201, 167, 0.12) !important;
   color: #00C9A7 !important;
   border: 1px solid rgba(0, 201, 167, 0.3) !important;
 }
 
+/* Skeletons and secondary cards */
 html:not(.high-contrast) .animate-skeleton,
 html:not(.high-contrast) .bg-primary-200 {
   background-color: #1e1d3d !important;
 }
 
+/* Header & Navbar Dark Override */
+html:not(.high-contrast) header.bg-primary-950\/95,
+html:not(.high-contrast) header {
+  background-color: rgba(13, 13, 26, 0.95) !important;
+  border-color: #1e1d3d !important;
+}
+
+html:not(.high-contrast) header .text-white {
+  color: #ffffff !important;
+}
+
+html:not(.high-contrast) header .text-primary-300 {
+  color: #cdc7f0 !important;
+}
+
+html:not(.high-contrast) header .text-primary-200 {
+  color: #e8e5f7 !important;
+}
+
+html:not(.high-contrast) header a:hover {
+  color: #00C9A7 !important;
+}
+
+/* Mobile Navigation Menu */
+html:not(.high-contrast) #mobile-menu.bg-primary-950,
+html:not(.high-contrast) #mobile-menu {
+  background-color: #131326 !important;
+  border-color: #1e1d3d !important;
+}
+
+html:not(.high-contrast) #mobile-menu hr.border-primary-800 {
+  border-color: #1e1d3d !important;
+}
+
+/* Footer Dark Override */
+html:not(.high-contrast) footer.bg-primary-950,
+html:not(.high-contrast) footer {
+  background-color: #0d0d1a !important;
+  border-color: #1e1d3d !important;
+}
+
+html:not(.high-contrast) footer .text-white {
+  color: #ffffff !important;
+}
+
+html:not(.high-contrast) footer .text-primary-300 {
+  color: #cdc7f0 !important;
+}
+
+html:not(.high-contrast) footer .text-primary-200 {
+  color: #e8e5f7 !important;
+}
+
+html:not(.high-contrast) footer .text-primary-400 {
+  color: #cdc7f0 !important;
+}
+
+html:not(.high-contrast) footer a:hover {
+  color: #00C9A7 !important;
+}
+
+/* Accent Badges, Icons and Avatars text contrast */
+html:not(.high-contrast) .bg-accent-400 {
+  color: #0d0d1a !important;
+}
+html:not(.high-contrast) .bg-accent-400 * {
+  color: #0d0d1a !important;
+}
+
+/* Scrollbars */
 html:not(.high-contrast) ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
