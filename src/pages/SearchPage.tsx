@@ -8,9 +8,12 @@ export function SearchPage() {
   // Filtros
   const [specialties, setSpecialties] = useState<readonly SpecialtyOption[]>([]);
   const [epsList, setEpsList] = useState<readonly EpsOption[]>([]);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedSpecialty, setSelectedSpecialty] = useState(searchParams.get('specialty') || '');
   const [selectedEps, setSelectedEps] = useState(searchParams.get('eps') || '');
+  const [hasSearched, setHasSearched] = useState(() => {
+    return !!(searchParams.get('specialty') || searchParams.get('eps'));
+  });
 
   // Resultados
   const [doctors, setDoctors] = useState<readonly DoctorSearchResult[]>([]);
@@ -53,88 +56,164 @@ export function SearchPage() {
   }, [selectedSpecialty, selectedEps]);
 
   useEffect(() => {
-    void searchDoctors();
-  }, [searchDoctors]);
+    if (hasSearched) {
+      void searchDoctors();
+    } else {
+      setIsLoading(false);
+    }
+  }, [hasSearched, searchDoctors]);
 
   const handleClearFilters = useCallback(() => {
     setSelectedSpecialty('');
     setSelectedEps('');
-  }, []);
+    setHasSearched(false);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.delete('specialty');
+      next.delete('eps');
+      return next;
+    });
+  }, [setSearchParams]);
+
+  const handleSearchSubmit = useCallback(() => {
+    setHasSearched(true);
+    setIsLoading(true);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (selectedSpecialty) {
+        next.set('specialty', selectedSpecialty);
+      } else {
+        next.delete('specialty');
+      }
+      if (selectedEps) {
+        next.set('eps', selectedEps);
+      } else {
+        next.delete('eps');
+      }
+      return next;
+    });
+  }, [selectedSpecialty, selectedEps, setSearchParams]);
 
   const hasActiveFilters = selectedSpecialty !== '' || selectedEps !== '';
+
+  if (!hasSearched) {
+    return (
+      <div className="animate-fade-in py-12 px-4">
+        <div className="mx-auto max-w-2xl bg-surface-card border-2 border-primary-100 rounded-[2.5rem] p-8 md:p-12 shadow-xl text-center">
+          <span className="text-6xl mb-6 block" aria-hidden="true">🩺</span>
+          <h1 className="text-3xl md:text-4xl font-bold text-primary-950 mb-4">
+            ¿Qué médico necesitas hoy?
+          </h1>
+          <p className="text-text-secondary text-base md:text-lg mb-10 max-w-md mx-auto leading-relaxed">
+            Por favor, dinos qué especialidad buscas y tu EPS para mostrarte los doctores disponibles.
+          </p>
+
+          <div className="space-y-6 text-left mb-10">
+            {/* Especialidad */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="filter-specialty" className="text-base font-bold text-primary-900">
+                1. Especialidad Médica
+              </label>
+              <div className="relative">
+                <select
+                  id="filter-specialty"
+                  value={selectedSpecialty}
+                  onChange={(e) => setSelectedSpecialty(e.target.value)}
+                  className="w-full rounded-2xl border-2 border-primary-200 bg-surface-card px-5 py-4 text-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-accent-400 hover:border-primary-350 transition-all appearance-none cursor-pointer pr-12 font-medium"
+                >
+                  <option value="">Selecciona una especialidad...</option>
+                  {specialties.map((s) => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none text-primary-500 font-bold" aria-hidden="true">
+                  ▼
+                </div>
+              </div>
+            </div>
+
+            {/* EPS */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="filter-eps" className="text-base font-bold text-primary-900">
+                2. Aseguradora (EPS)
+              </label>
+              <div className="relative">
+                <select
+                  id="filter-eps"
+                  value={selectedEps}
+                  onChange={(e) => setSelectedEps(e.target.value)}
+                  className="w-full rounded-2xl border-2 border-primary-200 bg-surface-card px-5 py-4 text-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-accent-400 hover:border-primary-350 transition-all appearance-none cursor-pointer pr-12 font-medium"
+                >
+                  <option value="">Selecciona tu EPS...</option>
+                  {epsList.map((e) => (
+                    <option key={e.id} value={e.id}>{e.name}</option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none text-primary-500 font-bold" aria-hidden="true">
+                  ▼
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <Button
+            variant="accent"
+            size="lg"
+            fullWidth
+            onClick={handleSearchSubmit}
+            className="py-4.5 text-lg font-bold rounded-2xl shadow-lg shadow-accent-400/25 hover:shadow-accent-400/40 cursor-pointer"
+          >
+            🔍 Encontrar Médicos Disponibles
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in">
       {/* Header */}
       <div className="bg-primary-50 border-b border-primary-100">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-primary-800">
-            Buscar médico
-          </h1>
-          <p className="text-text-secondary mt-1">
-            Encuentra el especialista que necesitas y agenda tu cita.
-          </p>
-          {searchParams.get('modo') === 'telemedicina' && (
-            <div className="mt-4 inline-flex items-center gap-2 bg-accent-50 text-accent-700 px-4 py-2 rounded-lg border border-accent-200">
-              <span className="text-xl">💻</span>
-              <span className="font-medium text-sm">Modo seleccionado: Consulta por Telemedicina</span>
-            </div>
-          )}
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-primary-800">
+              Médicos Disponibles
+            </h1>
+            <p className="text-text-secondary mt-1 flex flex-wrap gap-2 items-center">
+              <span>Criterio seleccionado:</span>
+              <span className="font-semibold px-2 py-0.5 bg-primary-100 rounded-md text-primary-850 text-xs">
+                {specialties.find(s => s.id === selectedSpecialty)?.name || 'Cualquier especialidad'}
+              </span>
+              <span className="text-primary-300">•</span>
+              <span className="font-semibold px-2 py-0.5 bg-primary-100 rounded-md text-primary-850 text-xs">
+                {epsList.find(e => e.id === selectedEps)?.name || 'Cualquier EPS'}
+              </span>
+            </p>
+          </div>
+          
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setHasSearched(false)}
+              className="font-bold border-2 border-primary-800 text-primary-850 hover:bg-primary-100 cursor-pointer"
+            >
+              ✏️ Modificar Búsqueda
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearFilters}
+              className="text-primary-600 font-semibold cursor-pointer"
+            >
+              Limpiar y Volver
+            </Button>
+          </div>
         </div>
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters */}
-        <div className="bg-surface-card border border-primary-100 rounded-2xl p-6 mb-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
-            {/* Especialidad */}
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="filter-specialty" className="text-sm font-medium text-text-secondary">
-                Especialidad
-              </label>
-              <select
-                id="filter-specialty"
-                value={selectedSpecialty}
-                onChange={(e) => setSelectedSpecialty(e.target.value)}
-                className="w-full rounded-xl border border-primary-200 bg-surface-card px-4 py-3 text-base text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-accent-400 hover:border-primary-300 transition-colors appearance-none cursor-pointer"
-              >
-                <option value="">Todas las especialidades</option>
-                {specialties.map((s) => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* EPS */}
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="filter-eps" className="text-sm font-medium text-text-secondary">
-                EPS
-              </label>
-              <select
-                id="filter-eps"
-                value={selectedEps}
-                onChange={(e) => setSelectedEps(e.target.value)}
-                className="w-full rounded-xl border border-primary-200 bg-surface-card px-4 py-3 text-base text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-accent-400 hover:border-primary-300 transition-colors appearance-none cursor-pointer"
-              >
-                <option value="">Todas las EPS</option>
-                {epsList.map((e) => (
-                  <option key={e.id} value={e.id}>{e.name}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Clear */}
-            <div className="flex gap-3">
-              {hasActiveFilters && (
-                <Button variant="ghost" size="md" onClick={handleClearFilters}>
-                  Limpiar filtros
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Results */}
+        {/* Results Info */}
         <div className="mb-4 flex items-center justify-between">
           <p className="text-sm text-text-muted">
             {isSearching ? 'Buscando...' : `${doctors.length} médico${doctors.length !== 1 ? 's' : ''} encontrado${doctors.length !== 1 ? 's' : ''}`}
@@ -173,7 +252,7 @@ export function SearchPage() {
             </p>
             {hasActiveFilters && (
               <Button variant="secondary" size="md" onClick={handleClearFilters}>
-                Limpiar filtros
+                Modificar filtros
               </Button>
             )}
           </div>

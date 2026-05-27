@@ -3,6 +3,7 @@ import { AuthProvider } from '@/hooks/useAuth';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { PWAInstallPrompt } from '@/components/ui/PWAInstallPrompt';
+import { AccessibilityWidget } from '@/components/ui/AccessibilityWidget';
 
 export function RootLayout() {
   return (
@@ -19,6 +20,7 @@ export function RootLayout() {
           <Outlet />
         </main>
         <Footer />
+        <AccessibilityWidget />
         <PWAInstallPrompt />
       </div>
     </AuthProvider>

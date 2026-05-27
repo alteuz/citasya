@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -5,6 +6,33 @@ import { STATS, HOW_IT_WORKS_STEPS } from '@/lib/constants';
 
 export function HomePage() {
   const navigate = useNavigate();
+  const [tiltStyle, setTiltStyle] = useState<React.CSSProperties>({});
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (document.documentElement.classList.contains('reduce-motion')) return;
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const rotateX = ((centerY - y) / centerY) * 12; // max 12 degrees
+    const rotateY = ((x - centerX) / centerX) * 12; // max 12 degrees
+    
+    setTiltStyle({
+      transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`,
+      transition: 'transform 0.1s ease-out',
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setTiltStyle({
+      transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
+      transition: 'transform 0.5s ease-out',
+    });
+  };
 
   return (
     <div className="bg-primary-950 text-white min-h-screen animate-fade-in font-sans">
@@ -81,7 +109,12 @@ export function HomePage() {
             </div>
 
             {/* Right Column: 3D Art / Visual */}
-            <div className="relative h-[400px] lg:h-[600px] w-full max-w-md mx-auto lg:max-w-none lg:mx-0 rounded-[2.5rem] bg-gradient-to-b from-primary-800 to-primary-900 border border-primary-700/50 shadow-2xl overflow-hidden flex flex-col items-center justify-center p-8 group hover:border-primary-600/50 transition-colors duration-500 mt-8 lg:mt-0">
+            <div 
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              style={tiltStyle}
+              className="relative h-[400px] lg:h-[600px] w-full max-w-md mx-auto lg:max-w-none lg:mx-0 rounded-[2.5rem] bg-gradient-to-b from-primary-800 to-primary-900 border border-primary-700/50 shadow-2xl overflow-hidden flex flex-col items-center justify-center p-8 group hover:border-primary-600/50 transition-all duration-500 mt-8 lg:mt-0"
+            >
                {/* Shine effect */}
                <div className="absolute top-0 left-1/4 w-full h-1/2 bg-white/5 blur-[100px] -rotate-45 pointer-events-none" />
                

@@ -158,3 +158,66 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* ─── Accesibilidad / Alto Contraste ─── */
+html.high-contrast {
+  --color-primary-950: #000000;
+  --color-primary-900: #000000;
+  --color-primary-800: #000000;
+  --color-primary-700: #000000;
+  --color-primary-600: #111111;
+  --color-primary-500: #0000ee;
+  --color-primary-400: #0000ee;
+  --color-primary-300: #0000ee;
+  --color-primary-200: #ffffff;
+  --color-primary-100: #ffffff;
+  --color-primary-50: #ffffff;
+
+  --color-accent-600: #0000ee;
+  --color-accent-500: #0000ee;
+  --color-accent-400: #0000ee;
+  --color-accent-300: #0000ee;
+  --color-accent-200: #ffffff;
+  --color-accent-100: #ffffff;
+  --color-accent-50: #ffffff;
+
+  --color-surface: #ffffff;
+  --color-surface-card: #ffffff;
+  --color-surface-hover: #e0e0e0;
+  --color-surface-muted: #d0d0d0;
+
+  --color-text-primary: #000000;
+  --color-text-secondary: #000000;
+  --color-text-muted: #111111;
+  --color-text-inverse: #ffffff;
+}
+
+html.high-contrast .gradient-text-primary,
+html.high-contrast .gradient-text-accent {
+  background: none;
+  -webkit-background-clip: initial;
+  -webkit-text-fill-color: initial;
+  background-clip: initial;
+  color: #000000;
+}
+
+html.high-contrast select,
+html.high-contrast input {
+  border: 2px solid #000000 !important;
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+
+/* ─── Accesibilidad / Animaciones Reducidas ─── */
+html.reduce-motion *,
+html.reduce-motion ::before,
+html.reduce-motion ::after {
+  animation-delay: -1ms !important;
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  background-attachment: initial !important;
+  scroll-behavior: auto !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+
