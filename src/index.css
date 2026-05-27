@@ -222,3 +222,100 @@ html.reduce-motion ::after {
   transition-delay: 0s !important;
 }
 
+/* ─── Premium Dark Mode Overrides (Landing Page Style) ─── */
+html:not(.high-contrast) {
+  --color-surface: #0d0d1a;
+  --color-surface-card: #131326;
+  --color-surface-hover: #1e1d3d;
+  --color-surface-muted: #151430;
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #cdc7f0;
+  --color-text-muted: #7c779e;
+  --color-text-inverse: #0d0d1a;
+
+  --color-primary-950: #ffffff;
+  --color-primary-900: #ffffff;
+  --color-primary-800: #e8e5f7;
+  --color-primary-700: #cdc7f0;
+  --color-primary-600: #a89ee3;
+  --color-primary-500: #00C9A7;
+  --color-primary-400: #7b6fd0;
+  --color-primary-300: #2d2b7a;
+  --color-primary-200: #1c1b47;
+  --color-primary-100: #131326;
+  --color-primary-50: #0d0d1a;
+
+  --color-accent-600: #00a385;
+  --color-accent-500: #00C9A7;
+  --color-accent-400: #00C9A7;
+  --color-accent-300: #5eead4;
+  --color-accent-200: #99f6e4;
+  --color-accent-100: #ccfbf1;
+  --color-accent-50: #102a25;
+}
+
+html:not(.high-contrast) .bg-primary-800 {
+  background-color: #252367 !important;
+  color: #ffffff !important;
+}
+
+html:not(.high-contrast) .bg-primary-800:hover {
+  background-color: #2d2b7a !important;
+}
+
+html:not(.high-contrast) .bg-accent-500 {
+  background-color: #00C9A7 !important;
+  color: #0d0d1a !important;
+}
+
+html:not(.high-contrast) .bg-accent-500:hover {
+  background-color: #00a385 !important;
+}
+
+html:not(.high-contrast) input,
+html:not(.high-contrast) select,
+html:not(.high-contrast) textarea {
+  background-color: #131326 !important;
+  color: #ffffff !important;
+  border-color: #1c1b47 !important;
+}
+
+html:not(.high-contrast) input:focus,
+html:not(.high-contrast) select:focus,
+html:not(.high-contrast) textarea:focus {
+  border-color: #00C9A7 !important;
+  box-shadow: 0 0 0 2px rgba(0, 201, 167, 0.2) !important;
+}
+
+html:not(.high-contrast) option {
+  background-color: #131326 !important;
+  color: #ffffff !important;
+}
+
+html:not(.high-contrast) .bg-primary-100.text-primary-700 {
+  background-color: rgba(0, 201, 167, 0.12) !important;
+  color: #00C9A7 !important;
+  border: 1px solid rgba(0, 201, 167, 0.3) !important;
+}
+
+html:not(.high-contrast) .animate-skeleton,
+html:not(.high-contrast) .bg-primary-200 {
+  background-color: #1e1d3d !important;
+}
+
+html:not(.high-contrast) ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+html:not(.high-contrast) ::-webkit-scrollbar-track {
+  background: #0d0d1a;
+}
+html:not(.high-contrast) ::-webkit-scrollbar-thumb {
+  background: #1c1b47;
+  border-radius: 4px;
+}
+html:not(.high-contrast) ::-webkit-scrollbar-thumb:hover {
+  background: #252367;
+}
+
