@@ -93,26 +93,6 @@ export function HomePage() {
         <source src={heroBgVideo} type="video/mp4" />
       </video>
 
-      {/* ─── 3D ROTATING HOLOGRAPHIC LOGO BACKGROUND ─── */}
-      <div 
-        className="absolute inset-0 -z-15 flex items-center justify-center pointer-events-none overflow-hidden"
-        style={{ perspective: '1000px' }}
-      >
-        <motion.img
-          src="/app-logo-transparent.png"
-          alt=""
-          aria-hidden="true"
-          className="w-[280px] sm:w-[450px] md:w-[600px] object-contain opacity-25"
-          animate={{ 
-            rotateY: 360,
-            y: [0, -20, 0]
-          }}
-          transition={{
-            rotateY: { repeat: Infinity, ease: 'linear', duration: 25 },
-            y: { repeat: Infinity, ease: 'easeInOut', duration: 6 }
-          }}
-        />
-      </div>
 
       {/* ─── GRADIENT OVERLAY ─── */}
       <div 
