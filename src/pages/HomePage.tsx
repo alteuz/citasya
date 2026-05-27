@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, MotionConfig } from 'framer-motion';
 import { ArrowUpRight, X } from 'lucide-react';
 import heroBgVideo from '@/assets/hero-bg.mp4';
+import { useAuthContext } from '@/hooks/useAuthContext';
+import { Footer } from '@/components/layout/Footer';
 
 const Logo = ({ dark = false }: { dark?: boolean }) => (
   <div className="flex items-center gap-3">
@@ -20,43 +22,61 @@ const Logo = ({ dark = false }: { dark?: boolean }) => (
 export function HomePage() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [animationCompleted, setAnimationCompleted] = useState(false);
+  const { isAuthenticated, logout } = useAuthContext();
+
+  // ─── ACCESSIBILITY REDUCE MOTION STATE ───
+  const [shouldReduceMotion, setShouldReduceMotion] = useState(() => {
+    return document.documentElement.classList.contains('reduce-motion');
+  });
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setShouldReduceMotion(document.documentElement.classList.contains('reduce-motion'));
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+    return () => observer.disconnect();
+  }, []);
 
   // Motion transitions
   const transition = [0.22, 1, 0.36, 1] as const;
 
   const fadeDown = (index: number) => ({
-    initial: { opacity: 0, y: -20 },
+    initial: shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 },
     animate: { 
       opacity: 1, 
       y: 0,
       transition: {
-        delay: index * 0.1,
-        duration: 0.6,
+        delay: shouldReduceMotion ? 0 : index * 0.1,
+        duration: shouldReduceMotion ? 0 : 0.6,
         ease: transition
       }
     }
   });
 
   const fadeUp = (index: number) => ({
-    initial: { opacity: 0, y: 32 },
+    initial: shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 },
     animate: { 
       opacity: 1, 
       y: 0,
       transition: {
-        delay: index * 0.12,
-        duration: 0.6,
+        delay: shouldReduceMotion ? 0 : index * 0.12,
+        duration: shouldReduceMotion ? 0 : 0.6,
         ease: transition
       }
     }
   });
 
   const wordSlideUp = (delay: number) => ({
-    initial: { y: '110%' },
+    initial: shouldReduceMotion ? { y: 0 } : { y: '110%' },
     animate: { 
       y: 0,
       transition: {
-        delay,
-        duration: 0.7,
+        delay: shouldReduceMotion ? 0 : delay,
+        duration: shouldReduceMotion ? 0 : 0.7,
         ease: transition
       }
     }
@@ -64,16 +84,18 @@ export function HomePage() {
 
   const navLinks = [
     { label: 'Inicio', path: '/' },
-    { label: 'Especialidades', path: '/buscar' },
+    { label: 'Agendar cita', path: '/buscar' },
+    { label: 'Cómo funciona', path: '#como-funciona' },
     { label: 'EPS', path: '/directorio-eps' },
-    { label: 'Ayuda', path: '/buscar' }
+    { label: 'Ayuda', path: '#ayuda' }
   ];
 
   return (
-    <div className="relative w-full min-h-screen text-white flex flex-col justify-between overflow-hidden font-sans select-none">
+    <MotionConfig reducedMotion={shouldReduceMotion ? "always" : "user"}>
+      <div className="relative w-full min-h-screen text-white flex flex-col justify-between overflow-x-hidden font-sans select-none scroll-smooth bg-black">
       
       {/* ─── BASE BACKGROUND COLOR LAYER ─── */}
-      <div className="absolute inset-0 bg-black -z-30 pointer-events-none" />
+      <div className="fixed inset-0 bg-black -z-30 pointer-events-none" />
 
       {/* ─── VIDEO BACKGROUND ─── */}
       <video
@@ -82,7 +104,7 @@ export function HomePage() {
         muted
         playsInline
         aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-contain -z-20 pointer-events-none"
+        className="fixed inset-0 w-full h-full object-contain -z-20 pointer-events-none"
         onEnded={(e) => {
           // Garantiza loop sin cortes en navegadores que ignoran el atributo loop
           const video = e.currentTarget;
@@ -96,7 +118,7 @@ export function HomePage() {
 
       {/* ─── GRADIENT OVERLAY ─── */}
       <div 
-        className="absolute inset-0 -z-10 pointer-events-none" 
+        className="fixed inset-0 -z-10 pointer-events-none" 
         style={{
           background: 'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.7) 80%, rgba(0,0,0,0.92) 100%)'
         }}
@@ -123,7 +145,16 @@ export function HomePage() {
               variants={fadeDown(idx + 1)}
               initial="initial"
               animate="animate"
-              onClick={() => navigate(link.path)}
+              onClick={() => {
+                if (link.path.startsWith('#')) {
+                  const el = document.querySelector(link.path);
+                  if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                  }
+                } else {
+                  navigate(link.path);
+                }
+              }}
               className="nav-link-underline text-[13px] font-semibold tracking-widest uppercase text-white/80 hover:text-[#00C9A7] transition-colors cursor-pointer"
             >
               {link.label}
@@ -210,7 +241,7 @@ export function HomePage() {
           className="flex items-center justify-between gap-4 border-b border-white/10 pb-5 md:pb-6"
         >
           {/* Left: Tagline */}
-          <p className="text-[10px] sm:text-xs font-semibold tracking-widest uppercase text-white/60 leading-normal">
+          <p className="text-[10px] sm:text-xs font-semibold tracking-widest uppercase text-white/60 leading-normal hover:text-[#00C9A7] hover:translate-x-1.5 transition-all duration-350 cursor-default select-none">
             TU SALUD,<br />SIN FILAS<br />SIN ESPERAS<br />EN BOGOTÁ
           </p>
 
@@ -253,7 +284,7 @@ export function HomePage() {
               variants={fadeUp(6)}
               initial="initial"
               animate="animate"
-              className="text-[9px] sm:text-[10px] font-semibold tracking-widest uppercase text-white/45 leading-relaxed"
+              className="text-[9px] sm:text-[10px] font-semibold tracking-widest uppercase text-white/45 leading-relaxed hover:text-white/70 hover:translate-x-1 transition-all duration-350 cursor-default select-none"
             >
               Plataforma centralizada para gestionar tus citas con tu EPS en Bogotá. Rápido, seguro y accesible.
             </motion.p>
@@ -261,32 +292,33 @@ export function HomePage() {
 
           {/* Right Heading Column */}
           <div className="flex flex-col items-end select-none font-serif text-white uppercase text-right leading-[0.88] select-none" style={{ fontSize: 'clamp(2.2rem, 10vw, 9rem)' }}>
-            <div className="overflow-hidden">
+            <div className={`p-4 -m-4 transition-all duration-300 ${animationCompleted ? '' : 'overflow-hidden'}`}>
               <motion.div 
                 variants={wordSlideUp(0.4)} 
                 initial="initial" 
                 animate="animate"
-                className="hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-105 transition-all duration-300 cursor-default inline-block origin-right"
+                className={`transition-all duration-300 cursor-default inline-block origin-right ${shouldReduceMotion ? '' : 'hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-105'}`}
               >
                 Agenda
               </motion.div>
             </div>
-            <div className="overflow-hidden">
+            <div className={`p-4 -m-4 transition-all duration-300 ${animationCompleted ? '' : 'overflow-hidden'}`}>
               <motion.div 
                 variants={wordSlideUp(0.54)} 
                 initial="initial" 
                 animate="animate" 
-                className="text-[#00C9A7] italic font-normal hover:drop-shadow-[0_0_25px_rgba(0,201,167,0.7)] hover:scale-105 transition-all duration-300 cursor-default inline-block origin-right"
+                className={`text-[#00C9A7] italic font-normal transition-all duration-300 cursor-default inline-block origin-right ${shouldReduceMotion ? '' : 'hover:drop-shadow-[0_0_25px_rgba(0,201,167,0.7)] hover:scale-105'}`}
               >
                 Sin
               </motion.div>
             </div>
-            <div className="overflow-hidden">
+            <div className={`p-4 -m-4 transition-all duration-300 ${animationCompleted ? '' : 'overflow-hidden'}`}>
               <motion.div 
                 variants={wordSlideUp(0.68)} 
                 initial="initial" 
                 animate="animate"
-                className="hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-105 transition-all duration-300 cursor-default inline-block origin-right"
+                onAnimationComplete={() => setAnimationCompleted(true)}
+                className={`transition-all duration-300 cursor-default inline-block origin-right ${shouldReduceMotion ? '' : 'hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-105'}`}
               >
                 Filas.
               </motion.div>
@@ -303,7 +335,7 @@ export function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: '-100%' }}
             transition={{ duration: 0.5, ease: transition }}
-            className="fixed inset-0 z-50 bg-black flex flex-col p-5 sm:p-8"
+            className="fixed inset-0 z-50 bg-black flex flex-col p-5 sm:p-8 overflow-y-auto"
           >
             {/* Top row */}
             <div className="w-full flex items-center justify-between">
@@ -320,18 +352,73 @@ export function HomePage() {
 
             {/* Vertical list of links */}
             <div className="flex flex-col gap-7 mt-16">
-              {navLinks.map((link) => (
-                <button
-                  key={link.label}
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    navigate(link.path);
-                  }}
-                  className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-[#00C9A7] transition-colors"
-                >
-                  {link.label}
-                </button>
-              ))}
+              {navLinks.map((link) => {
+                const isAnchor = link.path.startsWith('#');
+                return (
+                  <button
+                    key={link.label}
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      if (isAnchor) {
+                        const el = document.querySelector(link.path);
+                        if (el) {
+                          el.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      } else {
+                        navigate(link.path);
+                      }
+                    }}
+                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-[#00C9A7] transition-colors"
+                  >
+                    {link.label}
+                  </button>
+                );
+              })}
+
+              {/* Botones de Iniciar sesión, Registro, Mi Panel y Cerrar Sesión en menú móvil */}
+              {isAuthenticated ? (
+                <>
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      navigate('/dashboard');
+                    }}
+                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-[#00C9A7] transition-colors"
+                  >
+                    Mi Panel
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      void logout();
+                    }}
+                    className="text-left text-3xl font-semibold tracking-widest uppercase text-red-400 cursor-pointer hover:text-red-300 transition-colors"
+                  >
+                    Cerrar Sesión
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      navigate('/iniciar-sesion');
+                    }}
+                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-[#00C9A7] transition-colors"
+                  >
+                    Iniciar Sesión
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      navigate('/registrarse');
+                    }}
+                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-[#00C9A7] transition-colors"
+                  >
+                    Registrarse
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Bottom CTA */}
@@ -340,7 +427,7 @@ export function HomePage() {
                 setIsMenuOpen(false);
                 navigate('/buscar');
               }}
-              className="mt-auto text-left text-xl font-semibold tracking-wide uppercase text-[#00C9A7] flex items-center gap-1.5 cursor-pointer hover:opacity-85 transition-opacity"
+              className="mt-auto pt-8 text-left text-xl font-semibold tracking-wide uppercase text-[#00C9A7] flex items-center gap-1.5 cursor-pointer hover:opacity-85 transition-opacity"
             >
               Agendar Cita <span aria-hidden="true">↗</span>
             </button>
@@ -348,6 +435,143 @@ export function HomePage() {
         )}
       </AnimatePresence>
 
+      {/* ─── SECTION: ¿CÓMO FUNCIONA? ─── */}
+      <section 
+        id="como-funciona" 
+        className="relative z-20 py-24 px-5 sm:px-8 md:px-16 lg:px-24 bg-[#0a091f]/95 border-t border-white/10 text-white"
+      >
+        <div className="max-w-6xl mx-auto flex flex-col gap-12">
+          {/* Section Heading */}
+          <div className="flex flex-col gap-3">
+            <span className="text-xs font-bold tracking-widest uppercase text-[#00C9A7]">
+              ¿Qué es CitasYA?
+            </span>
+            <h2 className="text-3xl md:text-5xl font-serif font-normal">
+              Cómo funciona la plataforma
+            </h2>
+            <div className="w-16 h-1 bg-[#00C9A7] mt-2 rounded-full" />
+          </div>
+
+          {/* Description Block */}
+          <p className="text-base sm:text-lg text-white/70 leading-relaxed max-w-4xl">
+            <strong>CitasYA</strong> es tu puerta de entrada inteligente a la salud en Bogotá. Somos una plataforma centralizada que conecta a los ciudadanos directamente con sus Entidades Promotoras de Salud (EPS), eliminando las filas físicas y telefónicas. Facilitamos la búsqueda de médicos, la consulta de especialidades y el agendamiento o reprogramación de citas en un entorno 100% digital, accesible e inclusivo para todas las edades.
+          </p>
+
+          {/* Timeline Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+            <div className="bg-[#131233]/40 border border-white/5 rounded-2xl p-6 flex flex-col gap-4 hover:border-[#00C9A7]/30 transition-all duration-300">
+              <span className="text-3xl">🔍</span>
+              <h3 className="text-xl font-bold font-serif text-white">1. Encuentra tu Especialidad</h3>
+              <p className="text-sm text-white/60 leading-relaxed">
+                Selecciona la especialidad médica que necesitas y tu EPS correspondiente para filtrar las opciones disponibles de forma inmediata.
+              </p>
+            </div>
+            <div className="bg-[#131233]/40 border border-white/5 rounded-2xl p-6 flex flex-col gap-4 hover:border-[#00C9A7]/30 transition-all duration-300">
+              <span className="text-3xl">📅</span>
+              <h3 className="text-xl font-bold font-serif text-white">2. Elige Médico y Horario</h3>
+              <p className="text-sm text-white/60 leading-relaxed">
+                Compara profesionales calificados, revisa sus agendas en tiempo real y escoge el horario que mejor se adapte a tu vida.
+              </p>
+            </div>
+            <div className="bg-[#131233]/40 border border-white/5 rounded-2xl p-6 flex flex-col gap-4 hover:border-[#00C9A7]/30 transition-all duration-300">
+              <span className="text-3xl">✅</span>
+              <h3 className="text-xl font-bold font-serif text-white">3. Agenda e Historial</h3>
+              <p className="text-sm text-white/60 leading-relaxed">
+                Confirma tus datos y agenda tu cita en segundos. Podrás consultar, descargar o reprogramar tus citas cuando quieras en tu panel personal.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SECTION: AYUDA Y SOPORTE ─── */}
+      <section 
+        id="ayuda" 
+        className="relative z-20 py-24 px-5 sm:px-8 md:px-16 lg:px-24 bg-[#0c0b24]/95 border-t border-white/10 text-white"
+      >
+        <div className="max-w-6xl mx-auto flex flex-col gap-12">
+          {/* Section Heading */}
+          <div className="flex flex-col gap-3">
+            <span className="text-xs font-bold tracking-widest uppercase text-[#00C9A7]">
+              Soporte Directo
+            </span>
+            <h2 className="text-3xl md:text-5xl font-serif font-normal">
+              Centro de Ayuda
+            </h2>
+            <div className="w-16 h-1 bg-[#00C9A7] mt-2 rounded-full" />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            {/* Left Box: CitasYA support */}
+            <div className="bg-[#131233]/40 border border-white/5 rounded-3xl p-8 flex flex-col gap-5">
+              <span className="text-4xl">💻</span>
+              <h3 className="text-2xl font-serif font-normal">Soporte Técnico de la Página</h3>
+              <p className="text-sm text-white/70 leading-relaxed">
+                Si experimentas problemas técnicos con el funcionamiento de CitasYA, como errores al iniciar sesión, problemas al agendar o fallas en el visualizador, por favor contacta a nuestro equipo de desarrollo:
+              </p>
+              <div className="bg-[#0c0a24] p-4 rounded-xl border border-white/5 flex flex-col gap-1.5">
+                <span className="text-xs text-white/40 uppercase tracking-widest">Correo de soporte</span>
+                <a href="mailto:soporte@citasya.com" className="text-base font-bold text-[#00C9A7] hover:underline">
+                  soporte@citasya.com
+                </a>
+              </div>
+            </div>
+
+            {/* Right Box: EPS support */}
+            <div className="bg-[#131233]/40 border border-white/5 rounded-3xl p-8 flex flex-col gap-5">
+              <span className="text-4xl">🏥</span>
+              <h3 className="text-2xl font-serif font-normal">Asuntos de tu EPS</h3>
+              <p className="text-sm text-white/70 leading-relaxed">
+                Si tu consulta está relacionada con autorizaciones de servicios, reclamos, entrega de medicamentos o peticiones directamente relacionadas con tu EPS, comunícate a sus canales oficiales:
+              </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+                <div className="bg-[#0c0a24] p-3 rounded-xl border border-white/5">
+                  <p className="text-xs font-bold text-white font-serif">Sanitas</p>
+                  <a href="mailto:contacto@epssanitas.com" className="text-xs text-[#00C9A7] hover:underline">
+                    contacto@epssanitas.com
+                  </a>
+                </div>
+                <div className="bg-[#0c0a24] p-3 rounded-xl border border-white/5">
+                  <p className="text-xs font-bold text-white font-serif">Sura</p>
+                  <a href="mailto:afiliados@epssura.com.co" className="text-xs text-[#00C9A7] hover:underline">
+                    afiliados@epssura.com.co
+                  </a>
+                </div>
+                <div className="bg-[#0c0a24] p-3 rounded-xl border border-white/5">
+                  <p className="text-xs font-bold text-white font-serif">Compensar</p>
+                  <a href="mailto:servicioalcliente@compensarsalud.com" className="text-xs text-[#00C9A7] hover:underline">
+                    servicioalcliente@compensarsalud.com
+                  </a>
+                </div>
+                <div className="bg-[#0c0a24] p-3 rounded-xl border border-white/5">
+                  <p className="text-xs font-bold text-white font-serif">Salud Total</p>
+                  <a href="mailto:defensoria@saludtotal.com.co" className="text-xs text-[#00C9A7] hover:underline">
+                    defensoria@saludtotal.com.co
+                  </a>
+                </div>
+                <div className="bg-[#0c0a24] p-3 rounded-xl border border-white/5">
+                  <p className="text-xs font-bold text-white font-serif">Famisanar</p>
+                  <a href="mailto:servicioalcliente@famisanar.com.co" className="text-xs text-[#00C9A7] hover:underline">
+                    servicioalcliente@famisanar.com.co
+                  </a>
+                </div>
+                <div className="bg-[#0c0a24] p-3 rounded-xl border border-white/5">
+                  <p className="text-xs font-bold text-white font-serif">Coosalud</p>
+                  <a href="mailto:defensordelusuario@coosalud.com" className="text-xs text-[#00C9A7] hover:underline">
+                    defensordelusuario@coosalud.com
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <Footer />
+
     </div>
+    </MotionConfig>
   );
 }

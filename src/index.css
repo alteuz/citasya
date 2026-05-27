@@ -489,4 +489,51 @@ html.high-contrast .accessibility-trigger-btn {
   transform: scale-x(1);
 }
 
+/* Disabled input styling in dark mode */
+html:not(.high-contrast) input:disabled,
+html:not(.high-contrast) select:disabled,
+html:not(.high-contrast) textarea:disabled {
+  background-color: #1e1d3d !important;
+  color: #9f99c7 !important;
+  border-color: #2c2a57 !important;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Ghost button hover style in dark mode */
+html:not(.high-contrast) button.bg-transparent:hover,
+html:not(.high-contrast) button.bg-transparent.text-primary-700:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+/* Unified dark mode borders for tables and dividers */
+html:not(.high-contrast) tr,
+html:not(.high-contrast) th,
+html:not(.high-contrast) td,
+html:not(.high-contrast) .border-primary-50,
+html:not(.high-contrast) .border-primary-100,
+html:not(.high-contrast) .border-primary-200 {
+  border-color: #1c1b47 !important;
+}
+
+/* Global High Contrast button overrides */
+html.high-contrast button,
+html.high-contrast a button,
+html.high-contrast .button {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 3px solid #000000 !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
+
+html.high-contrast button:hover,
+html.high-contrast a button:hover,
+html.high-contrast .button:hover {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+
 

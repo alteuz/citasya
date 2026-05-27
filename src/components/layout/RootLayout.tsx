@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { AuthProvider } from '@/hooks/useAuth';
 import { Navbar } from './Navbar';
@@ -8,6 +9,21 @@ import { AccessibilityWidget } from '@/components/ui/AccessibilityWidget';
 export function RootLayout() {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+
+  // ─── SCROLL TO HASH ANCHORS ON ROUTE / HASH CHANGE ───
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.substring(1);
+      // Wait a frame to ensure the target element exists in the DOM
+      const timer = setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [location.pathname, location.hash]);
 
   return (
     <AuthProvider>

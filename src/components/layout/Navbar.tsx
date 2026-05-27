@@ -11,9 +11,10 @@ interface NavLink {
 
 const NAV_LINKS: readonly NavLink[] = [
   { label: 'Inicio', href: '/' },
-  { label: 'Buscar médico', href: '/buscar' },
+  { label: 'Agendar cita', href: '/buscar' },
   { label: 'Cómo funciona', href: '/#como-funciona' },
   { label: 'Directorio EPS', href: '/directorio-eps' },
+  { label: 'Ayuda', href: '/#ayuda' },
 ];
 
 export function Navbar() {
