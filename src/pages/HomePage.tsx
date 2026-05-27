@@ -82,11 +82,14 @@ export function HomePage() {
         playsInline
         aria-hidden="true"
         className="absolute inset-0 w-full h-full object-cover -z-20 pointer-events-none"
+        onEnded={(e) => {
+          // Garantiza loop sin cortes en navegadores que ignoran el atributo loop
+          const video = e.currentTarget;
+          video.currentTime = 0;
+          void video.play();
+        }}
       >
-        <source 
-          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260517_222138_3e3205be-3364-417b-a64a-bfe087acbec4.mp4" 
-          type="video/mp4" 
-        />
+        <source src="/hero-bg.mp4" type="video/mp4" />
       </video>
 
       {/* ─── 3D ROTATING HOLOGRAPHIC LOGO BACKGROUND ─── */}
