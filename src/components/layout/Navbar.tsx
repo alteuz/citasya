@@ -64,7 +64,7 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-8">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -81,7 +81,7 @@ export function Navbar() {
           </div>
 
           {/* Desktop Auth Actions */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden lg:flex items-center gap-6">
             {isLoading ? (
               <div className="h-8 w-24 bg-primary-800 rounded-lg animate-skeleton" />
             ) : isAuthenticated ? (
@@ -130,7 +130,7 @@ export function Navbar() {
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
             aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-            className="md:hidden p-2 rounded-lg text-primary-200 hover:text-white hover:bg-primary-800 transition-colors cursor-pointer"
+            className="lg:hidden p-2 rounded-lg text-primary-200 hover:text-white hover:bg-primary-800 transition-colors cursor-pointer"
           >
             <svg
               className="h-6 w-6"
@@ -154,7 +154,7 @@ export function Navbar() {
           <>
             {/* Backdrop */}
             <div
-              className="fixed inset-0 top-16 bg-black/20 backdrop-blur-sm z-40 md:hidden"
+              className="fixed inset-0 top-16 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
               onClick={closeMobileMenu}
               aria-hidden="true"
             />
@@ -162,7 +162,7 @@ export function Navbar() {
             id="mobile-menu"
             role="navigation"
             aria-label="Menú móvil"
-            className="fixed right-0 top-16 bottom-0 w-72 bg-primary-950 border-l border-primary-800 shadow-elevated z-50 md:hidden animate-slide-in overflow-y-auto"
+            className="fixed right-0 top-16 bottom-0 w-72 bg-primary-950 border-l border-primary-800 shadow-elevated z-50 lg:hidden animate-slide-in overflow-y-auto"
           >
               <div className="flex flex-col p-6 gap-2">
                 {/* Auth user header for mobile */}
@@ -184,10 +184,10 @@ export function Navbar() {
                     to={link.href}
                     onClick={closeMobileMenu}
                     className={`
-                      px-4 py-3 rounded-xl text-base font-medium transition-colors
+                      px-4 py-3 rounded-xl text-base font-medium transition-all duration-200
                       ${location.pathname === link.href
-                        ? 'bg-primary-800 text-white'
-                        : 'text-primary-200 hover:bg-primary-800 hover:text-white'
+                        ? 'bg-accent-400 text-primary-950 font-bold'
+                        : 'text-white/80 hover:bg-white/10 hover:text-white'
                       }
                     `}
                   >
@@ -199,7 +199,13 @@ export function Navbar() {
                   <Link
                     to="/dashboard"
                     onClick={closeMobileMenu}
-                    className="px-4 py-3 rounded-xl text-base font-medium text-primary-200 hover:bg-primary-800 hover:text-white transition-colors"
+                    className={`
+                      px-4 py-3 rounded-xl text-base font-medium transition-all duration-200
+                      ${location.pathname === '/dashboard'
+                        ? 'bg-accent-400 text-primary-950 font-bold'
+                        : 'text-white/80 hover:bg-white/10 hover:text-white'
+                      }
+                    `}
                   >
                     Mi panel
                   </Link>
@@ -221,13 +227,19 @@ export function Navbar() {
                     <Link
                       to="/iniciar-sesion"
                       onClick={closeMobileMenu}
-                      className="px-4 py-3 rounded-xl text-base font-medium text-primary-200 hover:bg-primary-800 hover:text-white transition-colors"
+                      className={`
+                        px-4 py-3 rounded-xl text-base font-medium transition-all duration-200
+                        ${location.pathname === '/iniciar-sesion'
+                          ? 'bg-accent-400 text-primary-950 font-bold'
+                          : 'text-white/80 hover:bg-white/10 hover:text-white'
+                        }
+                      `}
                     >
                       Iniciar sesión
                     </Link>
                     <Link to="/registrarse" onClick={closeMobileMenu} className="mt-2">
-                      <Button variant="primary" size="md" fullWidth>
-                        Agendar cita
+                      <Button variant="accent" size="md" fullWidth>
+                        Registrarse
                       </Button>
                     </Link>
                   </>

@@ -25,3 +25,6 @@ dist-ssr
 
 .vercel
 .env
+
+# Caché interna del CLI de Supabase (contiene ref del proyecto y host del pooler)
+supabase/.temp

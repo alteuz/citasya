@@ -16,7 +16,7 @@ export function HistorialPage() {
   const [appointments, setAppointments] = useState<readonly AppointmentDetail[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [cancellingAppointmentId, setCancellingAppointmentId] = useState<string | null>(null);
 
   const loadAppointments = useCallback(async () => {
     setIsLoading(true);
@@ -35,18 +35,30 @@ export function HistorialPage() {
     void loadAppointments();
   }, [loadAppointments]);
 
-  const handleCancel = useCallback(async (appointmentId: string) => {
-    const reason = window.prompt('¿Por qué deseas cancelar esta cita?');
-    if (!reason) return;
+  const cancelAppointment = useCallback(async (appointmentId: string): Promise<void> => {
+    const userInput = window.prompt('¿Por qué deseas cancelar esta cita? (Opcional):');
+    
+    // Si presiona "Cancelar" en el prompt, cancelamos la acción
+    if (userInput === null) {
+      return;
+    }
 
-    setCancellingId(appointmentId);
-    const result = await AppointmentsService.cancelAppointment(appointmentId, reason);
-    setCancellingId(null);
+    // Si hace clic en "Aceptar" vacío, asignamos motivo por defecto
+    const reason = userInput.trim() === '' ? 'Cancelado por el paciente' : userInput.trim();
 
-    if (result.success) {
-      void loadAppointments();
-    } else {
-      alert(result.error);
+    setCancellingAppointmentId(appointmentId);
+    try {
+      const result = await AppointmentsService.cancelAppointment(appointmentId, reason);
+      if (result.success) {
+        await loadAppointments();
+      } else {
+        alert(result.error);
+      }
+    } catch (err) {
+      console.error('Error cancelling appointment:', { appointmentId, error: err });
+      alert('Ocurrió un error inesperado al cancelar la cita.');
+    } finally {
+      setCancellingAppointmentId(null);
     }
   }, [loadAppointments]);
 
@@ -116,7 +128,7 @@ export function HistorialPage() {
             {appointments.map((apt) => {
               const config = STATUS_CONFIG[apt.status];
               const isCancellable = apt.status === 'scheduled';
-              const isCancelling = cancellingId === apt.id;
+              const isCancelling = cancellingAppointmentId === apt.id;
 
               return (
                 <div
@@ -178,7 +190,7 @@ export function HistorialPage() {
                           variant="danger"
                           size="sm"
                           isLoading={isCancelling}
-                          onClick={() => { void handleCancel(apt.id); }}
+                          onClick={() => { void cancelAppointment(apt.id); }}
                         >
                           Cancelar
                         </Button>
