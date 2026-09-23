@@ -155,4 +155,5 @@ jobs:
         with:
           name: lighthouse-${{ matrix.perfil }}
           path: .lighthouseci
+          include-hidden-files: true # .lighthouseci es un directorio oculto
           retention-days: 30
