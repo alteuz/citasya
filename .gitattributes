@@ -1,0 +1,3 @@
+# Finales de línea normalizados a LF en el repositorio (el CI corre en Linux).
+* text=auto eol=lf
+*.{png,jpg,jpeg,webp,avif,ico,mp4,webm,woff,woff2} binary
