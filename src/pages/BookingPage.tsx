@@ -6,6 +6,7 @@ import { useAuthContext } from '@/hooks/useAuthContext';
 import { DoctorsService, type DoctorSearchResult, type SlotResult } from '@/services/doctors.service';
 import { AppointmentsService, type AppointmentDetail } from '@/services/appointments.service';
 import type { AppointmentMode } from '@/types/database';
+import { AppointmentModeSelector } from '@/components/appointments/AppointmentModeSelector';
 
 type BookingStep = 'select' | 'confirm' | 'success';
 
@@ -220,35 +221,7 @@ export function BookingPage() {
           </div>
 
           {/* Modo */}
-          <div>
-            <label className="text-sm font-medium text-text-secondary mb-2 block">
-              Modalidad de atención
-            </label>
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => setMode('presencial')}
-                className={`flex-1 py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all cursor-pointer ${
-                  mode === 'presencial'
-                    ? 'border-accent-400 bg-accent-400/10 text-accent-600'
-                    : 'border-primary-200 text-text-secondary hover:border-primary-300'
-                }`}
-              >
-                🏥 Presencial
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode('telemedicina')}
-                className={`flex-1 py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all cursor-pointer ${
-                  mode === 'telemedicina'
-                    ? 'border-accent-400 bg-accent-400/10 text-accent-600'
-                    : 'border-primary-200 text-text-secondary hover:border-primary-300'
-                }`}
-              >
-                💻 Telemedicina
-              </button>
-            </div>
-          </div>
+          <AppointmentModeSelector value={mode} onChange={setMode} />
 
           {/* Notas */}
           <div>
