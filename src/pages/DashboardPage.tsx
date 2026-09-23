@@ -148,7 +148,7 @@ export function DashboardPage() {
               icon="🏥"
               title="Directorio EPS"
               description="Consulta las EPS vinculadas y sus especialidades."
-              href="/buscar"
+              href="/directorio-eps"
               ctaText="Ver directorio"
               variant="primary"
             />
@@ -287,44 +287,52 @@ export function DashboardPage() {
               {isEditingProfile ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
+                    <label htmlFor="perfil-nombre" className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
                       Nombre Completo
                     </label>
                     <input
+                      id="perfil-nombre"
                       type="text"
+                      autoComplete="name"
                       value={editFullName}
                       onChange={(e) => setEditFullName(e.target.value)}
                       className="w-full px-3 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-400"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
+                    <label htmlFor="perfil-cedula" className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
                       Cédula <span className="lowercase normal-case text-gray-400 ml-1">(solo lectura)</span>
                     </label>
+                    {/* readOnly (no disabled): sigue siendo enfocable y legible por lectores de pantalla */}
                     <input
+                      id="perfil-cedula"
                       type="text"
                       value={profile.cedula}
-                      disabled
+                      readOnly
                       className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 cursor-not-allowed"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
+                    <label htmlFor="perfil-correo" className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
                       Correo Electrónico <span className="lowercase normal-case text-gray-400 ml-1">(solo lectura)</span>
                     </label>
                     <input
+                      id="perfil-correo"
                       type="email"
+                      autoComplete="email"
                       value={profile.email}
-                      disabled
+                      readOnly
                       className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 cursor-not-allowed"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
+                    <label htmlFor="perfil-telefono" className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
                       Teléfono
                     </label>
                     <input
+                      id="perfil-telefono"
                       type="tel"
+                      autoComplete="tel"
                       value={editPhone}
                       onChange={(e) => setEditPhone(e.target.value)}
                       className="w-full px-3 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-400"
