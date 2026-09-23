@@ -18,7 +18,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "lhci": "lhci autorun",
-    "audit:deps": "npm audit --audit-level=high",
+    "audit:deps": "npm audit --omit=dev --audit-level=high",
     "verify": "npm run typecheck && npm run lint && npm run test && npm run build"
   },
   "devDependencies": {

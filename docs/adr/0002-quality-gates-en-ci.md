@@ -23,6 +23,10 @@ Implementar la DoD como **jobs de GitHub Actions** que bloquean la integración 
 
 A estas se suman `npm audit` (job `seguridad`, OWASP A06) y Dependabot.
 
+**Alcance del gate de seguridad.** El paso bloqueante audita las **dependencias de producción** (`npm audit --omit=dev`), que son el código que se entrega al navegador del paciente. Un segundo paso audita el árbol completo, incluidas las herramientas de desarrollo, y solo informa. Razón: tras `npm audit fix`, las vulnerabilidades altas restantes vienen de la cadena interna de Lighthouse CI (puppeteer, `tmp`, `extract-zip`), sin corrección publicada, y solo se ejecutan dentro del runner efímero del CI. Un gate imposible de cumplir por un componente ajeno al producto no mide la calidad del producto. Las herramientas de desarrollo siguen vigiladas por Dependabot y por el paso informativo.
+
+**Independencia de los gates.** El build es un job propio del que dependen `accesibilidad` y `lighthouse`. Los pasos de `calidad` se ejecutan todos aunque uno falle. Así, un error de lint no impide medir la accesibilidad ni el rendimiento, y cada ejecución es una medición completa. Se corrigió después de que la primera ejecución omitiera axe y Lighthouse porque dependían de un job que falló en el lint.
+
 **Umbrales** (propuesta R-01, pendiente de aval del director): accesibilidad ≥ 98 en ambos perfiles; rendimiento ≥ 85 en móvil y ≥ 95 en escritorio; LCP ≤ 2,5 s; 0 violaciones axe WCAG A/AA críticas o serias. Viven en un solo lugar (`lighthouserc.cjs` y `e2e/accesibilidad.spec.ts`).
 
 **Metodología de medición:** se audita el **build de producción** (`dist/`), no el servidor de desarrollo. Se sirve con `serve`, que aplica compresión gzip y *fallback* SPA, para emular la CDN de Vercel. Se descartó `vite preview` porque no comprime: en una prueba de validación, `/directorio-eps` dio LCP de 10,2 s con `vite preview` contra 3,4 s en producción, ya que el JS pasaba de 209 KB a 751 KB. Lighthouse ejecuta 3 corridas por URL y evalúa la **mediana**, para reducir el ruido de la medición de rendimiento.
