@@ -10,6 +10,7 @@ export function DashboardPage() {
   const { profile, isLoading: authLoading, refreshProfile, user } = useAuthContext();
   const [upcomingAppointments, setUpcomingAppointments] = useState<readonly AppointmentDetail[]>([]);
   const [isLoadingAppointments, setIsLoadingAppointments] = useState(true);
+  const [cancellingAppointmentId, setCancellingAppointmentId] = useState<string | null>(null);
 
   // Edit Profile State
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -63,6 +64,33 @@ export function DashboardPage() {
 
     setIsLoadingAppointments(false);
   }, []);
+
+  const cancelAppointment = useCallback(async (appointmentId: string): Promise<void> => {
+    const userInput = window.prompt('¿Por qué deseas cancelar esta cita? (Opcional):');
+    
+    // Si presiona "Cancelar" en el prompt, cancelamos la acción
+    if (userInput === null) {
+      return;
+    }
+
+    // Si hace clic en "Aceptar" vacío, asignamos motivo por defecto
+    const reason = userInput.trim() === '' ? 'Cancelado por el paciente' : userInput.trim();
+
+    setCancellingAppointmentId(appointmentId);
+    try {
+      const result = await AppointmentsService.cancelAppointment(appointmentId, reason);
+      if (result.success) {
+        await loadAppointments();
+      } else {
+        alert(result.error);
+      }
+    } catch (error) {
+      console.error('Error cancelling appointment:', { appointmentId, error });
+      alert('Ocurrió un error inesperado al cancelar la cita.');
+    } finally {
+      setCancellingAppointmentId(null);
+    }
+  }, [loadAppointments]);
 
   useEffect(() => {
     void loadAppointments();
@@ -203,15 +231,31 @@ export function DashboardPage() {
                       </span>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 self-start sm:self-center whitespace-nowrap text-center">
+                  <div className="flex flex-col gap-2 items-stretch sm:items-end">
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 self-start sm:self-end whitespace-nowrap text-center mb-1">
                       📅 Programada
                     </span>
-                    <Link to={`/reprogramar/${apt.id}`} className="w-full sm:w-auto">
-                      <Button variant="secondary" size="sm" fullWidth>
-                        Reprogramar
+                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                      <Link to={`/reprogramar/${apt.id}`} className="w-full sm:w-auto">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          fullWidth
+                          disabled={cancellingAppointmentId === apt.id}
+                        >
+                          Reprogramar
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        isLoading={cancellingAppointmentId === apt.id}
+                        onClick={() => { void cancelAppointment(apt.id); }}
+                        className="w-full sm:w-auto"
+                      >
+                        Cancelar
                       </Button>
-                    </Link>
+                    </div>
                   </div>
                 </div>
               ))}
