@@ -244,9 +244,9 @@ export function SearchPage() {
         {!isLoading && !error && doctors.length === 0 && (
           <div className="bg-surface-card border border-primary-100 rounded-2xl p-10 text-center">
             <span className="text-5xl mb-4 block" aria-hidden="true">🔍</span>
-            <h3 className="text-lg font-semibold text-primary-800 mb-2">
+            <h2 className="text-lg font-semibold text-primary-800 mb-2">
               No se encontraron médicos
-            </h3>
+            </h2>
             <p className="text-text-secondary mb-6 max-w-md mx-auto">
               Intenta cambiar los filtros de búsqueda o selecciona otra especialidad.
             </p>
@@ -293,9 +293,9 @@ function DoctorCard({ doctor, modeParam }: DoctorCardProps) {
           {initials}
         </div>
         <div className="min-w-0">
-          <h3 className="text-base font-semibold text-primary-800 truncate">
+          <h2 className="text-base font-semibold text-primary-800 truncate">
             {doctor.fullName}
-          </h3>
+          </h2>
           <p className="text-sm text-accent-500 font-medium">
             {doctor.specialtyName}
           </p>

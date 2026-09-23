@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { useAuthContext } from '@/hooks/useAuthContext';
-import { APP_NAME } from '@/lib/constants';
 
 interface NavLink {
   readonly label: string;
@@ -50,17 +49,17 @@ export function Navbar() {
           <Link
             to="/"
             className="flex items-center gap-3 shrink-0"
-            aria-label={`${APP_NAME} — Inicio`}
             onClick={closeMobileMenu}
           >
             <img
               src="/logo.png"
-              alt={`${APP_NAME} logo`}
+              alt=""
               className="h-14 w-14 object-contain shrink-0"
             />
             <span className="font-serif text-[28px] tracking-tight font-normal text-white">
               Citas<span className="text-accent-400">YA</span>
             </span>
+            <span className="sr-only">, ir al inicio</span>
           </Link>
 
           {/* Desktop Nav Links */}

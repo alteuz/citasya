@@ -201,10 +201,10 @@ export function AccessibilityWidget() {
               <div className="space-y-3 pt-2">
                 {/* Alto Contraste */}
                 <label className="flex items-center justify-between p-2.5 bg-[#131233] border border-[#25235c] rounded-xl cursor-pointer hover:bg-[#1a1945] transition-colors">
-                  <div className="flex flex-col">
-                    <span className="text-sm font-bold text-white">Alto Contraste</span>
-                    <span className="text-[10px] text-[#9f99c7]">Colores de alta visibilidad</span>
-                  </div>
+                  <span className="flex flex-col text-sm font-bold text-white">
+                    Alto Contraste
+                    <span className="text-xs font-normal text-[#9f99c7]">Colores de alta visibilidad</span>
+                  </span>
                   <input
                     type="checkbox"
                     checked={highContrast}
@@ -215,10 +215,10 @@ export function AccessibilityWidget() {
 
                 {/* Guía de Lectura */}
                 <label className="flex items-center justify-between p-2.5 bg-[#131233] border border-[#25235c] rounded-xl cursor-pointer hover:bg-[#1a1945] transition-colors">
-                  <div className="flex flex-col">
-                    <span className="text-sm font-bold text-white">Guía de Lectura</span>
-                    <span className="text-[10px] text-[#9f99c7]">Regla visual para seguir el texto</span>
-                  </div>
+                  <span className="flex flex-col text-sm font-bold text-white">
+                    Guía de Lectura
+                    <span className="text-xs font-normal text-[#9f99c7]">Regla visual para seguir el texto</span>
+                  </span>
                   <input
                     type="checkbox"
                     checked={readingGuide}
@@ -229,10 +229,10 @@ export function AccessibilityWidget() {
 
                 {/* Asistente de Voz */}
                 <label className="flex items-center justify-between p-2.5 bg-[#131233] border border-[#25235c] rounded-xl cursor-pointer hover:bg-[#1a1945] transition-colors">
-                  <div className="flex flex-col">
-                    <span className="text-sm font-bold text-white">Lector de Voz</span>
-                    <span className="text-[10px] text-[#9f99c7]">Escuchar texto al pasar el cursor</span>
-                  </div>
+                  <span className="flex flex-col text-sm font-bold text-white">
+                    Lector de Voz
+                    <span className="text-xs font-normal text-[#9f99c7]">Escuchar texto al pasar el cursor</span>
+                  </span>
                   <input
                     type="checkbox"
                     checked={voiceAssistance}
@@ -243,10 +243,10 @@ export function AccessibilityWidget() {
 
                 {/* Animaciones */}
                 <label className="flex items-center justify-between p-2.5 bg-[#131233] border border-[#25235c] rounded-xl cursor-pointer hover:bg-[#1a1945] transition-colors">
-                  <div className="flex flex-col">
-                    <span className="text-sm font-bold text-white">Reducir Movimiento</span>
-                    <span className="text-[10px] text-[#9f99c7]">Desactiva efectos visuales rápidos</span>
-                  </div>
+                  <span className="flex flex-col text-sm font-bold text-white">
+                    Reducir Movimiento
+                    <span className="text-xs font-normal text-[#9f99c7]">Desactiva efectos visuales rápidos</span>
+                  </span>
                   <input
                     type="checkbox"
                     checked={reduceMotion}

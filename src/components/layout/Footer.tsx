@@ -36,11 +36,12 @@ export function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {/* Brand */}
           <div className="flex flex-col gap-4">
-            <Link to="/" className="flex items-center gap-3" aria-label={`${APP_NAME} — Inicio`}>
-              <img src="/logo.png" alt={`${APP_NAME} logo`} className="h-14 w-14 object-contain shrink-0" />
+            <Link to="/" className="flex items-center gap-3">
+              <img src="/logo.png" alt="" className="h-14 w-14 object-contain shrink-0" />
               <span className="font-serif text-[28px] tracking-tight font-normal text-white">
                 Citas<span className="text-accent-400">YA</span>
               </span>
+              <span className="sr-only">, ir al inicio</span>
             </Link>
             <p className="text-sm text-primary-300 leading-relaxed max-w-xs">
               {APP_TAGLINE}
@@ -50,9 +51,11 @@ export function Footer() {
           {/* Sections */}
           {FOOTER_SECTIONS.map((section) => (
             <div key={section.title} className="flex flex-col gap-4">
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+              <h2 className="text-sm font-semibold text-white uppercase tracking-wider">
                 {section.title}
-              </h3>
+              </h2>
+              {/* role="list" es intencional: Safari/VoiceOver elimina la semántica de lista cuando list-style es none (reset de Tailwind). */}
+              {/* eslint-disable-next-line jsx-a11y/no-redundant-roles */}
               <ul className="flex flex-col gap-2.5" role="list">
                 {section.links.map((link) => (
                   <li key={link.href}>
