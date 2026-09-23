@@ -28,3 +28,9 @@ dist-ssr
 
 # Caché interna del CLI de Supabase (contiene ref del proyecto y host del pooler)
 supabase/.temp
+
+# Resultados de pruebas y auditorías (se publican como artefactos del CI)
+coverage
+playwright-report
+test-results
+.lighthouseci
