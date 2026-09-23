@@ -1,0 +1,135 @@
+# Pipeline de integración continua de CitasYA.
+#
+# Implementa la Definición de Terminado (DoD) del trabajo de grado como
+# "quality gates" automáticos. Un PR solo puede integrarse a main si todos
+# los jobs terminan en verde (protección de rama):
+#
+#   calidad        → tipos, lint (incluye jsx-a11y), pruebas unitarias, build
+#   seguridad      → npm audit sin vulnerabilidades altas o críticas
+#   accesibilidad  → axe-core en navegador real, perfiles móvil y escritorio
+#   lighthouse     → Lighthouse CI (mediana de 3 corridas), móvil y escritorio
+#
+# Los umbrales viven en lighthouserc.cjs y e2e/accesibilidad.spec.ts.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 24 # misma versión mayor que el entorno de build de Vercel
+
+jobs:
+  calidad:
+    name: Calidad (tipos, lint, pruebas, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Verificación de tipos (TypeScript estricto)
+        run: npm run typecheck
+      - name: Lint (ESLint + jsx-a11y strict)
+        run: npm run lint
+      - name: Pruebas unitarias con cobertura
+        run: npm run test:coverage
+      - name: Build de producción
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cobertura
+          path: coverage
+          retention-days: 30
+
+  seguridad:
+    name: Seguridad (dependencias)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: npm audit (falla con severidad alta o crítica)
+        run: npm run audit:deps
+
+  accesibilidad:
+    name: Accesibilidad WCAG 2.1 AA (axe-core)
+    needs: calidad
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - run: npx playwright install --with-deps chromium
+      - name: axe-core en móvil y escritorio
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reporte-accesibilidad
+          path: playwright-report
+          retention-days: 30
+
+  lighthouse:
+    name: Lighthouse CI (${{ matrix.perfil }})
+    needs: calidad
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        perfil: [movil, escritorio]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Lighthouse CI (3 corridas por URL, se evalúa la mediana)
+        run: npm run lhci
+        env:
+          LHCI_PROFILE: ${{ matrix.perfil }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-${{ matrix.perfil }}
+          path: .lighthouseci
+          retention-days: 30
