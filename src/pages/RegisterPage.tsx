@@ -128,7 +128,7 @@ export function RegisterPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-3 mb-6">
-            <img src="/logo.png" alt="CitasYA" className="h-20 w-20 object-contain shrink-0" />
+            <img src="/logo.png" alt="" className="h-20 w-20 object-contain shrink-0" />
             <span className="font-serif text-[32px] tracking-tight font-normal text-text-primary">
               Citas<span className="text-accent-400">YA</span>
             </span>
@@ -140,7 +140,7 @@ export function RegisterPage() {
             Regístrate para agendar tus citas médicas
           </p>
           {/* Step indicator */}
-          <div className="flex items-center justify-center gap-2 mt-4" aria-label={`Paso ${step} de 2`}>
+          <div className="flex items-center justify-center gap-2 mt-4" aria-hidden="true">
             <div className={`h-2 w-10 rounded-full transition-colors ${step >= 1 ? 'bg-accent-400' : 'bg-primary-200'}`} />
             <div className={`h-2 w-10 rounded-full transition-colors ${step >= 2 ? 'bg-accent-400' : 'bg-primary-200'}`} />
           </div>

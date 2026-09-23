@@ -59,7 +59,7 @@ export function PWAInstallPrompt() {
         <span className="text-3xl shrink-0" aria-hidden="true">📱</span>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold">Instalar CitasYA</p>
-          <p className="text-xs text-primary-200 mt-0.5">
+          <p className="text-sm text-white mt-0.5">
             Agrega la app a tu pantalla de inicio para acceso rápido.
           </p>
         </div>
@@ -67,14 +67,15 @@ export function PWAInstallPrompt() {
           <button
             type="button"
             onClick={handleDismiss}
-            className="text-xs text-primary-300 hover:text-white transition-colors cursor-pointer px-2 py-1"
+            className="text-sm text-white underline underline-offset-2 hover:no-underline cursor-pointer px-2 py-1"
           >
             Ahora no
           </button>
+          {/* Color de texto explícito: los tokens primary-* se invierten en el tema oscuro (ADR-0004). */}
           <button
             type="button"
             onClick={() => { void handleInstall(); }}
-            className="bg-accent-400 text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-accent-500 transition-colors cursor-pointer"
+            className="bg-accent-400 text-[#0d0d1a] text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-accent-500 transition-colors cursor-pointer"
           >
             Instalar
           </button>

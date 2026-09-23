@@ -226,12 +226,13 @@ export function HomePage() {
                   >
                     Iniciar Sesión
                   </motion.button>
+                  {/* Texto oscuro explícito sobre turquesa (contraste 9,1:1): text-primary-950 se vuelve blanco en el tema oscuro (ADR-0004). */}
                   <motion.button
                     variants={fadeDown(7)}
                     initial="initial"
                     animate="animate"
                     onClick={() => navigate('/registrarse')}
-                    className="bg-[#00C9A7] hover:bg-[#00bda0] text-primary-950 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 transform hover:scale-105 cursor-pointer shadow-[0_0_15px_rgba(0,201,167,0.2)]"
+                    className="bg-[#00C9A7] hover:bg-[#00bda0] text-[#0d0d1a] px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 transform hover:scale-105 cursor-pointer shadow-[0_0_15px_rgba(0,201,167,0.2)]"
                   >
                     Registrarse
                   </motion.button>
@@ -369,29 +370,29 @@ export function HomePage() {
           </div>
 
           {/* Right Heading Column */}
-          <div className="flex flex-col items-end select-none font-serif text-white uppercase text-right leading-[0.92] select-none" style={{ fontSize: 'clamp(2.2rem, 10vw, 9rem)' }}>
-            <div className={`p-6 -m-6 transition-all duration-300 ${animationCompleted ? '' : 'overflow-hidden'}`}>
-              <motion.div 
+          <h1 className="flex flex-col items-end select-none font-serif text-white uppercase text-right leading-[0.92] select-none" style={{ fontSize: 'clamp(2.2rem, 10vw, 9rem)' }}>
+            <span className={`block p-6 -m-6 transition-all duration-300 ${animationCompleted ? '' : 'overflow-hidden'}`}>
+              <motion.span 
                 variants={wordSlideUp(0.4)} 
                 initial="initial" 
                 animate="animate"
                 className={`transition-all duration-300 cursor-default inline-block origin-right ${shouldReduceMotion ? '' : 'hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-105'}`}
               >
                 Agenda
-              </motion.div>
-            </div>
-            <div className={`p-6 -m-6 transition-all duration-300 ${animationCompleted ? '' : 'overflow-hidden'}`}>
-              <motion.div 
+              </motion.span>
+            </span>
+            <span className={`block p-6 -m-6 transition-all duration-300 ${animationCompleted ? '' : 'overflow-hidden'}`}>
+              <motion.span 
                 variants={wordSlideUp(0.54)} 
                 initial="initial" 
                 animate="animate" 
                 className={`text-[#00C9A7] italic font-normal transition-all duration-300 cursor-default inline-block origin-right ${shouldReduceMotion ? '' : 'hover:drop-shadow-[0_0_25px_rgba(0,201,167,0.7)] hover:scale-105'}`}
               >
                 Sin
-              </motion.div>
-            </div>
-            <div className={`p-6 -m-6 transition-all duration-300 ${animationCompleted ? '' : 'overflow-hidden'}`}>
-              <motion.div 
+              </motion.span>
+            </span>
+            <span className={`block p-6 -m-6 transition-all duration-300 ${animationCompleted ? '' : 'overflow-hidden'}`}>
+              <motion.span 
                 variants={wordSlideUp(0.68)} 
                 initial="initial" 
                 animate="animate"
@@ -399,9 +400,9 @@ export function HomePage() {
                 className={`transition-all duration-300 cursor-default inline-block origin-right ${shouldReduceMotion ? '' : 'hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-105'}`}
               >
                 Filas.
-              </motion.div>
-            </div>
-          </div>
+              </motion.span>
+            </span>
+          </h1>
         </div>
       </div>
       </div>
