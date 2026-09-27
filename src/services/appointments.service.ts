@@ -5,6 +5,7 @@
 import { supabase } from '@/lib/supabase';
 import type { ServiceResult } from '@/types/common';
 import type { AppointmentMode, AppointmentStatus } from '@/types/database';
+import { mensajeDeError } from './errores';
 
 type NotificationType = 'confirmation' | 'cancellation' | 'rescheduled';
 
@@ -12,9 +13,6 @@ type NotificationType = 'confirmation' | 'cancellation' | 'rescheduled';
 
 export interface BookAppointmentInput {
   readonly slotId: string;
-  readonly doctorId: string;
-  readonly epsId: string;
-  readonly specialtyId: string;
   readonly mode: AppointmentMode;
   readonly notes?: string;
 }
@@ -40,55 +38,28 @@ export interface AppointmentDetail {
 
 export const AppointmentsService = {
   /**
-   * Agenda una nueva cita.
-   * El trigger en BD marca automáticamente el slot como reservado.
+   * Agenda una nueva cita mediante la función transaccional `reservar_cita`.
+   * La base de datos bloquea el horario, valida las reglas de negocio (EPS del
+   * paciente, horario futuro y libre, una cita activa por especialidad) y crea
+   * la cita en una sola transacción.
    */
   async bookAppointment(input: BookAppointmentInput): Promise<ServiceResult<AppointmentDetail>> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: appointmentId, error } = await supabase.rpc('reservar_cita', {
+      p_slot_id: input.slotId,
+      p_modo: input.mode,
+      p_notas: input.notes ?? null,
+    });
 
-    if (!user) {
-      return { success: false, error: 'Debes iniciar sesión para agendar una cita.' };
+    if (error || typeof appointmentId !== 'string') {
+      return { success: false, error: mensajeDeError(error, 'No se pudo agendar la cita. Intenta de nuevo.') };
     }
 
-    const { data, error } = await supabase
-      .from('appointments')
-      .insert({
-        patient_id: user.id,
-        slot_id: input.slotId,
-        doctor_id: input.doctorId,
-        eps_id: input.epsId,
-        specialty_id: input.specialtyId,
-        mode: input.mode,
-        notes: input.notes ?? null,
-      })
-      .select(`
-        id,
-        status,
-        mode,
-        notes,
-        booked_at,
-        cancelled_at,
-        cancellation_reason,
-        doctors(full_name),
-        specialties(name),
-        eps(name),
-        availability_slots(date, start_time, end_time)
-      `)
-      .single();
-
-    if (error) {
-      if (error.code === '23505') {
-        return { success: false, error: 'Este horario ya fue reservado. Intenta con otro.' };
-      }
-      return { success: false, error: `No se pudo agendar la cita: ${error.message}` };
+    const detail = await AppointmentsService.getAppointmentById(appointmentId);
+    if (detail.success) {
+      // Enviar email de confirmación (no bloqueante)
+      void sendNotificationEmail(appointmentId, 'confirmation');
     }
-
-    const mapped = mapAppointmentDetail(data);
-
-    // Enviar email de confirmación (no bloqueante)
-    void sendNotificationEmail(mapped.id, 'confirmation');
-
-    return { success: true, data: mapped };
+    return detail;
   },
 
   /**
@@ -131,25 +102,20 @@ export const AppointmentsService = {
   },
 
   /**
-   * Cancela una cita (el trigger valida 24h de anticipación).
+   * Cancela una cita mediante `cancelar_cita` (valida propiedad, estado activo
+   * y 24 h de anticipación en hora de Bogotá, y libera el horario).
    */
   async cancelAppointment(
     appointmentId: string,
     reason: string,
   ): Promise<ServiceResult<null>> {
-    const { error } = await supabase
-      .from('appointments')
-      .update({
-        status: 'cancelled',
-        cancellation_reason: reason,
-      })
-      .eq('id', appointmentId);
+    const { error } = await supabase.rpc('cancelar_cita', {
+      p_cita_id: appointmentId,
+      p_motivo: reason,
+    });
 
     if (error) {
-      if (error.message.includes('24 horas')) {
-        return { success: false, error: 'No se puede cancelar una cita con menos de 24 horas de anticipación.' };
-      }
-      return { success: false, error: `Error al cancelar: ${error.message}` };
+      return { success: false, error: mensajeDeError(error, 'No se pudo cancelar la cita. Intenta de nuevo.') };
     }
 
     // Enviar email de cancelación (no bloqueante)
@@ -196,7 +162,8 @@ export const AppointmentsService = {
   },
 
   /**
-   * Reprograma una cita cambiando su slot.
+   * Reprograma una cita mediante `reprogramar_cita` (mismo médico, horario
+   * libre y futuro, 24 h de anticipación; libera el horario anterior).
    */
   async rescheduleAppointment(
     appointmentId: string,
@@ -204,33 +171,15 @@ export const AppointmentsService = {
     mode?: AppointmentMode,
     notes?: string
   ): Promise<ServiceResult<null>> {
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return { success: false, error: 'Debes iniciar sesión.' };
-    }
-
-    // Solo se envían las columnas que cambian; el tipo impide enviar columnas no previstas.
-    const updateData: { slot_id: string; mode?: AppointmentMode; notes?: string } = {
-      slot_id: newSlotId,
-      ...(mode ? { mode } : {}),
-      ...(notes !== undefined ? { notes } : {}),
-    };
-
-    const { error } = await supabase
-      .from('appointments')
-      .update(updateData)
-      .eq('id', appointmentId)
-      .eq('patient_id', user.id);
+    const { error } = await supabase.rpc('reprogramar_cita', {
+      p_cita_id: appointmentId,
+      p_nuevo_slot_id: newSlotId,
+      p_modo: mode ?? null,
+      p_notas: notes ?? null,
+    });
 
     if (error) {
-      if (error.message.includes('24 horas')) {
-        return { success: false, error: 'No se puede reprogramar una cita con menos de 24 horas de anticipación.' };
-      }
-      if (error.code === '23505') {
-         return { success: false, error: 'El nuevo horario ya fue reservado. Intenta con otro.' };
-      }
-      return { success: false, error: `Error al reprogramar: ${error.message}` };
+      return { success: false, error: mensajeDeError(error, 'No se pudo reprogramar la cita. Intenta de nuevo.') };
     }
 
     // Enviar email de reprogramación (no bloqueante)

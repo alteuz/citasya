@@ -43,19 +43,11 @@ export const AuthService = {
    * El trigger en BD crea automáticamente el perfil con la cédula y nombre.
    */
   async register(input: RegisterInput): Promise<ServiceResult<AuthUser>> {
-    // 1. Verificar si la cédula ya existe (requiere la función RPC en la BD)
-    const { data: cedulaExists, error: rpcError } = await supabase.rpc('check_cedula_exists', {
-      p_cedula: input.cedula
-    });
-
-    if (rpcError) {
-      console.error('Error verificando cédula:', rpcError);
-      // Fallback silencioso: si la RPC no existe aún, procedemos normal y la BD lo manejará o fallará.
-    } else if (cedulaExists) {
-      return { success: false, error: 'Esta cédula ya está registrada en el sistema.' };
-    }
-
-    // 2. Crear el usuario en Auth
+    // El perfil completo (cédula, nombre, teléfono, EPS) lo crea el trigger
+    // handle_new_user en la misma transacción del registro. La base de datos
+    // valida el formato y la unicidad de la cédula y que la EPS exista y esté
+    // activa; el rol siempre es 'patient'. Ya no se consulta si una cédula
+    // existe antes de registrar: esa consulta permitía enumerar cédulas (H-21).
     const { data, error } = await supabase.auth.signUp({
       email: input.email,
       password: input.password,
@@ -63,6 +55,8 @@ export const AuthService = {
         data: {
           cedula: input.cedula,
           full_name: input.fullName,
+          phone: input.phone,
+          eps_id: input.epsId || null,
         },
       },
     });
@@ -73,20 +67,6 @@ export const AuthService = {
 
     if (!data.user) {
       return { success: false, error: 'No se pudo crear el usuario.' };
-    }
-
-    // Actualizar perfil con datos adicionales (teléfono, EPS)
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .update({
-        phone: input.phone,
-        eps_id: input.epsId || null,
-      })
-      .eq('id', data.user.id);
-
-    if (profileError) {
-      console.error('Error actualizando perfil:', profileError);
-      // No es fatal — el perfil se creó con el trigger
     }
 
     return {
@@ -215,9 +195,14 @@ function translateAuthError(message: string): string {
     'Password should be at least 6 characters': 'La contraseña debe tener al menos 6 caracteres.',
     'Signup requires a valid password': 'Ingresa una contraseña válida.',
     'Email rate limit exceeded': 'Demasiados intentos. Espera unos minutos.',
+    // El trigger de perfil rechazó los datos (cédula inválida o ya registrada).
+    // Mensaje deliberadamente general: no confirma si la cédula existe (H-21).
+    'Database error saving new user':
+      'No pudimos completar el registro. Verifica que la cédula tenga solo números (5 a 10 dígitos) o, si ya tienes cuenta, inicia sesión.',
   };
 
-  return errorMap[message] ?? `Error de autenticación: ${message}`;
+  // Nunca se muestra el mensaje técnico al paciente (OWASP A05).
+  return errorMap[message] ?? 'No pudimos completar la operación. Intenta de nuevo en unos minutos.';
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

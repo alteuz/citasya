@@ -108,10 +108,9 @@ export function BookingPage() {
     setBookingError(null);
 
     const result = await AppointmentsService.bookAppointment({
+      // Médico, EPS y especialidad los deduce la base de datos a partir del
+      // horario: no se confía en datos enviados por el navegador.
       slotId: selectedSlot.id,
-      doctorId: doctor.id,
-      epsId: doctor.epsId,
-      specialtyId: doctor.specialtyId,
       mode,
       notes: notes.trim() || undefined,
     });
