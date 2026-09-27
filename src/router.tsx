@@ -2,43 +2,36 @@ import { createBrowserRouter } from 'react-router';
 import { RootLayout } from '@/components/layout/RootLayout';
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute';
 import { AdminRoute } from '@/components/layout/AdminRoute';
-import { HomePage } from '@/pages/HomePage';
-import { LoginPage } from '@/pages/LoginPage';
-import { RegisterPage } from '@/pages/RegisterPage';
-import { SearchPage } from '@/pages/SearchPage';
-import { BookingPage } from '@/pages/BookingPage';
-import { DashboardPage } from '@/pages/DashboardPage';
-import { HistorialPage } from '@/pages/HistorialPage';
-import { ReschedulePage } from '@/pages/ReschedulePage';
-import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage';
-import { AdminDoctorsPage } from '@/pages/admin/AdminDoctorsPage';
-import { AdminSlotsPage } from '@/pages/admin/AdminSlotsPage';
-import { AdminAppointmentsPage } from '@/pages/admin/AdminAppointmentsPage';
-import { DirectorioEpsPage } from '@/pages/DirectorioEpsPage';
-import { NotFoundPage } from '@/pages/NotFoundPage';
 
+// División de código por ruta: cada página se descarga solo cuando se visita.
+// Evita que las páginas internas carguen dependencias exclusivas de otras
+// (p. ej., framer-motion, que solo usa la página de inicio).
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <RootLayout />,
+    // Mientras se descarga la página inicial no se muestra nada: el HTML de
+    // index.html ya pinta el fondo, y un indicador de carga produciría un
+    // cambio de diseño (CLS) al ser reemplazado.
+    hydrateFallbackElement: null,
     children: [
       // Rutas públicas
-      { index: true, element: <HomePage /> },
-      { path: 'iniciar-sesion', element: <LoginPage /> },
-      { path: 'registrarse', element: <RegisterPage /> },
+      { index: true, lazy: () => import('@/pages/HomePage').then((m) => ({ Component: m.HomePage })) },
+      { path: 'iniciar-sesion', lazy: () => import('@/pages/LoginPage').then((m) => ({ Component: m.LoginPage })) },
+      { path: 'registrarse', lazy: () => import('@/pages/RegisterPage').then((m) => ({ Component: m.RegisterPage })) },
 
       // Búsqueda (pública, pero reservar requiere auth)
-      { path: 'buscar', element: <SearchPage /> },
-      { path: 'buscar/:doctorId', element: <BookingPage /> },
-      { path: 'directorio-eps', element: <DirectorioEpsPage /> },
+      { path: 'buscar', lazy: () => import('@/pages/SearchPage').then((m) => ({ Component: m.SearchPage })) },
+      { path: 'buscar/:doctorId', lazy: () => import('@/pages/BookingPage').then((m) => ({ Component: m.BookingPage })) },
+      { path: 'directorio-eps', lazy: () => import('@/pages/DirectorioEpsPage').then((m) => ({ Component: m.DirectorioEpsPage })) },
 
       // Rutas protegidas (requieren autenticación)
       {
         element: <ProtectedRoute />,
         children: [
-          { path: 'dashboard', element: <DashboardPage /> },
-          { path: 'dashboard/historial', element: <HistorialPage /> },
-          { path: 'reprogramar/:appointmentId', element: <ReschedulePage /> },
+          { path: 'dashboard', lazy: () => import('@/pages/DashboardPage').then((m) => ({ Component: m.DashboardPage })) },
+          { path: 'dashboard/historial', lazy: () => import('@/pages/HistorialPage').then((m) => ({ Component: m.HistorialPage })) },
+          { path: 'reprogramar/:appointmentId', lazy: () => import('@/pages/ReschedulePage').then((m) => ({ Component: m.ReschedulePage })) },
         ],
       },
 
@@ -47,15 +40,15 @@ export const router = createBrowserRouter([
         path: 'admin',
         element: <AdminRoute />,
         children: [
-          { index: true, element: <AdminDashboardPage /> },
-          { path: 'medicos', element: <AdminDoctorsPage /> },
-          { path: 'disponibilidad', element: <AdminSlotsPage /> },
-          { path: 'citas', element: <AdminAppointmentsPage /> },
+          { index: true, lazy: () => import('@/pages/admin/AdminDashboardPage').then((m) => ({ Component: m.AdminDashboardPage })) },
+          { path: 'medicos', lazy: () => import('@/pages/admin/AdminDoctorsPage').then((m) => ({ Component: m.AdminDoctorsPage })) },
+          { path: 'disponibilidad', lazy: () => import('@/pages/admin/AdminSlotsPage').then((m) => ({ Component: m.AdminSlotsPage })) },
+          { path: 'citas', lazy: () => import('@/pages/admin/AdminAppointmentsPage').then((m) => ({ Component: m.AdminAppointmentsPage })) },
         ],
       },
 
       // 404
-      { path: '*', element: <NotFoundPage /> },
+      { path: '*', lazy: () => import('@/pages/NotFoundPage').then((m) => ({ Component: m.NotFoundPage })) },
     ],
   },
 ]);
