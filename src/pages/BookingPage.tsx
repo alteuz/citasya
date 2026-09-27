@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -7,6 +7,31 @@ import { DoctorsService, type DoctorSearchResult, type SlotResult } from '@/serv
 import { AppointmentsService, type AppointmentDetail } from '@/services/appointments.service';
 import type { AppointmentMode } from '@/types/database';
 import { AppointmentModeSelector } from '@/components/appointments/AppointmentModeSelector';
+import { useServiceQuery } from '@/hooks/useServiceQuery';
+import type { ServiceResult } from '@/types/common';
+
+interface DoctorAgenda {
+  readonly doctor: DoctorSearchResult;
+  readonly slots: readonly SlotResult[];
+}
+
+/** Médico (obligatorio) y sus horarios disponibles (vacío si fallan). */
+async function loadDoctorAgenda(doctorId: string): Promise<ServiceResult<DoctorAgenda>> {
+  const [doctorResult, slotsResult] = await Promise.all([
+    DoctorsService.getDoctorById(doctorId),
+    DoctorsService.getAvailableSlots(doctorId),
+  ]);
+  if (!doctorResult.success) return doctorResult;
+  return {
+    success: true,
+    data: { doctor: doctorResult.data, slots: slotsResult.success ? slotsResult.data : [] },
+  };
+}
+
+/** Solo se aceptan modalidades válidas desde la URL; cualquier otro valor usa la presencial. */
+function parseMode(value: string | null): AppointmentMode {
+  return value === 'telemedicina' ? 'telemedicina' : 'presencial';
+}
 
 type BookingStep = 'select' | 'confirm' | 'success';
 
@@ -16,10 +41,13 @@ export function BookingPage() {
   const { isAuthenticated } = useAuthContext();
 
   // Data
-  const [doctor, setDoctor] = useState<DoctorSearchResult | null>(null);
-  const [slots, setSlots] = useState<readonly SlotResult[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: agenda, error, isLoading } = useServiceQuery(
+    () => loadDoctorAgenda(doctorId ?? ''),
+    [doctorId],
+    Boolean(doctorId),
+  );
+  const doctor = agenda?.doctor ?? null;
+  const slots = useMemo(() => agenda?.slots ?? [], [agenda]);
 
   // Booking state
   const [searchParams] = useSearchParams();
@@ -27,36 +55,13 @@ export function BookingPage() {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedSlot, setSelectedSlot] = useState<SlotResult | null>(null);
   
-  // Si la URL dice ?modo=telemedicina, seleccionarlo por defecto
-  const initialMode = (searchParams.get('modo') as AppointmentMode) || 'presencial';
-  const [mode, setMode] = useState<AppointmentMode>(initialMode);
+  // Si la URL dice ?modo=telemedicina, seleccionarlo por defecto (valor validado)
+  const [mode, setMode] = useState<AppointmentMode>(() => parseMode(searchParams.get('modo')));
   
   const [notes, setNotes] = useState('');
   const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookedAppointment, setBookedAppointment] = useState<AppointmentDetail | null>(null);
-
-  // Cargar médico y slots
-  useEffect(() => {
-    if (!doctorId) return;
-    const id = doctorId;
-
-    async function loadData() {
-      setIsLoading(true);
-      const [doctorResult, slotsResult] = await Promise.all([
-        DoctorsService.getDoctorById(id),
-        DoctorsService.getAvailableSlots(id),
-      ]);
-
-      if (doctorResult.success) setDoctor(doctorResult.data);
-      if (slotsResult.success) setSlots(slotsResult.data);
-
-      if (!doctorResult.success) setError(doctorResult.error);
-      setIsLoading(false);
-    }
-
-    void loadData();
-  }, [doctorId]);
 
   // Agrupar slots por fecha
   const slotsByDate = useMemo(() => {
@@ -72,18 +77,14 @@ export function BookingPage() {
   // Fechas disponibles
   const availableDates = useMemo(() => Array.from(slotsByDate.keys()).sort(), [slotsByDate]);
 
-  // Seleccionar primera fecha disponible por defecto
-  useEffect(() => {
-    const firstDate = availableDates[0];
-    if (firstDate && !selectedDate) {
-      setSelectedDate(firstDate);
-    }
-  }, [availableDates, selectedDate]);
+  // Fecha efectiva: la elegida por el paciente o, por defecto, la primera disponible
+  // (estado derivado, sin efecto que lo copie a otro estado).
+  const activeDate = selectedDate || availableDates[0] || '';
 
   // Slots de la fecha seleccionada
   const currentSlots = useMemo(
-    () => slotsByDate.get(selectedDate) ?? [],
-    [slotsByDate, selectedDate],
+    () => slotsByDate.get(activeDate) ?? [],
+    [slotsByDate, activeDate],
   );
 
   const handleSelectSlot = useCallback((slot: SlotResult) => {
@@ -310,7 +311,7 @@ export function BookingPage() {
           <>
             <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide" role="listbox" aria-label="Fechas disponibles">
               {availableDates.map((date) => {
-                const isSelected = date === selectedDate;
+                const isSelected = date === activeDate;
                 const dayName = formatDayShort(date);
                 const dayNum = new Date(date + 'T12:00:00').getDate();
                 const monthName = formatMonthShort(date);
@@ -338,7 +339,7 @@ export function BookingPage() {
 
             {/* Time slots */}
             <h2 className="text-lg font-semibold text-primary-800 mb-4">
-              Horarios disponibles — {formatDateLong(selectedDate)}
+              Horarios disponibles — {formatDateLong(activeDate)}
             </h2>
 
             {currentSlots.length === 0 ? (

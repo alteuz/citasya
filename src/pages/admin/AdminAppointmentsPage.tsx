@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { AdminService, type AdminAppointment } from '@/services/admin.service';
 import type { AppointmentStatus } from '@/types/database';
+import { useServiceQuery } from '@/hooks/useServiceQuery';
 
 const STATUS_TABS: Array<{ value: AppointmentStatus | 'all'; label: string; icon: string }> = [
   { value: 'all', label: 'Todas', icon: '📋' },
@@ -20,29 +21,15 @@ const STATUS_BADGE: Record<AppointmentStatus, { label: string; className: string
 };
 
 export function AdminAppointmentsPage() {
-  const [appointments, setAppointments] = useState<readonly AdminAppointment[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<AppointmentStatus | 'all'>('all');
+  // Si se cambia de pestaña antes de que llegue la respuesta anterior, esa
+  // respuesta se descarta (useServiceQuery): no se mezclan resultados.
+  const { data, error, isLoading, reload } = useServiceQuery(
+    () => AdminService.getAllAppointments(activeTab === 'all' ? undefined : activeTab),
+    [activeTab],
+  );
+  const appointments: readonly AdminAppointment[] = data ?? [];
 
-  const loadAppointments = useCallback(async (filter: AppointmentStatus | 'all') => {
-    setIsLoading(true);
-    setError(null);
-    const statusFilter = filter === 'all' ? undefined : filter;
-    const result = await AdminService.getAllAppointments(statusFilter);
-
-    if (result.success) {
-      setAppointments(result.data);
-    } else {
-      setError(result.error);
-    }
-
-    setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
-    void loadAppointments(activeTab);
-  }, [activeTab, loadAppointments]);
 
   return (
     <div className="animate-fade-in">
@@ -65,6 +52,7 @@ export function AdminAppointmentsPage() {
             <button
               key={tab.value}
               type="button"
+              aria-pressed={activeTab === tab.value}
               onClick={() => setActiveTab(tab.value)}
               className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all cursor-pointer ${
                 activeTab === tab.value
@@ -72,7 +60,7 @@ export function AdminAppointmentsPage() {
                   : 'bg-surface-card border border-primary-200 text-text-secondary hover:border-primary-300'
               }`}
             >
-              {tab.icon} {tab.label}
+              <span aria-hidden="true">{tab.icon}</span> {tab.label}
             </button>
           ))}
         </div>
@@ -88,7 +76,7 @@ export function AdminAppointmentsPage() {
         {error && !isLoading && (
           <div className="bg-surface-card border border-error/20 rounded-2xl p-8 text-center">
             <p className="text-error font-medium">{error}</p>
-            <Button variant="secondary" size="sm" onClick={() => { void loadAppointments(activeTab); }} className="mt-4">Reintentar</Button>
+            <Button variant="secondary" size="sm" onClick={reload} className="mt-4">Reintentar</Button>
           </div>
         )}
 

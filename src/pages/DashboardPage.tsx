@@ -1,15 +1,22 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { useAuthContext } from '@/hooks/useAuthContext';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { AppointmentsService, type AppointmentDetail } from '@/services/appointments.service';
 import { AuthService } from '@/services/auth.service';
+import { useServiceQuery } from '@/hooks/useServiceQuery';
 
 export function DashboardPage() {
   const { profile, isLoading: authLoading, refreshProfile, user } = useAuthContext();
-  const [upcomingAppointments, setUpcomingAppointments] = useState<readonly AppointmentDetail[]>([]);
-  const [isLoadingAppointments, setIsLoadingAppointments] = useState(true);
+  const {
+    data: myAppointments,
+    isLoading: isLoadingAppointments,
+    reload: reloadAppointments,
+  } = useServiceQuery(() => AppointmentsService.getMyAppointments(), []);
+  // Solo citas programadas (futuras)
+  const upcomingAppointments: readonly AppointmentDetail[] =
+    myAppointments?.filter((apt) => apt.status === 'scheduled') ?? [];
   const [cancellingAppointmentId, setCancellingAppointmentId] = useState<string | null>(null);
 
   // Edit Profile State
@@ -19,14 +26,14 @@ export function DashboardPage() {
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
 
-  const startEditing = useCallback(() => {
+  const startEditing = () => {
     if (profile) {
       setEditFullName(profile.fullName);
       setEditPhone(profile.phone || '');
       setProfileError(null);
       setIsEditingProfile(true);
     }
-  }, [profile]);
+  };
 
   const cancelEditing = useCallback(() => {
     setIsEditingProfile(false);
@@ -52,19 +59,6 @@ export function DashboardPage() {
     setIsSavingProfile(false);
   }, [user, profile, editFullName, editPhone, refreshProfile]);
 
-  const loadAppointments = useCallback(async () => {
-    setIsLoadingAppointments(true);
-    const result = await AppointmentsService.getMyAppointments();
-
-    if (result.success) {
-      // Filtrar solo citas programadas (futuras)
-      const scheduled = result.data.filter((apt) => apt.status === 'scheduled');
-      setUpcomingAppointments(scheduled);
-    }
-
-    setIsLoadingAppointments(false);
-  }, []);
-
   const cancelAppointment = useCallback(async (appointmentId: string): Promise<void> => {
     const userInput = window.prompt('¿Por qué deseas cancelar esta cita? (Opcional):');
     
@@ -80,7 +74,7 @@ export function DashboardPage() {
     try {
       const result = await AppointmentsService.cancelAppointment(appointmentId, reason);
       if (result.success) {
-        await loadAppointments();
+        reloadAppointments();
       } else {
         alert(result.error);
       }
@@ -90,11 +84,7 @@ export function DashboardPage() {
     } finally {
       setCancellingAppointmentId(null);
     }
-  }, [loadAppointments]);
-
-  useEffect(() => {
-    void loadAppointments();
-  }, [loadAppointments]);
+  }, [reloadAppointments]);
 
   if (authLoading) {
     return (
