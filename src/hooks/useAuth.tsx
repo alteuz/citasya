@@ -2,24 +2,10 @@
  * AuthContext — Estado global de autenticación.
  * Provee usuario actual, perfil, y funciones de auth a toda la app.
  */
-import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { AuthService, type AuthUser, type RegisterInput, type LoginInput } from '@/services/auth.service';
 import type { Profile } from '@/types/database';
-
-// ─── Tipo del contexto ──────────────────────────────────────────────────────
-
-interface AuthContextValue {
-  readonly user: AuthUser | null;
-  readonly profile: Profile | null;
-  readonly isLoading: boolean;
-  readonly isAuthenticated: boolean;
-  readonly register: (input: RegisterInput) => Promise<string | null>;
-  readonly login: (input: LoginInput) => Promise<string | null>;
-  readonly logout: () => Promise<void>;
-  readonly refreshProfile: () => Promise<void>;
-}
-
-export const AuthContext = createContext<AuthContextValue | null>(null);
+import { AuthContext, type AuthContextValue } from './authContext';
 
 // ─── Provider ───────────────────────────────────────────────────────────────
 

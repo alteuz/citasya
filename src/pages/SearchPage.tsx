@@ -1,13 +1,36 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { DoctorsService, type DoctorSearchResult, type SpecialtyOption, type EpsOption } from '@/services/doctors.service';
+import { useServiceQuery } from '@/hooks/useServiceQuery';
+import type { ServiceResult } from '@/types/common';
+
+interface SearchFiltersCatalog {
+  readonly specialties: readonly SpecialtyOption[];
+  readonly epsList: readonly EpsOption[];
+}
+
+/** Catálogos de filtros; si uno falla, ese filtro queda vacío sin bloquear la búsqueda. */
+async function loadFiltersCatalog(): Promise<ServiceResult<SearchFiltersCatalog>> {
+  const [specResult, epsResult] = await Promise.all([
+    DoctorsService.getSpecialties(),
+    DoctorsService.getEpsList(),
+  ]);
+  return {
+    success: true,
+    data: {
+      specialties: specResult.success ? specResult.data : [],
+      epsList: epsResult.success ? epsResult.data : [],
+    },
+  };
+}
 
 export function SearchPage() {
   // Filtros
-  const [specialties, setSpecialties] = useState<readonly SpecialtyOption[]>([]);
-  const [epsList, setEpsList] = useState<readonly EpsOption[]>([]);
+  const { data: filters } = useServiceQuery(loadFiltersCatalog, []);
+  const specialties = filters?.specialties ?? [];
+  const epsList = filters?.epsList ?? [];
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedSpecialty, setSelectedSpecialty] = useState(searchParams.get('specialty') || '');
   const [selectedEps, setSelectedEps] = useState(searchParams.get('eps') || '');
@@ -15,53 +38,21 @@ export function SearchPage() {
     return !!(searchParams.get('specialty') || searchParams.get('eps'));
   });
 
-  // Resultados
-  const [doctors, setDoctors] = useState<readonly DoctorSearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSearching, setIsSearching] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Cargar filtros al montar
-  useEffect(() => {
-    async function loadFilters() {
-      const [specResult, epsResult] = await Promise.all([
-        DoctorsService.getSpecialties(),
-        DoctorsService.getEpsList(),
-      ]);
-
-      if (specResult.success) setSpecialties(specResult.data);
-      if (epsResult.success) setEpsList(epsResult.data);
-    }
-    void loadFilters();
-  }, []);
-
-  // Búsqueda inicial y al cambiar filtros
-  const searchDoctors = useCallback(async () => {
-    setIsSearching(true);
-    setError(null);
-
-    const result = await DoctorsService.searchDoctors({
+  // Resultados: se buscan al confirmar y, después, cada vez que cambian los filtros.
+  // Una respuesta que llega tarde tras cambiar los filtros se descarta.
+  const search = useServiceQuery(
+    () => DoctorsService.searchDoctors({
       specialtyId: selectedSpecialty || undefined,
       epsId: selectedEps || undefined,
-    });
-
-    if (result.success) {
-      setDoctors(result.data);
-    } else {
-      setError(result.error);
-    }
-
-    setIsSearching(false);
-    setIsLoading(false);
-  }, [selectedSpecialty, selectedEps]);
-
-  useEffect(() => {
-    if (hasSearched) {
-      void searchDoctors();
-    } else {
-      setIsLoading(false);
-    }
-  }, [hasSearched, searchDoctors]);
+    }),
+    [selectedSpecialty, selectedEps],
+    hasSearched,
+  );
+  const doctors: readonly DoctorSearchResult[] = search.data ?? [];
+  const error = search.error;
+  const isSearching = search.isLoading;
+  // Esqueleto solo en la primera carga; en búsquedas posteriores se mantienen los resultados previos.
+  const isLoading = search.isLoading && search.data === null;
 
   const handleClearFilters = useCallback(() => {
     setSelectedSpecialty('');
@@ -77,7 +68,6 @@ export function SearchPage() {
 
   const handleSearchSubmit = useCallback(() => {
     setHasSearched(true);
-    setIsLoading(true);
     setSearchParams(prev => {
       const next = new URLSearchParams(prev);
       if (selectedSpecialty) {
@@ -234,7 +224,7 @@ export function SearchPage() {
           <div className="bg-surface-card border border-error/20 rounded-2xl p-8 text-center">
             <span className="text-4xl mb-3 block" aria-hidden="true">⚠️</span>
             <p className="text-error font-medium">{error}</p>
-            <Button variant="secondary" size="sm" onClick={() => { void searchDoctors(); }} className="mt-4">
+            <Button variant="secondary" size="sm" onClick={search.reload} className="mt-4">
               Reintentar
             </Button>
           </div>

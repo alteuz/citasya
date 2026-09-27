@@ -210,12 +210,12 @@ export const AppointmentsService = {
       return { success: false, error: 'Debes iniciar sesión.' };
     }
 
-    const updateData: Record<string, any> = {
+    // Solo se envían las columnas que cambian; el tipo impide enviar columnas no previstas.
+    const updateData: { slot_id: string; mode?: AppointmentMode; notes?: string } = {
       slot_id: newSlotId,
+      ...(mode ? { mode } : {}),
+      ...(notes !== undefined ? { notes } : {}),
     };
-
-    if (mode) updateData.mode = mode;
-    if (notes !== undefined) updateData.notes = notes;
 
     const { error } = await supabase
       .from('appointments')

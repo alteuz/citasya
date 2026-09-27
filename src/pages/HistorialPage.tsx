@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { AppointmentsService, type AppointmentDetail } from '@/services/appointments.service';
 import type { AppointmentStatus } from '@/types/database';
+import { useServiceQuery } from '@/hooks/useServiceQuery';
 
 const STATUS_CONFIG: Record<AppointmentStatus, { label: string; color: string; icon: string }> = {
   scheduled: { label: 'Programada', color: 'bg-blue-100 text-blue-700', icon: '📅' },
@@ -13,27 +14,9 @@ const STATUS_CONFIG: Record<AppointmentStatus, { label: string; color: string; i
 };
 
 export function HistorialPage() {
-  const [appointments, setAppointments] = useState<readonly AppointmentDetail[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, error, isLoading, reload } = useServiceQuery(() => AppointmentsService.getMyAppointments(), []);
+  const appointments: readonly AppointmentDetail[] = data ?? [];
   const [cancellingAppointmentId, setCancellingAppointmentId] = useState<string | null>(null);
-
-  const loadAppointments = useCallback(async () => {
-    setIsLoading(true);
-    const result = await AppointmentsService.getMyAppointments();
-
-    if (result.success) {
-      setAppointments(result.data);
-    } else {
-      setError(result.error);
-    }
-
-    setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
-    void loadAppointments();
-  }, [loadAppointments]);
 
   const cancelAppointment = useCallback(async (appointmentId: string): Promise<void> => {
     const userInput = window.prompt('¿Por qué deseas cancelar esta cita? (Opcional):');
@@ -50,7 +33,7 @@ export function HistorialPage() {
     try {
       const result = await AppointmentsService.cancelAppointment(appointmentId, reason);
       if (result.success) {
-        await loadAppointments();
+        reload();
       } else {
         alert(result.error);
       }
@@ -60,7 +43,7 @@ export function HistorialPage() {
     } finally {
       setCancellingAppointmentId(null);
     }
-  }, [loadAppointments]);
+  }, [reload]);
 
   return (
     <div className="animate-fade-in">
@@ -97,7 +80,7 @@ export function HistorialPage() {
           <div className="bg-surface-card border border-error/20 rounded-2xl p-8 text-center">
             <span className="text-4xl mb-3 block" aria-hidden="true">⚠️</span>
             <p className="text-error font-medium">{error}</p>
-            <Button variant="secondary" size="sm" onClick={() => { void loadAppointments(); }} className="mt-4">
+            <Button variant="secondary" size="sm" onClick={reload} className="mt-4">
               Reintentar
             </Button>
           </div>

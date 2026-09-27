@@ -1,16 +1,41 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { AdminService, type AdminDoctor, type CreateDoctorInput } from '@/services/admin.service';
 import { DoctorsService, type SpecialtyOption, type EpsOption } from '@/services/doctors.service';
+import { useServiceQuery } from '@/hooks/useServiceQuery';
+import type { ServiceResult } from '@/types/common';
+
+interface DoctorsCatalog {
+  readonly doctors: readonly AdminDoctor[];
+  readonly specialties: readonly SpecialtyOption[];
+  readonly epsList: readonly EpsOption[];
+}
+
+/** Médicos (obligatorio) + catálogos para el formulario (opcionales). */
+async function loadDoctorsCatalog(): Promise<ServiceResult<DoctorsCatalog>> {
+  const [docRes, specRes, epsRes] = await Promise.all([
+    AdminService.getAllDoctors(),
+    DoctorsService.getSpecialties(),
+    DoctorsService.getEpsList(),
+  ]);
+  if (!docRes.success) return docRes;
+  return {
+    success: true,
+    data: {
+      doctors: docRes.data,
+      specialties: specRes.success ? specRes.data : [],
+      epsList: epsRes.success ? epsRes.data : [],
+    },
+  };
+}
 
 export function AdminDoctorsPage() {
-  const [doctors, setDoctors] = useState<readonly AdminDoctor[]>([]);
-  const [specialties, setSpecialties] = useState<readonly SpecialtyOption[]>([]);
-  const [epsList, setEpsList] = useState<readonly EpsOption[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, error, isLoading, reload: loadData } = useServiceQuery(loadDoctorsCatalog, []);
+  const doctors = data?.doctors ?? [];
+  const specialties = data?.specialties ?? [];
+  const epsList = data?.epsList ?? [];
   const [showForm, setShowForm] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
 
@@ -24,26 +49,6 @@ export function AdminDoctorsPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
-  const loadData = useCallback(async () => {
-    setIsLoading(true);
-    const [docRes, specRes, epsRes] = await Promise.all([
-      AdminService.getAllDoctors(),
-      DoctorsService.getSpecialties(),
-      DoctorsService.getEpsList(),
-    ]);
-
-    if (docRes.success) setDoctors(docRes.data);
-    else setError(docRes.error);
-
-    if (specRes.success) setSpecialties(specRes.data);
-    if (epsRes.success) setEpsList(epsRes.data);
-
-    setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
-    void loadData();
-  }, [loadData]);
 
   const handleCreate = useCallback(async () => {
     if (!formName.trim() || !formLicense.trim() || !formSpecialty || !formEps) {
@@ -79,7 +84,7 @@ export function AdminDoctorsPage() {
     setFormPhone('');
     setFormEmail('');
     setShowForm(false);
-    void loadData();
+    loadData();
   }, [formName, formLicense, formSpecialty, formEps, formPhone, formEmail, loadData]);
 
   const handleToggle = useCallback(async (id: string, currentActive: boolean) => {
@@ -88,7 +93,7 @@ export function AdminDoctorsPage() {
     setTogglingId(null);
 
     if (result.success) {
-      void loadData();
+      loadData();
     } else {
       alert(result.error);
     }
@@ -186,7 +191,7 @@ export function AdminDoctorsPage() {
         {error && !isLoading && (
           <div className="bg-surface-card border border-error/20 rounded-2xl p-8 text-center">
             <p className="text-error font-medium">{error}</p>
-            <Button variant="secondary" size="sm" onClick={() => { void loadData(); }} className="mt-4">Reintentar</Button>
+            <Button variant="secondary" size="sm" onClick={loadData} className="mt-4">Reintentar</Button>
           </div>
         )}
 

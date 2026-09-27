@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -7,6 +7,22 @@ import { DoctorsService, type SlotResult } from '@/services/doctors.service';
 import { AppointmentsService, type AppointmentDetail } from '@/services/appointments.service';
 import type { AppointmentMode } from '@/types/database';
 import { AppointmentModeSelector } from '@/components/appointments/AppointmentModeSelector';
+import { useServiceQuery } from '@/hooks/useServiceQuery';
+import type { ServiceResult } from '@/types/common';
+
+interface RescheduleContext {
+  readonly appointment: AppointmentDetail;
+  readonly slots: readonly SlotResult[];
+}
+
+/** Cita original y horarios disponibles de su médico. */
+async function loadRescheduleContext(appointmentId: string): Promise<ServiceResult<RescheduleContext>> {
+  const apptResult = await AppointmentsService.getAppointmentById(appointmentId);
+  if (!apptResult.success) return apptResult;
+  const slotsResult = await DoctorsService.getAvailableSlots(apptResult.data.doctorId);
+  if (!slotsResult.success) return slotsResult;
+  return { success: true, data: { appointment: apptResult.data, slots: slotsResult.data } };
+}
 
 type RescheduleStep = 'select' | 'confirm' | 'success';
 
@@ -16,52 +32,24 @@ export function ReschedulePage() {
   const { isAuthenticated } = useAuthContext();
 
   // Data
-  const [appointment, setAppointment] = useState<AppointmentDetail | null>(null);
-  const [slots, setSlots] = useState<readonly SlotResult[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: context, error, isLoading } = useServiceQuery(
+    () => loadRescheduleContext(appointmentId ?? ''),
+    [appointmentId],
+    Boolean(appointmentId),
+  );
+  const appointment = context?.appointment ?? null;
+  const slots = useMemo(() => context?.slots ?? [], [context]);
 
   // Booking state
   const [step, setStep] = useState<RescheduleStep>('select');
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedSlot, setSelectedSlot] = useState<SlotResult | null>(null);
-  const [mode, setMode] = useState<AppointmentMode>('presencial');
-  const [notes, setNotes] = useState('');
+  // Modalidad: la que elija el paciente o, por defecto, la de la cita original.
+  const [chosenMode, setMode] = useState<AppointmentMode | null>(null);
+  const mode: AppointmentMode = chosenMode ?? appointment?.mode ?? 'presencial';
+  const notes = appointment?.notes ?? '';
   const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
-
-  // Cargar cita original y slots del médico
-  useEffect(() => {
-    if (!appointmentId) return;
-
-    async function loadData() {
-      setIsLoading(true);
-      const apptResult = await AppointmentsService.getAppointmentById(appointmentId!);
-
-      if (!apptResult.success) {
-        setError(apptResult.error);
-        setIsLoading(false);
-        return;
-      }
-
-      setAppointment(apptResult.data);
-      setMode(apptResult.data.mode);
-      setNotes(apptResult.data.notes || '');
-
-      // Load slots for this doctor
-      const slotsResult = await DoctorsService.getAvailableSlots(apptResult.data.doctorId);
-      
-      if (slotsResult.success) {
-        setSlots(slotsResult.data);
-      } else {
-        setError(slotsResult.error);
-      }
-      
-      setIsLoading(false);
-    }
-
-    void loadData();
-  }, [appointmentId]);
 
   // Agrupar slots por fecha
   const slotsByDate = useMemo(() => {
@@ -77,18 +65,13 @@ export function ReschedulePage() {
   // Fechas disponibles
   const availableDates = useMemo(() => Array.from(slotsByDate.keys()).sort(), [slotsByDate]);
 
-  // Seleccionar primera fecha disponible por defecto
-  useEffect(() => {
-    const firstDate = availableDates[0];
-    if (firstDate && !selectedDate) {
-      setSelectedDate(firstDate);
-    }
-  }, [availableDates, selectedDate]);
+  // Fecha efectiva: la elegida o, por defecto, la primera disponible (estado derivado).
+  const activeDate = selectedDate || availableDates[0] || '';
 
   // Slots de la fecha seleccionada
   const currentSlots = useMemo(
-    () => slotsByDate.get(selectedDate) ?? [],
-    [slotsByDate, selectedDate],
+    () => slotsByDate.get(activeDate) ?? [],
+    [slotsByDate, activeDate],
   );
 
   const handleSelectSlot = useCallback((slot: SlotResult) => {
@@ -290,7 +273,7 @@ export function ReschedulePage() {
           <>
             <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide" role="listbox" aria-label="Fechas disponibles">
               {availableDates.map((date) => {
-                const isSelected = date === selectedDate;
+                const isSelected = date === activeDate;
                 const dayName = formatDayShort(date);
                 const dayNum = new Date(date + 'T12:00:00').getDate();
                 const monthName = formatMonthShort(date);
@@ -318,7 +301,7 @@ export function ReschedulePage() {
 
             {/* Time slots */}
             <h2 className="text-lg font-semibold text-primary-800 mb-4">
-              Horarios disponibles — {formatDateLong(selectedDate)}
+              Horarios disponibles — {formatDateLong(activeDate)}
             </h2>
 
             {currentSlots.length === 0 ? (
