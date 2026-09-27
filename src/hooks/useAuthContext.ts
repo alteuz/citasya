@@ -3,7 +3,7 @@
  * Falla ruidosamente si se usa fuera del AuthProvider.
  */
 import { useContext } from 'react';
-import { AuthContext } from './useAuth';
+import { AuthContext } from './authContext';
 
 export function useAuthContext() {
   const context = useContext(AuthContext);
