@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAuthContext } from '@/hooks/useAuthContext';
 import { supabase } from '@/lib/supabase';
+import { problemaDeContrasena, vecesFiltrada } from '@/lib/contrasena';
 
 interface EpsOption {
   readonly id: string;
@@ -75,10 +76,18 @@ export function RegisterPage() {
     if (!email.trim()) { setError('Ingresa tu correo electrónico.'); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) { setError('Ingresa un correo electrónico válido.'); return; }
     if (!password) { setError('Ingresa una contraseña.'); return; }
-    if (password.length < 6) { setError('La contraseña debe tener al menos 6 caracteres.'); return; }
+    const problema = problemaDeContrasena(password, { cedula, correo: email });
+    if (problema) { setError(problema); return; }
     if (password !== confirmPassword) { setError('Las contraseñas no coinciden.'); return; }
 
     setIsSubmitting(true);
+    // Contraseñas filtradas (k-anonimato; si el servicio no responde, no bloquea).
+    const filtraciones = await vecesFiltrada(password);
+    if (filtraciones) {
+      setIsSubmitting(false);
+      setError('Esta contraseña apareció en filtraciones de datos conocidas y no es segura. Elige otra, por ejemplo una frase que puedas recordar.');
+      return;
+    }
     const errorMsg = await register({
       email: email.trim(),
       password,
@@ -266,7 +275,8 @@ export function RegisterPage() {
                 label="Contraseña"
                 type="password"
                 name="password"
-                placeholder="Mínimo 6 caracteres"
+                placeholder="Mínimo 8 caracteres"
+                helperText="Puedes usar una frase fácil de recordar. No uses tu cédula ni tu correo."
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
