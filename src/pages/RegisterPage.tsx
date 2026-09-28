@@ -1,9 +1,10 @@
-import { useState, useCallback, useEffect, type FormEvent } from 'react';
+import { useState, useCallback, type FormEvent } from 'react';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAuthContext } from '@/hooks/useAuthContext';
-import { supabase } from '@/lib/supabase';
+import { useServiceQuery } from '@/hooks/useServiceQuery';
+import { DoctorsService } from '@/services/doctors.service';
 import { problemaDeContrasena, vecesFiltrada } from '@/lib/contrasena';
 
 interface EpsOption {
@@ -15,7 +16,8 @@ export function RegisterPage() {
   const { register, isLoading: authLoading } = useAuthContext();
 
   const [step, setStep] = useState<1 | 2>(1);
-  const [epsList, setEpsList] = useState<readonly EpsOption[]>([]);
+  const { data: epsData } = useServiceQuery(() => DoctorsService.getEpsList(), []);
+  const epsList: readonly EpsOption[] = epsData ?? [];
 
   // Step 1 fields
   const [cedula, setCedula] = useState('');
@@ -32,25 +34,10 @@ export function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Cargar lista de EPS al montar
-  useEffect(() => {
-    async function loadEps() {
-      const { data, error: epsError } = await supabase
-        .from('eps')
-        .select('id, name')
-        .eq('active', true)
-        .order('name');
-
-      if (!epsError && data) {
-        setEpsList(data);
-      }
-    }
-    void loadEps();
-  }, []);
 
   const validateStep1 = useCallback((): boolean => {
     if (!cedula.trim()) { setError('Ingresa tu número de cédula.'); return false; }
-    if (!/^\d{6,12}$/.test(cedula.trim())) { setError('La cédula debe tener entre 6 y 12 dígitos.'); return false; }
+    if (!/^\d{5,10}$/.test(cedula.trim())) { setError('La cédula debe tener entre 5 y 10 dígitos, sin puntos ni espacios.'); return false; }
     if (!fullName.trim()) { setError('Ingresa tu nombre completo.'); return false; }
     if (fullName.trim().length < 3) { setError('El nombre debe tener al menos 3 caracteres.'); return false; }
     return true;

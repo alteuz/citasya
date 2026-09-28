@@ -2,7 +2,7 @@
  * AppointmentsService — Adaptador para crear y gestionar citas.
  * Los componentes NUNCA importan supabase directamente.
  */
-import { supabase } from '@/lib/supabase';
+import { obtenerSupabase } from '@/lib/supabase';
 import type { ServiceResult } from '@/types/common';
 import type { AppointmentMode, AppointmentStatus } from '@/types/database';
 import { mensajeDeError } from './errores';
@@ -44,6 +44,7 @@ export const AppointmentsService = {
    * la cita en una sola transacción.
    */
   async bookAppointment(input: BookAppointmentInput): Promise<ServiceResult<AppointmentDetail>> {
+    const supabase = await obtenerSupabase();
     const { data: appointmentId, error } = await supabase.rpc('reservar_cita', {
       p_slot_id: input.slotId,
       p_modo: input.mode,
@@ -66,6 +67,7 @@ export const AppointmentsService = {
    * Obtiene las citas del paciente autenticado.
    */
   async getMyAppointments(): Promise<ServiceResult<readonly AppointmentDetail[]>> {
+    const supabase = await obtenerSupabase();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -109,6 +111,7 @@ export const AppointmentsService = {
     appointmentId: string,
     reason: string,
   ): Promise<ServiceResult<null>> {
+    const supabase = await obtenerSupabase();
     const { error } = await supabase.rpc('cancelar_cita', {
       p_cita_id: appointmentId,
       p_motivo: reason,
@@ -128,6 +131,7 @@ export const AppointmentsService = {
    * Obtiene una cita específica por su ID.
    */
   async getAppointmentById(id: string): Promise<ServiceResult<AppointmentDetail>> {
+    const supabase = await obtenerSupabase();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -171,6 +175,7 @@ export const AppointmentsService = {
     mode?: AppointmentMode,
     notes?: string
   ): Promise<ServiceResult<null>> {
+    const supabase = await obtenerSupabase();
     const { error } = await supabase.rpc('reprogramar_cita', {
       p_cita_id: appointmentId,
       p_nuevo_slot_id: newSlotId,
@@ -222,6 +227,7 @@ async function sendNotificationEmail(
   appointmentId: string,
   type: NotificationType,
 ): Promise<void> {
+  const supabase = await obtenerSupabase();
   try {
     const { error } = await supabase.functions.invoke('send-email', {
       body: { appointmentId, type },

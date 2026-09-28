@@ -2,7 +2,7 @@
  * AdminService — Adaptador para operaciones de administración.
  * CRUD de médicos, generación de slots y vista global de citas.
  */
-import { supabase } from '@/lib/supabase';
+import { obtenerSupabase } from '@/lib/supabase';
 import type { ServiceResult } from '@/types/common';
 import type { AppointmentStatus } from '@/types/database';
 
@@ -86,6 +86,7 @@ export const AdminService = {
   // ─── Stats ──────────────────────────────────────────────────────────────
 
   async getStats(): Promise<ServiceResult<AdminStats>> {
+    const supabase = await obtenerSupabase();
     const today = new Date().toISOString().split('T')[0] ?? '';
 
     const [doctorsRes, apptRes, todayRes, cancelledRes] = await Promise.all([
@@ -116,6 +117,7 @@ export const AdminService = {
   // ─── Doctors ────────────────────────────────────────────────────────────
 
   async getAllDoctors(): Promise<ServiceResult<readonly AdminDoctor[]>> {
+    const supabase = await obtenerSupabase();
     const { data, error } = await supabase
       .from('doctors')
       .select(`
@@ -149,6 +151,7 @@ export const AdminService = {
   },
 
   async createDoctor(input: CreateDoctorInput): Promise<ServiceResult<AdminDoctor>> {
+    const supabase = await obtenerSupabase();
     const { data, error } = await supabase
       .from('doctors')
       .insert({
@@ -196,6 +199,7 @@ export const AdminService = {
   },
 
   async updateDoctor(id: string, input: UpdateDoctorInput): Promise<ServiceResult<null>> {
+    const supabase = await obtenerSupabase();
     /* eslint-disable @typescript-eslint/no-explicit-any */
     const updateData: Record<string, any> = {};
     /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -220,6 +224,7 @@ export const AdminService = {
   },
 
   async toggleDoctorActive(id: string, active: boolean): Promise<ServiceResult<null>> {
+    const supabase = await obtenerSupabase();
     const { error } = await supabase
       .from('doctors')
       .update({ active })
@@ -235,6 +240,7 @@ export const AdminService = {
   // ─── Slots ──────────────────────────────────────────────────────────────
 
   async getDoctorSlots(doctorId: string, date?: string): Promise<ServiceResult<readonly AdminSlot[]>> {
+    const supabase = await obtenerSupabase();
     let query = supabase
       .from('availability_slots')
       .select('id, date, start_time, end_time, is_booked')
@@ -266,6 +272,7 @@ export const AdminService = {
   },
 
   async generateSlots(input: GenerateSlotsInput): Promise<ServiceResult<number>> {
+    const supabase = await obtenerSupabase();
     const slots: Array<{
       doctor_id: string;
       date: string;
@@ -325,6 +332,7 @@ export const AdminService = {
   },
 
   async deleteSlot(slotId: string): Promise<ServiceResult<null>> {
+    const supabase = await obtenerSupabase();
     const { error } = await supabase
       .from('availability_slots')
       .delete()
@@ -341,6 +349,7 @@ export const AdminService = {
   // ─── Appointments ───────────────────────────────────────────────────────
 
   async getAllAppointments(statusFilter?: AppointmentStatus): Promise<ServiceResult<readonly AdminAppointment[]>> {
+    const supabase = await obtenerSupabase();
     let query = supabase
       .from('appointments')
       .select(`
