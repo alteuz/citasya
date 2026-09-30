@@ -2,7 +2,7 @@
  * DoctorsService — Adaptador para consultas de médicos y disponibilidad.
  * Los componentes NUNCA importan supabase directamente.
  */
-import { supabase } from '@/lib/supabase';
+import { obtenerSupabase } from '@/lib/supabase';
 import type { ServiceResult } from '@/types/common';
 
 // ─── Tipos de resultado ─────────────────────────────────────────────────────
@@ -49,6 +49,7 @@ export const DoctorsService = {
    * Obtiene todas las especialidades activas.
    */
   async getSpecialties(): Promise<ServiceResult<readonly SpecialtyOption[]>> {
+    const supabase = await obtenerSupabase();
     const { data, error } = await supabase
       .from('specialties')
       .select('id, name')
@@ -65,6 +66,7 @@ export const DoctorsService = {
    * Obtiene todas las EPS activas.
    */
   async getEpsList(): Promise<ServiceResult<readonly EpsOption[]>> {
+    const supabase = await obtenerSupabase();
     const { data, error } = await supabase
       .from('eps')
       .select('id, name')
@@ -82,6 +84,7 @@ export const DoctorsService = {
    * Busca médicos filtrados por especialidad y/o EPS.
    */
   async searchDoctors(filters: SearchFilters): Promise<ServiceResult<readonly DoctorSearchResult[]>> {
+    const supabase = await obtenerSupabase();
     let query = supabase
       .from('doctors')
       .select(`
@@ -133,6 +136,7 @@ export const DoctorsService = {
     doctorId: string,
     date?: string,
   ): Promise<ServiceResult<readonly SlotResult[]>> {
+    const supabase = await obtenerSupabase();
     let query = supabase
       .from('availability_slots')
       .select('id, date, start_time, end_time, is_booked')
@@ -172,6 +176,7 @@ export const DoctorsService = {
    * Obtiene un médico por ID con su especialidad y EPS.
    */
   async getDoctorById(doctorId: string): Promise<ServiceResult<DoctorSearchResult>> {
+    const supabase = await obtenerSupabase();
     const { data, error } = await supabase
       .from('doctors')
       .select(`

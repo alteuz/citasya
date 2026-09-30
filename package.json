@@ -8,9 +8,9 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && vite build --ssr src/prerender.tsx --outDir dist-ssr && node scripts/prerender.mjs",
     "preview": "vite preview",
-    "serve:dist": "serve -s dist -l 4173 --no-clipboard",
+    "serve:dist": "serve dist -l 4173 --no-clipboard -c ../serve.json",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",

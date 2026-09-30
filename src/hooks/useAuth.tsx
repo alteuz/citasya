@@ -45,7 +45,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     void init();
 
-    const { data: { subscription } } = AuthService.onAuthStateChange(async (authUser) => {
+    // La suscripción se resuelve cuando termina de cargar el cliente diferido.
+    let cancelarSuscripcion: (() => void) | undefined;
+    void AuthService.onAuthStateChange(async (authUser) => {
       if (!isMounted) return;
 
       setUser(authUser);
@@ -54,11 +56,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } else {
         setProfile(null);
       }
+    }).then((cancelar) => {
+      if (isMounted) cancelarSuscripcion = cancelar;
+      else cancelar();
     });
 
     return () => {
       isMounted = false;
-      subscription.unsubscribe();
+      cancelarSuscripcion?.();
     };
   }, [loadProfile]);
 

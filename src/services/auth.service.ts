@@ -3,7 +3,7 @@
  * Punto único de contacto con la API de autenticación.
  * Los componentes NUNCA importan supabase directamente.
  */
-import { supabase } from '@/lib/supabase';
+import { obtenerSupabase } from '@/lib/supabase';
 import type { ServiceResult } from '@/types/common';
 import type { Profile } from '@/types/database';
 
@@ -43,6 +43,7 @@ export const AuthService = {
    * El trigger en BD crea automáticamente el perfil con la cédula y nombre.
    */
   async register(input: RegisterInput): Promise<ServiceResult<AuthUser>> {
+    const supabase = await obtenerSupabase();
     // El perfil completo (cédula, nombre, teléfono, EPS) lo crea el trigger
     // handle_new_user en la misma transacción del registro. La base de datos
     // valida el formato y la unicidad de la cédula y que la EPS exista y esté
@@ -79,6 +80,7 @@ export const AuthService = {
    * Inicia sesión con email y contraseña.
    */
   async login(input: LoginInput): Promise<ServiceResult<AuthUser>> {
+    const supabase = await obtenerSupabase();
     const { data, error } = await supabase.auth.signInWithPassword({
       email: input.email,
       password: input.password,
@@ -102,6 +104,7 @@ export const AuthService = {
    * Cierra la sesión actual.
    */
   async logout(): Promise<ServiceResult<null>> {
+    const supabase = await obtenerSupabase();
     const { error } = await supabase.auth.signOut();
 
     if (error) {
@@ -115,6 +118,7 @@ export const AuthService = {
    * Obtiene el usuario autenticado actual (si existe).
    */
   async getCurrentUser(): Promise<AuthUser | null> {
+    const supabase = await obtenerSupabase();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return null;
@@ -126,6 +130,7 @@ export const AuthService = {
    * Obtiene el perfil del usuario autenticado.
    */
   async getProfile(): Promise<ServiceResult<Profile>> {
+    const supabase = await obtenerSupabase();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -152,6 +157,7 @@ export const AuthService = {
    * Actualiza el perfil del usuario actual (nombre y teléfono).
    */
   async updateProfile(userId: string, input: UpdateProfileInput): Promise<ServiceResult<null>> {
+    const supabase = await obtenerSupabase();
     const updates: Record<string, string> = {};
     if (input.fullName !== undefined) updates.full_name = input.fullName;
     if (input.phone !== undefined) updates.phone = input.phone;
@@ -174,14 +180,17 @@ export const AuthService = {
   /**
    * Suscribirse a cambios de estado de autenticación.
    */
-  onAuthStateChange(callback: (user: AuthUser | null) => void) {
-    return supabase.auth.onAuthStateChange((_event, session) => {
+  /** Se suscribe a cambios de sesión; devuelve la función para cancelar la suscripción. */
+  async onAuthStateChange(callback: (user: AuthUser | null) => void): Promise<() => void> {
+    const supabase = await obtenerSupabase();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         callback({ id: session.user.id, email: session.user.email ?? '' });
       } else {
         callback(null);
       }
     });
+    return () => subscription.unsubscribe();
   },
 } as const;
 

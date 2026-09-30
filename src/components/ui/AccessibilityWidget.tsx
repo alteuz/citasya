@@ -3,22 +3,27 @@ import { Button } from './Button';
 
 type TextScale = 'normal' | 'large' | 'extra-large';
 
+// En el prerenderizado (Node) no existe localStorage: se usan los valores por
+// defecto, que son los mismos que ve un visitante nuevo.
+const leerPreferencia = (clave: string): string | null =>
+  typeof localStorage === 'undefined' ? null : localStorage.getItem(clave);
+
 export function AccessibilityWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [textSize, setTextSize] = useState<TextScale>(() => {
-    return (localStorage.getItem('a11y-text-size') as TextScale) || 'normal';
+    return (leerPreferencia('a11y-text-size') as TextScale) || 'normal';
   });
   const [highContrast, setHighContrast] = useState<boolean>(() => {
-    return localStorage.getItem('a11y-high-contrast') === 'true';
+    return leerPreferencia('a11y-high-contrast') === 'true';
   });
   const [reduceMotion, setReduceMotion] = useState<boolean>(() => {
-    return localStorage.getItem('a11y-reduce-motion') === 'true';
+    return leerPreferencia('a11y-reduce-motion') === 'true';
   });
   const [readingGuide, setReadingGuide] = useState<boolean>(() => {
-    return localStorage.getItem('a11y-reading-guide') === 'true';
+    return leerPreferencia('a11y-reading-guide') === 'true';
   });
   const [voiceAssistance, setVoiceAssistance] = useState<boolean>(() => {
-    return localStorage.getItem('a11y-voice-assistance') === 'true';
+    return leerPreferencia('a11y-voice-assistance') === 'true';
   });
 
   const [rulerTop, setRulerTop] = useState(0);
@@ -145,7 +150,9 @@ export function AccessibilityWidget() {
   return (
     <>
       {/* Guía de Lectura (Regla visual) */}
-      {readingGuide && (
+      {/* Solo tras el primer movimiento del puntero: así el HTML inicial es el
+          mismo para todos y la hidratación no difiere del prerenderizado. */}
+      {readingGuide && rulerTop > 0 && (
         <div
           className="fixed left-0 right-0 h-8 pointer-events-none z-[99999] bg-accent-400/20 border-y-2 border-accent-400 mix-blend-difference -translate-y-1/2 transition-all duration-75"
           style={{ top: `${rulerTop}px` }}
