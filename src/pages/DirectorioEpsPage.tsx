@@ -24,7 +24,7 @@ export function DirectorioEpsPage() {
   const fuente = epsList.find((e) => e.fechaCorte)?.fuente;
 
   return (
-    <div className="animate-fade-in">
+    <div>
       {/* Header */}
       <div className="bg-primary-50 border-b border-primary-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 md:py-14 text-center">
@@ -38,10 +38,12 @@ export function DirectorioEpsPage() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        {/* Esqueleto con la altura aproximada de una tarjeta con su red de sedes:
+            así el pie de página no se desplaza al llegar los datos (CLS). */}
         {isLoading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Skeleton key={i} height="220px" rounded="2xl" />
+              <Skeleton key={i} height="360px" rounded="2xl" />
             ))}
           </div>
         )}

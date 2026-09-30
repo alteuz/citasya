@@ -88,7 +88,7 @@ export function SearchPage() {
 
   if (!hasSearched) {
     return (
-      <div className="animate-fade-in py-12 px-4">
+      <div className="py-12 px-4">
         <div className="mx-auto max-w-2xl bg-surface-card border-2 border-primary-100 rounded-[2.5rem] p-8 md:p-12 shadow-xl text-center">
           <span className="text-6xl mb-6 block" aria-hidden="true">🩺</span>
           <h1 className="text-3xl md:text-4xl font-bold text-primary-950 mb-4">

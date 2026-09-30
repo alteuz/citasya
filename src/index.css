@@ -5,6 +5,33 @@
  * Paleta basada en el logo: navy oscuro, púrpura/violeta, turquesa/teal, lavanda
  */
 
+/*
+ * Fuentes de respaldo con métricas ajustadas. Mientras la fuente web descarga,
+ * el texto se pinta con Arial/Georgia escaladas para ocupar el mismo espacio;
+ * al llegar DM Sans / DM Serif no hay reflujo (CLS "Fuente web cargada").
+ * size-adjust: ancho medido en Chromium sobre texto en español
+ * (DM Sans ≈ 1,030 × Arial en regular y 1,020 en negrita; DM Serif ≈ 0,997 ×
+ * Georgia). ascent/descent: tablas hhea de cada fuente divididas por size-adjust.
+ * Android no incluye Arial: allí se usa system-ui sin ajuste.
+ */
+@font-face {
+  font-family: 'DM Sans Fallback';
+  src: local('Arial');
+  size-adjust: 102.5%;
+  ascent-override: 96.8%;
+  descent-override: 30.2%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'DM Serif Display Fallback';
+  src: local('Georgia');
+  size-adjust: 99.7%;
+  ascent-override: 103.9%;
+  descent-override: 33.6%;
+  line-gap-override: 0%;
+}
+
 @theme {
   /* ─── Colores primarios: Azul marino oscuro → Púrpura ─── */
   --color-primary-950: #0f0e2e;
@@ -48,8 +75,8 @@
   --color-text-inverse: #ffffff;
 
   /* ─── Tipografía ─── */
-  --font-sans: 'DM Sans Variable', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-serif: 'DM Serif Display', Georgia, serif;
+  --font-sans: 'DM Sans Variable', 'DM Sans Fallback', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-serif: 'DM Serif Display', 'DM Serif Display Fallback', Georgia, serif;
 
   /* ─── Sombras ─── */
   --shadow-card: 0 1px 3px rgba(26, 24, 82, 0.06), 0 1px 2px rgba(26, 24, 82, 0.04);
