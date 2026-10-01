@@ -5,12 +5,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/alteuz/citasya/actions/workflows/ci.yml"><img src="https://github.com/alteuz/citasya/actions/workflows/ci.yml/badge.svg?branch=main" alt="Estado del pipeline de CI"></a>
-  <a href="https://citasya-seven.vercel.app"><img src="https://img.shields.io/badge/demo-en%20vivo-2dd4bf?style=flat-square&logo=vercel&logoColor=white" alt="Demo en vivo"></a>
-  <a href="https://www.w3.org/TR/WCAG21/"><img src="https://img.shields.io/badge/WCAG%202.1-AA-1a1852?style=flat-square" alt="WCAG 2.1 AA"></a>
-  <a href="#-resultados"><img src="https://img.shields.io/badge/Lighthouse%20a11y-100-2dd4bf?style=flat-square&logo=lighthouse&logoColor=white" alt="Lighthouse accesibilidad 100"></a>
-  <a href="tsconfig.app.json"><img src="https://img.shields.io/badge/TypeScript-strict-3178c6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript estricto"></a>
-  <a href="#-proyecto-académico"><img src="https://img.shields.io/badge/trabajo%20de%20grado-UNIMINUTO-252367?style=flat-square" alt="Trabajo de grado UNIMINUTO"></a>
+  <a href="https://citasya-seven.vercel.app"><img src="https://img.shields.io/badge/demo-en_vivo-2dd4bf?style=for-the-badge&logo=vercel&logoColor=white" alt="Demo en vivo"></a>
+  <a href="https://www.w3.org/TR/WCAG21/"><img src="https://img.shields.io/badge/WCAG_2.1-AA-1a1852?style=for-the-badge" alt="WCAG 2.1 AA"></a>
+  <a href="#-resultados"><img src="https://img.shields.io/badge/Lighthouse_a11y-100-2dd4bf?style=for-the-badge&logo=lighthouse&logoColor=white" alt="Lighthouse accesibilidad 100"></a>
+  <a href="tsconfig.app.json"><img src="https://img.shields.io/badge/TypeScript-strict-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript estricto"></a>
+  <a href="#-proyecto-académico"><img src="https://img.shields.io/badge/UNIMINUTO-trabajo_de_grado-252367?style=for-the-badge" alt="Trabajo de grado UNIMINUTO"></a>
 </p>
 
 <p align="center">
@@ -54,7 +53,7 @@ En Colombia, pedir una cita médica suele implicar líneas telefónicas saturada
 <p align="center"><sub>Medición reproducible contra producción: Lighthouse 12.8 (3 corridas por página, mediana) y axe-core 4.11. Línea base del 22-sep-2026 frente al estado del 30-sep-2026.</sub></p>
 
 > [!NOTE]
-> La página de inicio todavía supera el LCP por 0,05 s (2,55 s frente a 2,5 s), porque su encabezado con video aún no se prerenderiza. Por eso el check de Lighthouse móvil es informativo y el badge de CI puede verse en rojo. Cuando la página cumpla, el check pasará a ser obligatorio ([ADR-0003](docs/adr/0003-adopcion-progresiva-de-gates.md)).
+> La página de inicio todavía supera el LCP por 0,05 s (2,55 s frente a 2,5 s), porque su encabezado con video aún no se prerenderiza. Por eso el check de Lighthouse móvil es informativo. Cuando la página cumpla, pasará a ser obligatorio ([ADR-0003](docs/adr/0003-adopcion-progresiva-de-gates.md)).
 
 <details>
 <summary><b>Ver la tabla completa y el gráfico por página</b></summary>
