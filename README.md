@@ -5,11 +5,11 @@
 </p>
 
 <p align="center">
-  <a href="https://citasya-seven.vercel.app"><img src="https://img.shields.io/badge/demo-en_vivo-2dd4bf?style=for-the-badge&logo=vercel&logoColor=white" alt="Demo en vivo"></a>
-  <a href="https://www.w3.org/TR/WCAG21/"><img src="https://img.shields.io/badge/WCAG_2.1-AA-1a1852?style=for-the-badge" alt="WCAG 2.1 AA"></a>
-  <a href="#-resultados"><img src="https://img.shields.io/badge/Lighthouse_a11y-100-2dd4bf?style=for-the-badge&logo=lighthouse&logoColor=white" alt="Lighthouse accesibilidad 100"></a>
-  <a href="tsconfig.app.json"><img src="https://img.shields.io/badge/TypeScript-strict-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript estricto"></a>
-  <a href="#-proyecto-académico"><img src="https://img.shields.io/badge/UNIMINUTO-trabajo_de_grado-252367?style=for-the-badge" alt="Trabajo de grado UNIMINUTO"></a>
+  <a href="https://citasya-seven.vercel.app"><img src="docs/img/badges/demo.svg" alt="Demo en vivo"></a>
+  <a href="https://www.w3.org/TR/WCAG21/"><img src="docs/img/badges/wcag.svg" alt="WCAG 2.1 AA"></a>
+  <a href="#-resultados"><img src="docs/img/badges/lighthouse.svg" alt="Lighthouse accesibilidad 100"></a>
+  <a href="tsconfig.app.json"><img src="docs/img/badges/typescript.svg" alt="TypeScript estricto"></a>
+  <a href="#-proyecto-académico"><img src="docs/img/badges/uniminuto.svg" alt="Trabajo de grado UNIMINUTO"></a>
 </p>
 
 <p align="center">
@@ -128,7 +128,7 @@ Cada optimización se validó con un experimento A/B, incluido un resultado nega
 
 `main` está protegida: exige los checks obligatorios, la rama al día y conversaciones resueltas. La regla también aplica a los administradores.
 
-## 🇨🇴 Datos reales, personas sintéticas
+## 📍 Datos reales, personas sintéticas
 
 Las **entidades son reales y públicas**; las **personas son sintéticas**, para no tratar datos personales (Ley 1581 de 2012).
 
