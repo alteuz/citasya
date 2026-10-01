@@ -245,7 +245,7 @@ La base de datos se crea con las migraciones de [`supabase/migrations`](supabase
   <img src="public/logo.png" alt="" width="56"><br>
   <b>Trabajo de grado · Ingeniería de Sistemas</b><br>
   Corporación Universitaria Minuto de Dios — <b>UNIMINUTO</b> · Bogotá, 2026<br>
-  Autor: <b>Alejandro Agudelo Quintero</b> · Directora: <b>Prof. Maribel Medina Linares</b>
+  Autor: <b>Alejandro Agudelo Quintero</b>
 </p>
 
 <p align="center"><sub>Los profesionales, pacientes y citas de la aplicación son datos simulados: ninguna cita llega a una EPS real.</sub></p>
