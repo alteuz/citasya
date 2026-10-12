@@ -13,8 +13,8 @@ const Logo = ({ dark = false }: { dark?: boolean }) => (
       alt="CitasYA"
       className="h-14 w-14 object-contain shrink-0"
     />
-    <span className={`font-serif text-[28px] tracking-tight font-normal ${dark ? 'text-primary-950' : 'text-white'}`}>
-      Citas<span className="text-[#00C9A7]">YA</span>
+    <span className={`font-serif text-logo tracking-tight font-normal ${dark ? 'text-text-primary' : 'text-white'}`}>
+      Citas<span className="text-accent">YA</span>
     </span>
   </div>
 );
@@ -119,7 +119,7 @@ export function HomePage() {
 
   return (
     <MotionConfig reducedMotion={shouldReduceMotion ? "always" : "user"}>
-      <div className="relative w-full text-white overflow-x-hidden font-sans scroll-smooth bg-black">
+      <div className="relative w-full text-white overflow-x-hidden font-sans scroll-smooth bg-surface">
         
         {/* ─── HERO SCREEN CONTAINER (100vh) ─── */}
         <div className="relative w-full min-h-screen flex flex-col justify-between select-none">
@@ -146,10 +146,7 @@ export function HomePage() {
 
       {/* ─── GRADIENT OVERLAY ─── */}
       <div 
-        className="fixed inset-0 z-[2] pointer-events-none" 
-        style={{
-          background: 'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.7) 80%, rgba(0,0,0,0.92) 100%)'
-        }}
+        className="fixed inset-0 z-[2] pointer-events-none velo-portada"
       />
 
       {/* ─── NAVIGATION BAR (Top) ─── */}
@@ -183,7 +180,7 @@ export function HomePage() {
                   navigate(link.path);
                 }
               }}
-              className="nav-link-underline text-[13px] font-semibold tracking-widest uppercase text-white/80 hover:text-[#00C9A7] transition-colors cursor-pointer"
+              className="nav-link-underline inline-flex items-center min-h-11 text-caption font-semibold tracking-widest uppercase text-white/80 hover:text-accent transicion cursor-pointer"
             >
               {link.label}
             </motion.button>
@@ -201,7 +198,7 @@ export function HomePage() {
                     initial="initial"
                     animate="animate"
                     onClick={() => navigate('/dashboard')}
-                    className="text-[13px] font-semibold tracking-widest uppercase text-white/80 hover:text-[#00C9A7] transition-colors cursor-pointer nav-link-underline"
+                    className="nav-link-underline inline-flex items-center min-h-11 text-caption font-semibold tracking-widest uppercase text-white/80 hover:text-accent cursor-pointer"
                   >
                     Mi Panel
                   </motion.button>
@@ -210,7 +207,7 @@ export function HomePage() {
                     initial="initial"
                     animate="animate"
                     onClick={() => void logout()}
-                    className="text-[13px] font-semibold tracking-widest uppercase text-red-400 hover:text-red-300 transition-colors cursor-pointer"
+                    className="inline-flex items-center min-h-11 text-caption font-semibold tracking-widest uppercase text-error hover:opacity-80 transicion cursor-pointer"
                   >
                     Cerrar Sesión
                   </motion.button>
@@ -222,17 +219,17 @@ export function HomePage() {
                     initial="initial"
                     animate="animate"
                     onClick={() => navigate('/iniciar-sesion')}
-                    className="text-[13px] font-semibold tracking-widest uppercase text-white/80 hover:text-[#00C9A7] transition-colors cursor-pointer nav-link-underline"
+                    className="nav-link-underline inline-flex items-center min-h-11 text-caption font-semibold tracking-widest uppercase text-white/80 hover:text-accent cursor-pointer"
                   >
                     Iniciar Sesión
                   </motion.button>
-                  {/* Texto oscuro explícito sobre turquesa (contraste 9,1:1): text-primary-950 se vuelve blanco en el tema oscuro (ADR-0004). */}
+                  {/* Texto oscuro (text-inverse) sobre el cian de la marca: contraste ≥ 10:1. */}
                   <motion.button
                     variants={fadeDown(7)}
                     initial="initial"
                     animate="animate"
                     onClick={() => navigate('/registrarse')}
-                    className="bg-[#00C9A7] hover:bg-[#00bda0] text-[#0d0d1a] px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 transform hover:scale-105 cursor-pointer shadow-[0_0_15px_rgba(0,201,167,0.2)]"
+                    className="inline-flex items-center min-h-11 bg-accent hover:bg-accent-hover text-text-inverse px-5 rounded-full text-xs font-bold uppercase tracking-wider presionable hover:scale-105 cursor-pointer shadow-glow"
                   >
                     Registrarse
                   </motion.button>
@@ -247,7 +244,7 @@ export function HomePage() {
             animate="animate"
             onClick={() => setIsMenuOpen(true)}
             aria-label="Abrir menú de navegación"
-            className="w-9 h-9 rounded-full bg-white/15 backdrop-blur flex items-center justify-center cursor-pointer hover:bg-white/25 transition-colors"
+            className="w-11 h-11 rounded-full bg-white/15 backdrop-blur flex items-center justify-center cursor-pointer hover:bg-white/25 presionable"
           >
             <svg width="18" height="12" viewBox="0 0 18 12" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="0" y1="1" x2="18" y2="1" />
@@ -259,7 +256,7 @@ export function HomePage() {
       </nav>
 
       {/* ─── STATS ROW (Middle Section) ─── */}
-      <div className="relative z-20 flex-1 flex items-center justify-end px-5 sm:px-8 md:px-8 gap-8 md:gap-10 mt-16 md:mt-0">
+      <div className="relative z-20 flex-1 grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:flex sm:justify-end sm:px-8 sm:gap-8 md:gap-10 mt-16 md:mt-0">
         {/* Stat 1 */}
         <motion.div 
           variants={fadeUp(2)} 
@@ -268,10 +265,10 @@ export function HomePage() {
           whileHover={{ scale: 1.08, y: -4 }}
           className="text-right cursor-default select-none"
         >
-          <div className="font-sans font-semibold text-white leading-none tracking-tight" style={{ fontSize: 'clamp(1.6rem, 5vw, 3.5rem)' }}>
-            <span className="text-[#00C9A7] text-[0.5em] align-super font-semibold">+</span >50
+          <div className="font-sans font-semibold text-white text-stat tracking-tight tabular-nums">
+            <span className="text-accent text-superscript align-super font-semibold">+</span >50
           </div>
-          <div className="text-[10px] sm:text-xs font-semibold tracking-widest uppercase text-white/55 whitespace-pre-line leading-tight mt-2.5">
+          <div className="text-xs font-semibold tracking-normal sm:tracking-widest uppercase text-white/60 whitespace-pre-line leading-tight mt-2.5 hyphens-auto">
             {"EPS\nDISPONIBLES"}
           </div>
         </motion.div>
@@ -284,10 +281,10 @@ export function HomePage() {
           whileHover={{ scale: 1.08, y: -4 }}
           className="text-right cursor-default select-none"
         >
-          <div className="font-sans font-semibold text-white leading-none tracking-tight" style={{ fontSize: 'clamp(1.6rem, 5vw, 3.5rem)' }}>
-            <span className="text-[#00C9A7] text-[0.5em] align-super font-semibold">+</span >200
+          <div className="font-sans font-semibold text-white text-stat tracking-tight tabular-nums">
+            <span className="text-accent text-superscript align-super font-semibold">+</span >200
           </div>
-          <div className="text-[10px] sm:text-xs font-semibold tracking-widest uppercase text-white/55 whitespace-pre-line leading-tight mt-2.5">
+          <div className="text-xs font-semibold tracking-normal sm:tracking-widest uppercase text-white/60 whitespace-pre-line leading-tight mt-2.5 hyphens-auto">
             {"ESPECIALIDADES\nMÉDICAS"}
           </div>
         </motion.div>
@@ -300,10 +297,10 @@ export function HomePage() {
           whileHover={{ scale: 1.08, y: -4 }}
           className="text-right cursor-default select-none"
         >
-          <div className="font-sans font-semibold text-white leading-none tracking-tight" style={{ fontSize: 'clamp(1.6rem, 5vw, 3.5rem)' }}>
-            <span className="text-[#00C9A7] text-[0.5em] align-super font-semibold">+</span >10K
+          <div className="font-sans font-semibold text-white text-stat tracking-tight tabular-nums">
+            <span className="text-accent text-superscript align-super font-semibold">+</span >10K
           </div>
-          <div className="text-[10px] sm:text-xs font-semibold tracking-widest uppercase text-white/55 whitespace-pre-line leading-tight mt-2.5">
+          <div className="text-xs font-semibold tracking-normal sm:tracking-widest uppercase text-white/60 whitespace-pre-line leading-tight mt-2.5 hyphens-auto">
             {"CITAS\nAGENDADAS"}
           </div>
         </motion.div>
@@ -320,7 +317,7 @@ export function HomePage() {
           className="flex items-center justify-between gap-4 border-b border-white/10 pb-5 md:pb-6"
         >
           {/* Left: Tagline */}
-          <p className="text-[10px] sm:text-xs font-semibold tracking-widest uppercase text-white/60 leading-normal hover:text-[#00C9A7] hover:translate-x-1.5 transition-all duration-350 cursor-default select-none">
+          <p className="text-xs font-semibold tracking-widest uppercase text-white/60 leading-normal hover:text-accent hover:translate-x-1.5 transicion cursor-default select-none">
             TU SALUD,<br />SIN FILAS<br />SIN ESPERAS<br />EN BOGOTÁ
           </p>
 
@@ -329,11 +326,11 @@ export function HomePage() {
             onClick={() => navigate('/buscar')}
             className="flex items-center gap-3 cursor-pointer group select-none"
           >
-            <span className="text-base sm:text-xl text-[#00C9A7] font-semibold uppercase tracking-wide group-hover:opacity-85 transition-all duration-300">
+            <span className="text-base sm:text-xl text-accent font-semibold uppercase tracking-wide group-hover:opacity-85 transicion">
               Agendar Cita
             </span>
-            <div className="w-[26px] h-[26px] rounded-full border border-[#00C9A7] flex items-center justify-center shrink-0 group-hover:bg-[#00C9A7] group-hover:scale-110 transition-all duration-300">
-              <ArrowUpRight size={12} className="text-[#00C9A7] group-hover:text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
+            <div className="w-7 h-7 rounded-full border border-accent flex items-center justify-center shrink-0 group-hover:bg-accent group-hover:scale-110 transicion">
+              <ArrowUpRight size={12} className="text-accent group-hover:text-text-inverse group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transicion" />
             </div>
           </button>
         </motion.div>
@@ -341,19 +338,19 @@ export function HomePage() {
         {/* Row B: Description + Main Heading */}
         <div className="flex items-end justify-between gap-3 sm:gap-4">
           {/* Left Description Column */}
-          <div className="w-[140px] xs:w-[160px] sm:w-[200px] shrink-0 flex flex-col gap-3">
+          <div className="w-36 sm:w-48 shrink-0 flex flex-col gap-3">
             {/* Pill Badge */}
             <motion.div 
               variants={fadeUp(3)}
               initial="initial"
               animate="animate"
-              className="inline-flex items-center gap-2 bg-[#00C9A7]/12 border border-[#00C9A7]/30 rounded-full px-3.5 py-1.5 w-fit shadow-[0_0_15px_rgba(0,201,167,0.1)]"
+              className="inline-flex items-center gap-2 bg-accent/12 border border-accent/30 rounded-full px-3.5 py-1.5 w-fit shadow-glow"
             >
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00C9A7] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00C9A7]"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
               </span>
-              <span className="text-[10px] font-bold tracking-widest uppercase text-[#00C9A7]">
+              <span className="text-xs font-bold tracking-widest uppercase text-accent">
                 Disponible 24/7
               </span>
             </motion.div>
@@ -363,41 +360,41 @@ export function HomePage() {
               variants={fadeUp(6)}
               initial="initial"
               animate="animate"
-              className="text-[9px] sm:text-[10px] font-semibold tracking-widest uppercase text-white/45 leading-relaxed hover:text-white/70 hover:translate-x-1 transition-all duration-350 cursor-default select-none"
+              className="text-xs font-semibold tracking-widest uppercase text-white/60 leading-relaxed hover:text-white/80 hover:translate-x-1 transicion cursor-default select-none"
             >
               Plataforma centralizada para gestionar tus citas con tu EPS en Bogotá. Rápido, seguro y accesible.
             </motion.p>
           </div>
 
           {/* Right Heading Column */}
-          <h1 className="flex flex-col items-end select-none font-serif text-white uppercase text-right leading-[0.92] select-none" style={{ fontSize: 'clamp(2.2rem, 10vw, 9rem)' }}>
-            <span className={`block p-6 -m-6 transition-all duration-300 ${animationCompleted ? '' : 'overflow-hidden'}`}>
+          <h1 className="flex flex-col items-end select-none font-serif text-white uppercase text-right text-hero leading-display">
+            <span className={`block p-6 -m-6 transicion ${animationCompleted ? '' : 'overflow-hidden'}`}>
               <motion.span 
                 variants={wordSlideUp(0.4)} 
                 initial="initial" 
                 animate="animate"
-                className={`transition-all duration-300 cursor-default inline-block origin-right ${shouldReduceMotion ? '' : 'hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-105'}`}
+                className={`transicion duration-200 cursor-default inline-block origin-right ${shouldReduceMotion ? '' : 'hover:drop-shadow-soft hover:scale-105'}`}
               >
                 Agenda
               </motion.span>
             </span>
-            <span className={`block p-6 -m-6 transition-all duration-300 ${animationCompleted ? '' : 'overflow-hidden'}`}>
+            <span className={`block p-6 -m-6 transicion ${animationCompleted ? '' : 'overflow-hidden'}`}>
               <motion.span 
                 variants={wordSlideUp(0.54)} 
                 initial="initial" 
                 animate="animate" 
-                className={`text-[#00C9A7] italic font-normal transition-all duration-300 cursor-default inline-block origin-right ${shouldReduceMotion ? '' : 'hover:drop-shadow-[0_0_25px_rgba(0,201,167,0.7)] hover:scale-105'}`}
+                className={`text-accent italic font-normal transicion cursor-default inline-block origin-right ${shouldReduceMotion ? '' : 'hover:drop-shadow-glow hover:scale-105'}`}
               >
                 Sin
               </motion.span>
             </span>
-            <span className={`block p-6 -m-6 transition-all duration-300 ${animationCompleted ? '' : 'overflow-hidden'}`}>
+            <span className={`block p-6 -m-6 transicion ${animationCompleted ? '' : 'overflow-hidden'}`}>
               <motion.span 
                 variants={wordSlideUp(0.68)} 
                 initial="initial" 
                 animate="animate"
                 onAnimationComplete={() => setAnimationCompleted(true)}
-                className={`transition-all duration-300 cursor-default inline-block origin-right ${shouldReduceMotion ? '' : 'hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-105'}`}
+                className={`transicion duration-200 cursor-default inline-block origin-right ${shouldReduceMotion ? '' : 'hover:drop-shadow-soft hover:scale-105'}`}
               >
                 Filas.
               </motion.span>
@@ -415,7 +412,7 @@ export function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: '-100%' }}
             transition={{ duration: 0.5, ease: transition }}
-            className="fixed inset-0 z-50 bg-black flex flex-col p-5 sm:p-8 overflow-y-auto"
+            className="fixed inset-0 z-50 bg-surface flex flex-col p-5 sm:p-8 overflow-y-auto"
           >
             {/* Top row */}
             <div className="w-full flex items-center justify-between">
@@ -424,7 +421,7 @@ export function HomePage() {
               <button
                 onClick={() => setIsMenuOpen(false)}
                 aria-label="Cerrar menú de navegación"
-                className="w-9 h-9 rounded-full bg-white/10 backdrop-blur flex items-center justify-center cursor-pointer hover:bg-white/20 transition-colors"
+                className="w-11 h-11 rounded-full bg-white/10 backdrop-blur flex items-center justify-center cursor-pointer hover:bg-white/20 presionable"
               >
                 <X size={18} className="text-white" />
               </button>
@@ -448,7 +445,7 @@ export function HomePage() {
                         navigate(link.path);
                       }
                     }}
-                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-[#00C9A7] transition-colors"
+                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-accent transicion"
                   >
                     {link.label}
                   </button>
@@ -463,7 +460,7 @@ export function HomePage() {
                       setIsMenuOpen(false);
                       navigate('/dashboard');
                     }}
-                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-[#00C9A7] transition-colors"
+                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-accent transicion"
                   >
                     Mi Panel
                   </button>
@@ -472,7 +469,7 @@ export function HomePage() {
                       setIsMenuOpen(false);
                       void logout();
                     }}
-                    className="text-left text-3xl font-semibold tracking-widest uppercase text-red-400 cursor-pointer hover:text-red-300 transition-colors"
+                    className="text-left text-3xl font-semibold tracking-widest uppercase text-error cursor-pointer hover:text-error transicion"
                   >
                     Cerrar Sesión
                   </button>
@@ -484,7 +481,7 @@ export function HomePage() {
                       setIsMenuOpen(false);
                       navigate('/iniciar-sesion');
                     }}
-                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-[#00C9A7] transition-colors"
+                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-accent transicion"
                   >
                     Iniciar Sesión
                   </button>
@@ -493,7 +490,7 @@ export function HomePage() {
                       setIsMenuOpen(false);
                       navigate('/registrarse');
                     }}
-                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-[#00C9A7] transition-colors"
+                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-accent transicion"
                   >
                     Registrarse
                   </button>
@@ -507,7 +504,7 @@ export function HomePage() {
                 setIsMenuOpen(false);
                 navigate('/buscar');
               }}
-              className="mt-auto pt-8 text-left text-xl font-semibold tracking-wide uppercase text-[#00C9A7] flex items-center gap-1.5 cursor-pointer hover:opacity-85 transition-opacity"
+              className="mt-auto pt-8 text-left text-xl font-semibold tracking-wide uppercase text-accent flex items-center gap-1.5 cursor-pointer hover:opacity-85 transicion"
             >
               Agendar Cita <span aria-hidden="true">↗</span>
             </button>
@@ -518,7 +515,7 @@ export function HomePage() {
       {/* ─── SECTION: ¿CÓMO FUNCIONA? ─── */}
       <section 
         id="como-funciona" 
-        className="relative z-20 py-24 px-5 sm:px-8 md:px-16 lg:px-24 bg-[#0a091f]/95 border-t border-white/10 text-white"
+        className="relative z-20 py-24 px-5 sm:px-8 md:px-16 lg:px-24 bg-surface/95 border-t border-white/10 text-white"
       >
         <div className="max-w-6xl mx-auto flex flex-col gap-12">
           {/* Section Heading */}
@@ -529,13 +526,13 @@ export function HomePage() {
             transition={{ duration: 0.6 }}
             className="flex flex-col gap-3"
           >
-            <span className="text-xs font-bold tracking-widest uppercase text-[#00C9A7]">
+            <span className="text-xs font-bold tracking-widest uppercase text-accent">
               ¿Qué es CitasYA?
             </span>
             <h2 className="text-3xl md:text-5xl font-serif font-normal">
               Cómo funciona la plataforma
             </h2>
-            <div className="w-16 h-1 bg-[#00C9A7] mt-2 rounded-full" />
+            <div className="w-16 h-1 bg-accent mt-2 rounded-full" />
           </motion.div>
  
           {/* Description Block */}
@@ -557,7 +554,7 @@ export function HomePage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
               whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -5 }}
-              className="bg-[#131233]/40 border border-white/5 rounded-2xl p-6 flex flex-col gap-4 hover:border-[#00C9A7]/30 transition-all duration-300 cursor-default select-none"
+              className="bg-surface-card/60 border border-line rounded-2xl p-6 flex flex-col gap-4 hover:border-accent/30 transicion cursor-default select-none"
             >
               <span className="text-3xl">🔍</span>
               <h3 className="text-xl font-bold font-serif text-white">1. Encuentra tu Especialidad</h3>
@@ -572,7 +569,7 @@ export function HomePage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
               whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -5 }}
-              className="bg-[#131233]/40 border border-white/5 rounded-2xl p-6 flex flex-col gap-4 hover:border-[#00C9A7]/30 transition-all duration-300 cursor-default select-none"
+              className="bg-surface-card/60 border border-line rounded-2xl p-6 flex flex-col gap-4 hover:border-accent/30 transicion cursor-default select-none"
             >
               <span className="text-3xl">📅</span>
               <h3 className="text-xl font-bold font-serif text-white">2. Elige Médico y Horario</h3>
@@ -587,7 +584,7 @@ export function HomePage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.3 }}
               whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -5 }}
-              className="bg-[#131233]/40 border border-white/5 rounded-2xl p-6 flex flex-col gap-4 hover:border-[#00C9A7]/30 transition-all duration-300 cursor-default select-none"
+              className="bg-surface-card/60 border border-line rounded-2xl p-6 flex flex-col gap-4 hover:border-accent/30 transicion cursor-default select-none"
             >
               <span className="text-3xl">✅</span>
               <h3 className="text-xl font-bold font-serif text-white">3. Agenda e Historial</h3>
@@ -602,7 +599,7 @@ export function HomePage() {
       {/* ─── SECTION: AYUDA Y SOPORTE ─── */}
       <section 
         id="ayuda" 
-        className="relative z-20 py-24 px-5 sm:px-8 md:px-16 lg:px-24 bg-[#0c0b24]/95 border-t border-white/10 text-white"
+        className="relative z-20 py-24 px-5 sm:px-8 md:px-16 lg:px-24 bg-surface-muted/95 border-t border-white/10 text-white"
       >
         <div className="max-w-6xl mx-auto flex flex-col gap-12">
           {/* Section Heading */}
@@ -613,13 +610,13 @@ export function HomePage() {
             transition={{ duration: 0.6 }}
             className="flex flex-col gap-3"
           >
-            <span className="text-xs font-bold tracking-widest uppercase text-[#00C9A7]">
+            <span className="text-xs font-bold tracking-widest uppercase text-accent">
               Soporte Directo
             </span>
             <h2 className="text-3xl md:text-5xl font-serif font-normal">
               Centro de Ayuda
             </h2>
-            <div className="w-16 h-1 bg-[#00C9A7] mt-2 rounded-full" />
+            <div className="w-16 h-1 bg-accent mt-2 rounded-full" />
           </motion.div>
  
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
@@ -629,16 +626,16 @@ export function HomePage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="bg-[#131233]/40 border border-white/5 rounded-3xl p-8 flex flex-col gap-5 hover:border-white/10 transition-colors duration-300"
+              className="bg-surface-card/60 border border-line rounded-3xl p-8 flex flex-col gap-5 hover:border-line-strong transicion"
             >
               <span className="text-4xl">💻</span>
               <h3 className="text-2xl font-serif font-normal">Soporte Técnico de la Página</h3>
               <p className="text-sm text-white/70 leading-relaxed">
                 Si experimentas problemas técnicos con el funcionamiento de CitasYA, como errores al iniciar sesión, problemas al agendar o fallas en el visualizador, por favor contacta a nuestro equipo de desarrollo:
               </p>
-              <div className="bg-[#0c0a24] p-4 rounded-xl border border-white/5 flex flex-col gap-1.5 hover:border-[#00C9A7]/30 transition-colors duration-300">
-                <span className="text-xs text-white/40 uppercase tracking-widest">Correo de soporte</span>
-                <a href="mailto:soporte@citasya.com" className="text-base font-bold text-[#00C9A7] hover:underline">
+              <div className="bg-surface-muted p-4 rounded-xl border border-line flex flex-col gap-1.5 hover:border-accent/30 transicion">
+                <span className="text-xs text-white/60 uppercase tracking-widest">Correo de soporte</span>
+                <a href="mailto:soporte@citasya.com" className="inline-flex items-center min-h-11 text-base font-bold text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
                   soporte@citasya.com
                 </a>
               </div>
@@ -650,7 +647,7 @@ export function HomePage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="bg-[#131233]/40 border border-white/5 rounded-3xl p-8 flex flex-col gap-5 hover:border-white/10 transition-colors duration-300"
+              className="bg-surface-card/60 border border-line rounded-3xl p-8 flex flex-col gap-5 hover:border-line-strong transicion"
             >
               <span className="text-4xl">🏥</span>
               <h3 className="text-2xl font-serif font-normal">Asuntos de tu EPS</h3>
@@ -659,39 +656,39 @@ export function HomePage() {
               </p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-                <div className="bg-[#0c0a24] p-3 rounded-xl border border-white/5 hover:border-[#00C9A7]/30 transition-colors duration-300">
+                <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
                   <p className="text-xs font-bold text-white font-serif">Sanitas</p>
-                  <a href="mailto:contacto@epssanitas.com" className="text-xs text-[#00C9A7] hover:underline">
+                  <a href="mailto:contacto@epssanitas.com" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
                     contacto@epssanitas.com
                   </a>
                 </div>
-                <div className="bg-[#0c0a24] p-3 rounded-xl border border-white/5 hover:border-[#00C9A7]/30 transition-colors duration-300">
+                <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
                   <p className="text-xs font-bold text-white font-serif">Sura</p>
-                  <a href="mailto:afiliados@epssura.com.co" className="text-xs text-[#00C9A7] hover:underline">
+                  <a href="mailto:afiliados@epssura.com.co" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
                     afiliados@epssura.com.co
                   </a>
                 </div>
-                <div className="bg-[#0c0a24] p-3 rounded-xl border border-white/5 hover:border-[#00C9A7]/30 transition-colors duration-300">
+                <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
                   <p className="text-xs font-bold text-white font-serif">Compensar</p>
-                  <a href="mailto:servicioalcliente@compensarsalud.com" className="text-xs text-[#00C9A7] hover:underline">
+                  <a href="mailto:servicioalcliente@compensarsalud.com" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
                     servicioalcliente@compensarsalud.com
                   </a>
                 </div>
-                <div className="bg-[#0c0a24] p-3 rounded-xl border border-white/5 hover:border-[#00C9A7]/30 transition-colors duration-300">
+                <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
                   <p className="text-xs font-bold text-white font-serif">Salud Total</p>
-                  <a href="mailto:defensoria@saludtotal.com.co" className="text-xs text-[#00C9A7] hover:underline">
+                  <a href="mailto:defensoria@saludtotal.com.co" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
                     defensoria@saludtotal.com.co
                   </a>
                 </div>
-                <div className="bg-[#0c0a24] p-3 rounded-xl border border-white/5 hover:border-[#00C9A7]/30 transition-colors duration-300">
+                <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
                   <p className="text-xs font-bold text-white font-serif">Famisanar</p>
-                  <a href="mailto:servicioalcliente@famisanar.com.co" className="text-xs text-[#00C9A7] hover:underline">
+                  <a href="mailto:servicioalcliente@famisanar.com.co" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
                     servicioalcliente@famisanar.com.co
                   </a>
                 </div>
-                <div className="bg-[#0c0a24] p-3 rounded-xl border border-white/5 hover:border-[#00C9A7]/30 transition-colors duration-300">
+                <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
                   <p className="text-xs font-bold text-white font-serif">Coosalud</p>
-                  <a href="mailto:defensordelusuario@coosalud.com" className="text-xs text-[#00C9A7] hover:underline">
+                  <a href="mailto:defensordelusuario@coosalud.com" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
                     defensordelusuario@coosalud.com
                   </a>
                 </div>

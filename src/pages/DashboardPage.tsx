@@ -104,9 +104,9 @@ export function DashboardPage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="bg-primary-50 border-b border-primary-100">
+      <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-primary-800">
+          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
             ¡Hola, {firstName}! 👋
           </h1>
           <p className="text-text-secondary mt-1">
@@ -157,10 +157,10 @@ export function DashboardPage() {
         {/* Upcoming Appointments */}
         <section aria-labelledby="upcoming-heading">
           <div className="flex items-center justify-between mb-6">
-            <h2 id="upcoming-heading" className="text-xl font-semibold text-primary-800">
+            <h2 id="upcoming-heading" className="text-xl font-semibold text-text-primary">
               Próximas citas
             </h2>
-            <Link to="/dashboard/historial" className="text-sm text-accent-500 hover:text-accent-600 font-medium transition-colors">
+            <Link to="/dashboard/historial" className="inline-flex items-center min-h-11 px-1 rounded-lg text-sm text-accent hover:text-accent-hover hover:underline underline-offset-4 font-medium">
               Ver todas →
             </Link>
           </div>
@@ -175,9 +175,9 @@ export function DashboardPage() {
 
           {/* Empty state */}
           {!isLoadingAppointments && upcomingAppointments.length === 0 && (
-            <div className="bg-surface-card border border-primary-100 rounded-2xl p-10 text-center">
+            <div className="bg-surface-card border border-line rounded-2xl p-10 text-center">
               <span className="text-5xl mb-4 block" aria-hidden="true">🗓️</span>
-              <h3 className="text-lg font-semibold text-primary-800 mb-2">
+              <h3 className="text-lg font-semibold text-text-primary mb-2">
                 No tienes citas próximas
               </h3>
               <p className="text-text-secondary mb-6 max-w-md mx-auto">
@@ -198,19 +198,19 @@ export function DashboardPage() {
               {upcomingAppointments.slice(0, 3).map((apt) => (
                 <div
                   key={apt.id}
-                  className="bg-surface-card border border-primary-100 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+                  className="bg-surface-card border border-line rounded-2xl p-5 sm:p-6 hover:border-line-strong flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-accent-400/10 text-accent-500 flex items-center justify-center shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-accent-soft text-accent border border-accent/20 flex items-center justify-center shrink-0">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
                     <div>
-                      <h3 className="text-base font-semibold text-primary-800">
+                      <h3 className="text-base font-semibold text-text-primary">
                         {apt.doctorName}
                       </h3>
-                      <p className="text-sm text-accent-500 font-medium">
+                      <p className="text-sm text-accent font-medium">
                         {apt.specialtyName}
                       </p>
                       <p className="text-sm text-text-secondary mt-1">
@@ -222,7 +222,7 @@ export function DashboardPage() {
                     </div>
                   </div>
                   <div className="flex flex-col gap-2 items-stretch sm:items-end">
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 self-start sm:self-end whitespace-nowrap text-center mb-1">
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-info-soft text-info border border-info/30 self-start sm:self-end whitespace-nowrap text-center mb-1">
                       📅 Programada
                     </span>
                     <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -257,7 +257,7 @@ export function DashboardPage() {
         {profile && (
           <section className="mt-10" aria-labelledby="profile-heading">
             <div className="flex items-center justify-between mb-4">
-              <h2 id="profile-heading" className="text-xl font-semibold text-primary-800">
+              <h2 id="profile-heading" className="text-xl font-semibold text-text-primary">
                 Tu información
               </h2>
               {!isEditingProfile && (
@@ -267,9 +267,9 @@ export function DashboardPage() {
               )}
             </div>
 
-            <div className="bg-surface-card border border-primary-100 rounded-2xl p-6">
+            <div className="bg-surface-card border border-line rounded-2xl p-6">
               {profileError && (
-                <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
+                <div className="mb-4 px-4 py-3 bg-error-soft text-error text-sm font-medium rounded-xl border border-error/30">
                   {profileError}
                 </div>
               )}
@@ -277,7 +277,7 @@ export function DashboardPage() {
               {isEditingProfile ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="perfil-nombre" className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
+                    <label htmlFor="perfil-nombre" className="block text-xs font-medium text-text-secondary uppercase tracking-wider mb-1.5">
                       Nombre Completo
                     </label>
                     <input
@@ -286,12 +286,12 @@ export function DashboardPage() {
                       autoComplete="name"
                       value={editFullName}
                       onChange={(e) => setEditFullName(e.target.value)}
-                      className="w-full px-3 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-400"
+                      className="control-campo"
                     />
                   </div>
                   <div>
-                    <label htmlFor="perfil-cedula" className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
-                      Cédula <span className="lowercase normal-case text-gray-400 ml-1">(solo lectura)</span>
+                    <label htmlFor="perfil-cedula" className="block text-xs font-medium text-text-secondary uppercase tracking-wider mb-1.5">
+                      Cédula <span className="lowercase normal-case text-text-muted ml-1">(solo lectura)</span>
                     </label>
                     {/* readOnly (no disabled): sigue siendo enfocable y legible por lectores de pantalla */}
                     <input
@@ -299,12 +299,12 @@ export function DashboardPage() {
                       type="text"
                       value={profile.cedula}
                       readOnly
-                      className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 cursor-not-allowed"
+                      className="control-campo bg-surface-muted text-text-muted cursor-not-allowed"
                     />
                   </div>
                   <div>
-                    <label htmlFor="perfil-correo" className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
-                      Correo Electrónico <span className="lowercase normal-case text-gray-400 ml-1">(solo lectura)</span>
+                    <label htmlFor="perfil-correo" className="block text-xs font-medium text-text-secondary uppercase tracking-wider mb-1.5">
+                      Correo Electrónico <span className="lowercase normal-case text-text-muted ml-1">(solo lectura)</span>
                     </label>
                     <input
                       id="perfil-correo"
@@ -312,11 +312,11 @@ export function DashboardPage() {
                       autoComplete="email"
                       value={profile.email}
                       readOnly
-                      className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 cursor-not-allowed"
+                      className="control-campo bg-surface-muted text-text-muted cursor-not-allowed"
                     />
                   </div>
                   <div>
-                    <label htmlFor="perfil-telefono" className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
+                    <label htmlFor="perfil-telefono" className="block text-xs font-medium text-text-secondary uppercase tracking-wider mb-1.5">
                       Teléfono
                     </label>
                     <input
@@ -325,11 +325,11 @@ export function DashboardPage() {
                       autoComplete="tel"
                       value={editPhone}
                       onChange={(e) => setEditPhone(e.target.value)}
-                      className="w-full px-3 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-400"
+                      className="control-campo"
                     />
                   </div>
                   
-                  <div className="sm:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-primary-100">
+                  <div className="sm:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-line">
                     <Button variant="ghost" size="sm" onClick={cancelEditing} disabled={isSavingProfile}>
                       Cancelar
                     </Button>
@@ -367,9 +367,9 @@ interface QuickActionCardProps {
 
 function QuickActionCard({ icon, title, description, href, ctaText, variant }: QuickActionCardProps) {
   return (
-    <div className="bg-surface-card border border-primary-100 rounded-2xl p-6 hover:shadow-elevated hover:-translate-y-0.5 transition-all duration-300">
+    <div className="bg-surface-card border border-line rounded-2xl p-6 hover:border-line-strong hover:shadow-elevated hover:-translate-y-0.5 transicion h-full">
       <span className="text-3xl mb-3 block" aria-hidden="true">{icon}</span>
-      <h3 className="text-lg font-semibold text-primary-800 mb-1">{title}</h3>
+      <h3 className="text-lg font-semibold text-text-primary mb-1">{title}</h3>
       <p className="text-sm text-text-secondary mb-4">{description}</p>
       <Link to={href}>
         <Button variant={variant} size="sm">
@@ -390,7 +390,7 @@ function InfoItem({ label, value }: InfoItemProps) {
   return (
     <div>
       <dt className="text-xs font-medium text-text-muted uppercase tracking-wider">{label}</dt>
-      <dd className="text-base text-primary-800 font-medium mt-0.5">{value}</dd>
+      <dd className="text-base text-text-primary font-medium mt-0.5">{value}</dd>
     </div>
   );
 }

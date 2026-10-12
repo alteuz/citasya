@@ -10,9 +10,15 @@ interface BadgeProps {
 }
 
 const VARIANT_CLASSES = {
-  default: 'bg-primary-100 text-primary-700 hover:bg-primary-200',
-  active: 'bg-primary-800 text-white',
-  accent: 'bg-accent-100 text-accent-600 hover:bg-accent-200',
+  default: 'bg-surface-hover text-text-secondary border border-line',
+  active: 'bg-brand text-white border border-brand',
+  accent: 'bg-accent-soft text-accent border border-accent/30',
+} as const;
+
+const CLICKABLE_HOVER = {
+  default: 'hover:bg-surface-strong hover:text-text-primary',
+  active: 'hover:bg-brand-hover',
+  accent: 'hover:border-accent/60',
 } as const;
 
 export function Badge({
@@ -32,9 +38,8 @@ export function Badge({
       className={`
         inline-flex items-center gap-1.5 px-4 py-2
         text-sm font-medium rounded-full
-        transition-all duration-200 ease-out
         ${VARIANT_CLASSES[resolvedVariant]}
-        ${clickable ? 'cursor-pointer active:scale-95' : ''}
+        ${clickable ? `min-h-11 cursor-pointer presionable ${CLICKABLE_HOVER[resolvedVariant]}` : ''}
         ${className}
       `}
       {...(clickable ? { type: 'button' as const } : {})}

@@ -103,12 +103,12 @@ export function AdminSlotsPage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="bg-primary-50 border-b border-primary-100">
+      <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          <Link to="/admin" className="text-sm text-text-muted hover:text-primary-700 font-medium mb-4 flex items-center gap-1">
+          <Link to="/admin" className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-3">
             <span aria-hidden="true">←</span> Volver al panel
           </Link>
-          <h1 className="text-2xl md:text-3xl font-bold text-primary-800">
+          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
             Gestión de Disponibilidad 📋
           </h1>
         </div>
@@ -127,7 +127,7 @@ export function AdminSlotsPage() {
               id="slot-doctor"
               value={selectedDoctor}
               onChange={(e) => handleDoctorChange(e.target.value)}
-              className="w-full max-w-md rounded-xl border border-primary-200 bg-surface-card px-4 py-3 text-base text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400 transition-colors"
+              className="control-campo max-w-md"
             >
               <option value="">Seleccionar médico...</option>
               {doctors.map((d) => (
@@ -140,23 +140,23 @@ export function AdminSlotsPage() {
         {selectedDoctor && (
           <>
             {/* Generate Form */}
-            <div className="bg-surface-card border border-primary-100 rounded-2xl p-6 mb-8">
-              <h2 className="text-lg font-semibold text-primary-800 mb-4">Generar slots en lote</h2>
+            <div className="bg-surface-card border border-line rounded-2xl p-6 mb-8">
+              <h2 className="text-lg font-semibold text-text-primary mb-4">Generar slots en lote</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
-                  <label htmlFor="gen-start" className="text-sm font-medium text-text-secondary block mb-1">Fecha inicio</label>
+                  <label htmlFor="gen-start" className="text-sm font-medium text-text-secondary block mb-1.5">Fecha inicio</label>
                   <input id="gen-start" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full rounded-xl border border-primary-200 bg-surface-card px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-accent-400 transition-colors" />
+                    className="control-campo" />
                 </div>
                 <div>
-                  <label htmlFor="gen-end" className="text-sm font-medium text-text-secondary block mb-1">Fecha fin</label>
+                  <label htmlFor="gen-end" className="text-sm font-medium text-text-secondary block mb-1.5">Fecha fin</label>
                   <input id="gen-end" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full rounded-xl border border-primary-200 bg-surface-card px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-accent-400 transition-colors" />
+                    className="control-campo" />
                 </div>
                 <div>
-                  <label htmlFor="gen-duration" className="text-sm font-medium text-text-secondary block mb-1">Duración (minutos)</label>
+                  <label htmlFor="gen-duration" className="text-sm font-medium text-text-secondary block mb-1.5">Duración (minutos)</label>
                   <select id="gen-duration" value={duration} onChange={(e) => setDuration(Number(e.target.value))}
-                    className="w-full rounded-xl border border-primary-200 bg-surface-card px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-accent-400 transition-colors">
+                    className="control-campo">
                     <option value={15}>15 min</option>
                     <option value={20}>20 min</option>
                     <option value={30}>30 min</option>
@@ -165,39 +165,39 @@ export function AdminSlotsPage() {
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="gen-start-h" className="text-sm font-medium text-text-secondary block mb-1">Hora inicio</label>
+                  <label htmlFor="gen-start-h" className="text-sm font-medium text-text-secondary block mb-1.5">Hora inicio</label>
                   <select id="gen-start-h" value={startHour} onChange={(e) => setStartHour(Number(e.target.value))}
-                    className="w-full rounded-xl border border-primary-200 bg-surface-card px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-accent-400 transition-colors">
+                    className="control-campo">
                     {Array.from({ length: 14 }, (_, i) => i + 6).map((h) => (
                       <option key={h} value={h}>{h}:00</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="gen-end-h" className="text-sm font-medium text-text-secondary block mb-1">Hora fin</label>
+                  <label htmlFor="gen-end-h" className="text-sm font-medium text-text-secondary block mb-1.5">Hora fin</label>
                   <select id="gen-end-h" value={endHour} onChange={(e) => setEndHour(Number(e.target.value))}
-                    className="w-full rounded-xl border border-primary-200 bg-surface-card px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-accent-400 transition-colors">
+                    className="control-campo">
                     {Array.from({ length: 14 }, (_, i) => i + 7).map((h) => (
                       <option key={h} value={h}>{h}:00</option>
                     ))}
                   </select>
                 </div>
                 <div className="flex items-end">
-                  <label className="flex items-center gap-2 cursor-pointer py-3">
+                  <label className="flex items-center gap-3 min-h-12 cursor-pointer">
                     <input type="checkbox" checked={excludeWeekends} onChange={(e) => setExcludeWeekends(e.target.checked)}
-                      className="w-5 h-5 rounded border-primary-300 text-accent-400 focus:ring-accent-400" />
+                      className="w-5 h-5 rounded accent-accent cursor-pointer" />
                     <span className="text-sm text-text-secondary">Excluir fines de semana</span>
                   </label>
                 </div>
               </div>
 
               {genError && (
-                <div role="alert" className="bg-red-50 border border-error/20 text-error text-sm font-medium px-4 py-3 rounded-xl mt-4">
+                <div role="alert" className="bg-error-soft border border-error/30 text-error text-sm font-medium px-4 py-3 rounded-xl mt-4">
                   {genError}
                 </div>
               )}
               {genResult && (
-                <div className="bg-green-50 border border-green-200 text-green-700 text-sm font-medium px-4 py-3 rounded-xl mt-4">
+                <div className="bg-success-soft border border-success/30 text-success text-sm font-medium px-4 py-3 rounded-xl mt-4">
                   {genResult}
                 </div>
               )}
@@ -210,7 +210,7 @@ export function AdminSlotsPage() {
             </div>
 
             {/* Slots List */}
-            <h2 className="text-lg font-semibold text-primary-800 mb-4">
+            <h2 className="text-lg font-semibold text-text-primary mb-4">
               Slots existentes ({slots.length})
             </h2>
 
@@ -219,32 +219,32 @@ export function AdminSlotsPage() {
                 {[1, 2].map((i) => <Skeleton key={i} height="100px" rounded="xl" />)}
               </div>
             ) : slots.length === 0 ? (
-              <div className="bg-surface-card border border-primary-100 rounded-2xl p-8 text-center text-text-muted">
+              <div className="bg-surface-card border border-line rounded-2xl p-8 text-center text-text-muted">
                 No hay slots para este médico. Genera nuevos slots arriba.
               </div>
             ) : (
               <div className="space-y-6">
                 {Array.from(slotsByDate.entries()).map(([date, dateSlots]) => (
-                  <div key={date} className="bg-surface-card border border-primary-100 rounded-2xl p-4">
-                    <h3 className="text-sm font-semibold text-primary-800 mb-3">
+                  <div key={date} className="bg-surface-card border border-line rounded-2xl p-4">
+                    <h3 className="text-sm font-semibold text-text-primary mb-3">
                       📅 {formatDateLong(date)} ({dateSlots.length} slots)
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {dateSlots.map((slot) => (
-                        <div key={slot.id} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium border ${
+                        <div key={slot.id} className={`flex items-center gap-1 min-h-11 pl-3 pr-1 rounded-lg text-xs font-medium tabular-nums border ${
                           slot.isBooked
-                            ? 'bg-red-50 border-red-200 text-red-700'
-                            : 'bg-green-50 border-green-200 text-green-700'
+                            ? 'bg-error-soft border-error/30 text-error'
+                            : 'bg-success-soft border-success/30 text-success'
                         }`}>
                           <span>{formatTime(slot.startTime)} - {formatTime(slot.endTime)}</span>
                           {slot.isBooked ? (
-                            <span className="text-red-400">🔒</span>
+                            <span className="inline-flex items-center justify-center min-w-10 text-error">🔒</span>
                           ) : (
                             <button
                               type="button"
                               onClick={() => { void handleDelete(slot.id); }}
                               disabled={deletingId === slot.id}
-                              className="text-red-400 hover:text-red-600 ml-1 cursor-pointer"
+                              className="inline-flex items-center justify-center min-h-10 min-w-10 rounded-md text-error hover:bg-error/15 disabled:opacity-50 disabled:cursor-not-allowed presionable cursor-pointer"
                               aria-label="Eliminar slot"
                             >
                               ✕

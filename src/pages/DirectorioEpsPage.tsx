@@ -26,9 +26,9 @@ export function DirectorioEpsPage() {
   return (
     <div>
       {/* Header */}
-      <div className="bg-primary-50 border-b border-primary-100">
+      <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 md:py-14 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-primary-800 mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-2">
             EPS habilitadas en Bogotá
           </h1>
           <p className="text-text-secondary max-w-2xl mx-auto">
@@ -49,7 +49,7 @@ export function DirectorioEpsPage() {
         )}
 
         {error && !isLoading && (
-          <div className="bg-surface-card border border-error/20 rounded-2xl p-8 text-center">
+          <div className="bg-error-soft border border-error/30 rounded-2xl p-8 text-center">
             <p className="text-error font-medium">{error}</p>
             <Button variant="secondary" size="sm" onClick={reload} className="mt-4">Reintentar</Button>
           </div>
@@ -61,9 +61,9 @@ export function DirectorioEpsPage() {
               <article
                 key={eps.id}
                 aria-labelledby={`eps-${eps.id}`}
-                className="bg-surface-card border border-primary-100 rounded-2xl p-6"
+                className="bg-surface-card border border-line rounded-2xl p-6 h-full"
               >
-                <h2 id={`eps-${eps.id}`} className="text-lg font-bold text-primary-800 leading-tight">
+                <h2 id={`eps-${eps.id}`} className="text-lg font-bold text-text-primary leading-tight">
                   {eps.nombre}
                 </h2>
                 <p className="text-sm text-text-secondary mt-1">
@@ -74,15 +74,15 @@ export function DirectorioEpsPage() {
 
                 {(eps.telefono || eps.correo || eps.direccion) && (
                   <div className="space-y-1 mt-3 text-sm text-text-secondary">
-                    {eps.telefono && <p><a href={`tel:${eps.telefono}`} className="underline underline-offset-2">{eps.telefono}</a></p>}
-                    {eps.correo && <p className="break-all"><a href={`mailto:${eps.correo}`} className="underline underline-offset-2">{eps.correo}</a></p>}
+                    {eps.telefono && <p><a href={`tel:${eps.telefono}`} className="inline-flex items-center min-h-11 text-link hover:text-accent underline underline-offset-4">{eps.telefono}</a></p>}
+                    {eps.correo && <p className="break-all"><a href={`mailto:${eps.correo}`} className="inline-flex items-center min-h-11 text-link hover:text-accent underline underline-offset-4">{eps.correo}</a></p>}
                     {eps.direccion && <p>{eps.direccion}</p>}
                   </div>
                 )}
 
                 {eps.sedes.length > 0 && (
                   <>
-                    <h3 className="text-sm font-semibold text-primary-800 mt-4 mb-2">
+                    <h3 className="text-sm font-semibold text-text-primary mt-4 mb-2">
                       Sedes de atención ({eps.sedes.length})
                     </h3>
                     {/* role="list": Safari/VoiceOver elimina la semántica de lista con list-style none. */}
@@ -104,7 +104,7 @@ export function DirectorioEpsPage() {
         )}
 
         {!isLoading && !error && epsList.length === 0 && (
-          <div className="text-center py-16 text-text-muted">
+          <div className="text-center py-16 px-6 text-text-muted bg-surface-card border border-line rounded-2xl">
             <p className="text-lg font-medium">No se encontraron EPS activas.</p>
           </div>
         )}

@@ -146,7 +146,7 @@ export function BookingPage() {
     return (
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 text-center animate-fade-in">
         <span className="text-5xl mb-4 block" aria-hidden="true">😕</span>
-        <h1 className="text-2xl font-bold text-primary-800 mb-2">Médico no encontrado</h1>
+        <h1 className="text-2xl font-bold text-text-primary mb-2">Médico no encontrado</h1>
         <p className="text-text-secondary mb-6">{error ?? 'El médico solicitado no existe.'}</p>
         <Link to="/buscar">
           <Button variant="primary" size="md">Volver al buscador</Button>
@@ -159,16 +159,16 @@ export function BookingPage() {
   if (step === 'success' && bookedAppointment) {
     return (
       <div className="mx-auto max-w-lg px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
-        <div className="bg-surface-card border border-primary-100 rounded-2xl p-8 text-center">
+        <div className="bg-surface-card border border-line rounded-2xl p-8 text-center">
           <span className="text-6xl mb-4 block" aria-hidden="true">🎉</span>
-          <h1 className="text-2xl font-bold text-primary-800 mb-2">
+          <h1 className="text-2xl font-bold text-text-primary mb-2">
             ¡Cita agendada!
           </h1>
           <p className="text-text-secondary mb-6">
             Tu cita ha sido confirmada exitosamente.
           </p>
 
-          <div className="bg-primary-50 rounded-xl p-6 text-left space-y-3 mb-6">
+          <div className="bg-surface-muted rounded-xl p-6 text-left space-y-3 mb-6">
             <InfoRow label="Médico" value={bookedAppointment.doctorName} />
             <InfoRow label="Especialidad" value={bookedAppointment.specialtyName} />
             <InfoRow label="EPS" value={bookedAppointment.epsName} />
@@ -201,18 +201,18 @@ export function BookingPage() {
         <button
           type="button"
           onClick={() => setStep('select')}
-          className="text-sm text-text-muted hover:text-primary-700 font-medium mb-6 flex items-center gap-1 cursor-pointer"
+          className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-4 cursor-pointer"
         >
           <span aria-hidden="true">←</span> Cambiar horario
         </button>
 
-        <h1 className="text-2xl font-bold text-primary-800 mb-6">
+        <h1 className="text-2xl font-bold text-text-primary mb-6">
           Confirmar cita
         </h1>
 
-        <div className="bg-surface-card border border-primary-100 rounded-2xl p-6 space-y-6">
+        <div className="bg-surface-card border border-line rounded-2xl p-6 space-y-6">
           {/* Resumen */}
-          <div className="bg-primary-50 rounded-xl p-5 space-y-3">
+          <div className="bg-surface-muted rounded-xl p-5 space-y-3">
             <InfoRow label="Médico" value={doctor.fullName} />
             <InfoRow label="Especialidad" value={doctor.specialtyName} />
             <InfoRow label="EPS" value={doctor.epsName} />
@@ -235,13 +235,13 @@ export function BookingPage() {
               placeholder="Describe brevemente el motivo de tu consulta..."
               rows={3}
               maxLength={500}
-              className="w-full rounded-xl border border-primary-200 bg-surface-card px-4 py-3 text-base text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-accent-400 hover:border-primary-300 transition-colors resize-none"
+              className="control-campo resize-none"
             />
           </div>
 
           {/* Error */}
           {bookingError && (
-            <div role="alert" className="bg-red-50 border border-error/20 text-error text-sm font-medium px-4 py-3 rounded-xl">
+            <div role="alert" className="bg-error-soft border border-error/30 text-error text-sm font-medium px-4 py-3 rounded-xl">
               {bookingError}
             </div>
           )}
@@ -271,24 +271,24 @@ export function BookingPage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="bg-primary-50 border-b border-primary-100">
+      <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
           <Link
             to="/buscar"
-            className="text-sm text-text-muted hover:text-primary-700 font-medium mb-4 flex items-center gap-1"
+            className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-3"
           >
             <span aria-hidden="true">←</span> Volver al buscador
           </Link>
 
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-primary-200 text-primary-800 font-bold text-xl flex items-center justify-center shrink-0">
+            <div className="w-16 h-16 rounded-full bg-brand-soft text-accent border border-accent/20 font-bold text-xl flex items-center justify-center shrink-0">
               {initials}
             </div>
             <div>
-              <h1 className="text-xl md:text-2xl font-bold text-primary-800">
+              <h1 className="text-xl md:text-2xl font-bold text-text-primary">
                 {doctor.fullName}
               </h1>
-              <p className="text-accent-500 font-medium">{doctor.specialtyName}</p>
+              <p className="text-accent font-medium">{doctor.specialtyName}</p>
               <p className="text-sm text-text-muted">{doctor.epsName} · Reg. {doctor.licenseNumber}</p>
             </div>
           </div>
@@ -297,12 +297,12 @@ export function BookingPage() {
 
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Date picker */}
-        <h2 className="text-lg font-semibold text-primary-800 mb-4">
+        <h2 className="text-lg font-semibold text-text-primary mb-4">
           Selecciona una fecha
         </h2>
 
         {availableDates.length === 0 ? (
-          <div className="bg-surface-card border border-primary-100 rounded-2xl p-8 text-center mb-8">
+          <div className="bg-surface-card border border-line rounded-2xl p-8 text-center mb-8">
             <span className="text-4xl mb-3 block" aria-hidden="true">📅</span>
             <p className="text-text-secondary">No hay horarios disponibles en los próximos 14 días.</p>
           </div>
@@ -322,10 +322,10 @@ export function BookingPage() {
                     role="option"
                     aria-selected={isSelected}
                     onClick={() => { setSelectedDate(date); setSelectedSlot(null); }}
-                    className={`flex flex-col items-center px-4 py-3 rounded-xl border-2 min-w-[72px] shrink-0 transition-all cursor-pointer ${
+                    className={`flex flex-col items-center px-4 py-3 rounded-xl border-2 min-w-18 shrink-0 presionable cursor-pointer ${
                       isSelected
-                        ? 'border-accent-400 bg-accent-400/10 text-accent-600'
-                        : 'border-primary-200 text-text-secondary hover:border-primary-300'
+                        ? 'border-accent bg-accent-soft text-accent'
+                        : 'border-line-input text-text-secondary hover:border-text-muted hover:text-text-primary'
                     }`}
                   >
                     <span className="text-xs font-medium uppercase">{dayName}</span>
@@ -337,12 +337,12 @@ export function BookingPage() {
             </div>
 
             {/* Time slots */}
-            <h2 className="text-lg font-semibold text-primary-800 mb-4">
+            <h2 className="text-lg font-semibold text-text-primary mb-4">
               Horarios disponibles — {formatDateLong(activeDate)}
             </h2>
 
             {currentSlots.length === 0 ? (
-              <div className="bg-surface-card border border-primary-100 rounded-xl p-6 text-center">
+              <div className="bg-surface-card border border-line rounded-xl p-6 text-center">
                 <p className="text-text-secondary">No hay horarios disponibles para esta fecha.</p>
               </div>
             ) : (
@@ -354,10 +354,10 @@ export function BookingPage() {
                       key={slot.id}
                       type="button"
                       onClick={() => handleSelectSlot(slot)}
-                      className={`py-3 px-2 rounded-xl border-2 text-sm font-medium transition-all cursor-pointer ${
+                      className={`min-h-12 py-3 px-2 rounded-xl border-2 text-sm font-medium tabular-nums presionable cursor-pointer ${
                         isSelected
-                          ? 'border-accent-400 bg-accent-400 text-white shadow-md'
-                          : 'border-primary-200 text-text-secondary hover:border-accent-300 hover:bg-accent-50'
+                          ? 'border-accent bg-accent text-text-inverse shadow-glow'
+                          : 'border-line-input text-text-secondary hover:border-accent/60 hover:bg-accent-soft hover:text-text-primary'
                       }`}
                     >
                       {formatTime(slot.startTime)}
@@ -369,9 +369,9 @@ export function BookingPage() {
 
             {/* CTA */}
             {selectedSlot && (
-              <div className="sticky bottom-4 bg-surface-card/95 backdrop-blur-md border border-primary-100 rounded-2xl p-4 shadow-elevated flex items-center justify-between gap-4">
+              <div className="sticky bottom-4 bg-surface-card/95 backdrop-blur-md border border-line rounded-2xl p-4 shadow-elevated flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm font-medium text-primary-800">
+                  <p className="text-sm font-medium text-text-primary">
                     {formatDateLong(selectedSlot.date)}, {formatTime(selectedSlot.startTime)} - {formatTime(selectedSlot.endTime)}
                   </p>
                   <p className="text-xs text-text-muted">{doctor.fullName} · {doctor.specialtyName}</p>
@@ -400,7 +400,7 @@ function InfoRow({ label, value }: InfoRowProps) {
   return (
     <div className="flex justify-between items-center">
       <span className="text-sm text-text-muted">{label}</span>
-      <span className="text-sm font-medium text-primary-800">{value}</span>
+      <span className="text-sm font-medium text-text-primary">{value}</span>
     </div>
   );
 }

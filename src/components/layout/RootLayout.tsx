@@ -30,7 +30,7 @@ export function RootLayout() {
       <div className="flex flex-col min-h-screen">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-accent-500 focus:text-white focus:rounded-lg"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-3 focus:bg-accent focus:text-text-inverse focus:font-semibold focus:rounded-lg focus:shadow-elevated"
         >
           Ir al contenido principal
         </a>

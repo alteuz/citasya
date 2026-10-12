@@ -29,21 +29,21 @@ export function Footer() {
 
   return (
     <footer
-      className="bg-primary-950 text-primary-200"
+      className="bg-surface-muted text-text-secondary border-t border-line"
       aria-label="Pie de página"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {/* Brand */}
           <div className="flex flex-col gap-4">
-            <Link to="/" className="flex items-center gap-3">
+            <Link to="/" className="flex items-center gap-3 self-start rounded-xl">
               <img src="/logo.png" alt="" className="h-14 w-14 object-contain shrink-0" />
-              <span className="font-serif text-[28px] tracking-tight font-normal text-white">
-                Citas<span className="text-accent-400">YA</span>
+              <span className="font-serif text-logo tracking-tight font-normal text-text-primary">
+                Citas<span className="text-accent">YA</span>
               </span>
               <span className="sr-only">, ir al inicio</span>
             </Link>
-            <p className="text-sm text-primary-300 leading-relaxed max-w-xs">
+            <p className="text-sm text-text-secondary leading-relaxed max-w-xs">
               {APP_TAGLINE}
             </p>
           </div>
@@ -51,17 +51,17 @@ export function Footer() {
           {/* Sections */}
           {FOOTER_SECTIONS.map((section) => (
             <div key={section.title} className="flex flex-col gap-4">
-              <h2 className="text-sm font-semibold text-white uppercase tracking-wider">
+              <h2 className="font-sans text-sm font-semibold text-text-primary uppercase tracking-wider">
                 {section.title}
               </h2>
               {/* role="list" es intencional: Safari/VoiceOver elimina la semántica de lista cuando list-style es none (reset de Tailwind). */}
               {/* eslint-disable-next-line jsx-a11y/no-redundant-roles */}
-              <ul className="flex flex-col gap-2.5" role="list">
+              <ul className="flex flex-col gap-1" role="list">
                 {section.links.map((link) => (
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="text-sm text-primary-300 hover:text-accent-400 transition-colors duration-200"
+                      className="inline-flex items-center min-h-11 text-sm text-text-secondary hover:text-accent"
                     >
                       {link.label}
                     </Link>
@@ -73,12 +73,12 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 pt-8 border-t border-primary-800 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-primary-400">
+        <div className="mt-12 pt-8 border-t border-line flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-text-secondary">
             © {currentYear} {APP_NAME} — Bogotá, Colombia. Todos los derechos reservados.
           </p>
           <div className="flex items-center gap-4">
-            <span className="text-xs text-primary-400">
+            <span className="text-xs text-text-secondary">
               Hecho con 💜 para la salud de los colombianos
             </span>
           </div>

@@ -99,7 +99,7 @@ export function RegisterPage() {
       <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 animate-fade-in">
         <div className="w-full max-w-md text-center">
           <span className="text-6xl mb-6 block" aria-hidden="true">🎉</span>
-          <h1 className="text-3xl font-bold text-primary-800 mb-4">
+          <h1 className="text-3xl font-bold text-text-primary mb-4">
             ¡Registro exitoso!
           </h1>
           <p className="text-text-secondary mb-2">
@@ -123,13 +123,13 @@ export function RegisterPage() {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-3 mb-6">
+          <Link to="/" className="inline-flex items-center gap-3 mb-6 rounded-xl">
             <img src="/logo.png" alt="" className="h-20 w-20 object-contain shrink-0" />
-            <span className="font-serif text-[32px] tracking-tight font-normal text-text-primary">
-              Citas<span className="text-accent-400">YA</span>
+            <span className="font-serif text-logo-lg tracking-tight font-normal text-text-primary">
+              Citas<span className="text-accent">YA</span>
             </span>
           </Link>
-          <h1 className="text-3xl font-bold text-primary-800 mb-2">
+          <h1 className="text-3xl font-bold text-text-primary mb-2">
             Crear cuenta
           </h1>
           <p className="text-text-secondary">
@@ -137,8 +137,8 @@ export function RegisterPage() {
           </p>
           {/* Step indicator */}
           <div className="flex items-center justify-center gap-2 mt-4" aria-hidden="true">
-            <div className={`h-2 w-10 rounded-full transition-colors ${step >= 1 ? 'bg-accent-400' : 'bg-primary-200'}`} />
-            <div className={`h-2 w-10 rounded-full transition-colors ${step >= 2 ? 'bg-accent-400' : 'bg-primary-200'}`} />
+            <div className={`h-2 w-10 rounded-full transicion ${step >= 1 ? 'bg-accent' : 'bg-surface-strong'}`} />
+            <div className={`h-2 w-10 rounded-full transicion ${step >= 2 ? 'bg-accent' : 'bg-surface-strong'}`} />
           </div>
           <p className="text-xs text-text-muted mt-2">Paso {step} de 2</p>
         </div>
@@ -146,14 +146,14 @@ export function RegisterPage() {
         {/* Form */}
         <form
           onSubmit={(e) => { void handleSubmit(e); }}
-          className="bg-surface-card rounded-2xl shadow-elevated p-8 space-y-5"
+          className="bg-surface-card border border-line rounded-2xl shadow-elevated p-6 sm:p-8 space-y-5"
           noValidate
         >
           {/* Error global */}
           {error && (
             <div
               role="alert"
-              className="bg-red-50 border border-error/20 text-error text-sm font-medium px-4 py-3 rounded-xl"
+              className="bg-error-soft border border-error/30 text-error text-sm font-medium px-4 py-3 rounded-xl"
             >
               {error}
             </div>
@@ -247,7 +247,7 @@ export function RegisterPage() {
                   id="eps"
                   value={epsId}
                   onChange={(e) => setEpsId(e.target.value)}
-                  className="w-full rounded-xl border border-primary-200 bg-surface-card px-4 py-3 text-base text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-accent-400 hover:border-primary-300 transition-colors appearance-none cursor-pointer"
+                  className="control-campo appearance-none cursor-pointer"
                 >
                   <option value="">Seleccione su EPS</option>
                   {epsList.map((epsItem) => (
@@ -319,7 +319,7 @@ export function RegisterPage() {
             ¿Ya tienes cuenta?{' '}
             <Link
               to="/iniciar-sesion"
-              className="text-accent-500 hover:text-accent-600 font-semibold transition-colors"
+              className="text-accent hover:text-accent-hover font-semibold underline-offset-4 hover:underline rounded"
             >
               Inicia sesión
             </Link>

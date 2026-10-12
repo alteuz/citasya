@@ -154,7 +154,7 @@ export function AccessibilityWidget() {
           mismo para todos y la hidratación no difiere del prerenderizado. */}
       {readingGuide && rulerTop > 0 && (
         <div
-          className="fixed left-0 right-0 h-8 pointer-events-none z-[99999] bg-accent-400/20 border-y-2 border-accent-400 mix-blend-difference -translate-y-1/2 transition-all duration-75"
+          className="fixed left-0 right-0 h-8 pointer-events-none z-[99999] bg-accent/20 border-y-2 border-accent mix-blend-difference -translate-y-1/2"
           style={{ top: `${rulerTop}px` }}
           aria-hidden="true"
         />
@@ -163,15 +163,15 @@ export function AccessibilityWidget() {
       {/* Botón Flotante del Widget */}
       <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end">
         {isOpen && (
-          <div className="mb-4 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-[#0a091f]/95 backdrop-blur-xl border border-[#211f4d] rounded-3xl p-6 shadow-2xl animate-fade-in text-white accessibility-widget-panel">
-            <div className="flex items-center justify-between mb-5 border-b border-[#211f4d] pb-3">
-              <h2 className="text-lg font-bold flex items-center gap-2">
+          <div className="mb-4 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-surface/95 backdrop-blur-xl border border-line rounded-3xl p-6 shadow-elevated animate-fade-in text-text-primary accessibility-widget-panel">
+            <div className="flex items-center justify-between mb-5 border-b border-line pb-3">
+              <h2 className="font-sans text-lg font-bold flex items-center gap-2">
                 <span className="text-xl">⚙️</span> Ajustes de Accesibilidad
               </h2>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="text-[#cdc7f0] hover:text-white p-1 rounded-lg focus-visible:outline-2 focus-visible:outline-accent-400"
+                className="inline-flex items-center justify-center min-h-11 min-w-11 -mr-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface-hover presionable cursor-pointer"
                 aria-label="Cerrar panel de accesibilidad"
               >
                 ✕
@@ -181,7 +181,7 @@ export function AccessibilityWidget() {
             <div className="space-y-5">
               {/* Ajuste de Tamaño de Texto */}
               <div>
-                <span className="block text-sm font-semibold text-[#e8e5f7] mb-2">
+                <span className="block text-sm font-semibold text-text-primary mb-2">
                   Tamaño del texto:
                 </span>
                 <div className="grid grid-cols-3 gap-2">
@@ -191,10 +191,10 @@ export function AccessibilityWidget() {
                       type="button"
                       onClick={() => setTextSize(size)}
                       className={`
-                        py-2 text-xs font-bold rounded-xl transition-all cursor-pointer border
+                        min-h-11 py-2 text-xs font-bold rounded-xl presionable cursor-pointer border
                         ${textSize === size
-                          ? 'bg-accent-400 text-[#0d0d1a] border-accent-400'
-                          : 'bg-[#131233] text-[#cdc7f0] border-[#25235c] hover:bg-[#1a1945]'
+                          ? 'bg-accent text-text-inverse border-accent'
+                          : 'bg-surface-card text-text-secondary border-line-input hover:bg-surface-hover hover:text-text-primary'
                         }
                       `}
                     >
@@ -207,69 +207,69 @@ export function AccessibilityWidget() {
               {/* Toggles Rápidos */}
               <div className="space-y-3 pt-2">
                 {/* Alto Contraste */}
-                <label className="flex items-center justify-between p-2.5 bg-[#131233] border border-[#25235c] rounded-xl cursor-pointer hover:bg-[#1a1945] transition-colors">
-                  <span className="flex flex-col text-sm font-bold text-white">
+                <label className="flex items-center justify-between gap-3 min-h-14 px-3 py-2.5 bg-surface-card border border-line rounded-xl cursor-pointer hover:bg-surface-hover hover:border-line-strong">
+                  <span className="flex flex-col text-sm font-bold text-text-primary">
                     Alto Contraste
-                    <span className="text-xs font-normal text-[#9f99c7]">Colores de alta visibilidad</span>
+                    <span className="text-xs font-normal text-text-muted">Colores de alta visibilidad</span>
                   </span>
                   <input
                     type="checkbox"
                     checked={highContrast}
                     onChange={(e) => setHighContrast(e.target.checked)}
-                    className="w-5 h-5 accent-accent-400 cursor-pointer"
+                    className="w-5 h-5 accent-accent cursor-pointer"
                   />
                 </label>
 
                 {/* Guía de Lectura */}
-                <label className="flex items-center justify-between p-2.5 bg-[#131233] border border-[#25235c] rounded-xl cursor-pointer hover:bg-[#1a1945] transition-colors">
-                  <span className="flex flex-col text-sm font-bold text-white">
+                <label className="flex items-center justify-between gap-3 min-h-14 px-3 py-2.5 bg-surface-card border border-line rounded-xl cursor-pointer hover:bg-surface-hover hover:border-line-strong">
+                  <span className="flex flex-col text-sm font-bold text-text-primary">
                     Guía de Lectura
-                    <span className="text-xs font-normal text-[#9f99c7]">Regla visual para seguir el texto</span>
+                    <span className="text-xs font-normal text-text-muted">Regla visual para seguir el texto</span>
                   </span>
                   <input
                     type="checkbox"
                     checked={readingGuide}
                     onChange={(e) => setReadingGuide(e.target.checked)}
-                    className="w-5 h-5 accent-accent-400 cursor-pointer"
+                    className="w-5 h-5 accent-accent cursor-pointer"
                   />
                 </label>
 
                 {/* Asistente de Voz */}
-                <label className="flex items-center justify-between p-2.5 bg-[#131233] border border-[#25235c] rounded-xl cursor-pointer hover:bg-[#1a1945] transition-colors">
-                  <span className="flex flex-col text-sm font-bold text-white">
+                <label className="flex items-center justify-between gap-3 min-h-14 px-3 py-2.5 bg-surface-card border border-line rounded-xl cursor-pointer hover:bg-surface-hover hover:border-line-strong">
+                  <span className="flex flex-col text-sm font-bold text-text-primary">
                     Lector de Voz
-                    <span className="text-xs font-normal text-[#9f99c7]">Escuchar texto al pasar el cursor</span>
+                    <span className="text-xs font-normal text-text-muted">Escuchar texto al pasar el cursor</span>
                   </span>
                   <input
                     type="checkbox"
                     checked={voiceAssistance}
                     onChange={(e) => setVoiceAssistance(e.target.checked)}
-                    className="w-5 h-5 accent-accent-400 cursor-pointer"
+                    className="w-5 h-5 accent-accent cursor-pointer"
                   />
                 </label>
 
                 {/* Animaciones */}
-                <label className="flex items-center justify-between p-2.5 bg-[#131233] border border-[#25235c] rounded-xl cursor-pointer hover:bg-[#1a1945] transition-colors">
-                  <span className="flex flex-col text-sm font-bold text-white">
+                <label className="flex items-center justify-between gap-3 min-h-14 px-3 py-2.5 bg-surface-card border border-line rounded-xl cursor-pointer hover:bg-surface-hover hover:border-line-strong">
+                  <span className="flex flex-col text-sm font-bold text-text-primary">
                     Reducir Movimiento
-                    <span className="text-xs font-normal text-[#9f99c7]">Desactiva efectos visuales rápidos</span>
+                    <span className="text-xs font-normal text-text-muted">Desactiva efectos visuales rápidos</span>
                   </span>
                   <input
                     type="checkbox"
                     checked={reduceMotion}
                     onChange={(e) => setReduceMotion(e.target.checked)}
-                    className="w-5 h-5 accent-accent-400 cursor-pointer"
+                    className="w-5 h-5 accent-accent cursor-pointer"
                   />
                 </label>
               </div>
 
               {/* Botón de reinicio */}
-              <div className="pt-2 border-t border-[#25235c] flex justify-end">
+              <div className="pt-3 border-t border-line flex justify-end">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={resetAll}
-                  className="text-xs !text-[#cdc7f0] hover:!text-white hover:!bg-[#1a1945] font-bold"
+                  className="text-xs font-bold"
                 >
                   Restablecer todo
                 </Button>
@@ -284,7 +284,7 @@ export function AccessibilityWidget() {
           onClick={() => setIsOpen(!isOpen)}
           aria-expanded={isOpen}
           aria-label="Panel de opciones de accesibilidad para adultos mayores"
-          className="w-14 h-14 rounded-full bg-accent-400 hover:bg-accent-300 text-primary-950 font-bold text-2xl flex items-center justify-center shadow-lg transition-all duration-300 ease-out hover:scale-105 active:scale-95 cursor-pointer focus-visible:outline-3 focus-visible:outline-white focus-visible:outline-offset-2 accessibility-trigger-btn"
+          className="w-14 h-14 rounded-full bg-accent hover:bg-accent-hover text-text-inverse font-bold text-2xl flex items-center justify-center shadow-elevated transicion hover:scale-105 active:scale-95 cursor-pointer focus-visible:outline-3 focus-visible:outline-white focus-visible:outline-offset-2 accessibility-trigger-btn"
         >
           {isOpen ? '✕' : '♿'}
         </button>

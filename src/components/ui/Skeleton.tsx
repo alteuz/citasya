@@ -23,7 +23,7 @@ export function Skeleton({
   return (
     <div
       aria-hidden="true"
-      className={`bg-primary-100 animate-skeleton ${ROUNDED_CLASSES[rounded]} ${className}`}
+      className={`bg-surface-strong animate-skeleton ${ROUNDED_CLASSES[rounded]} ${className}`}
       style={{ width, height }}
     />
   );

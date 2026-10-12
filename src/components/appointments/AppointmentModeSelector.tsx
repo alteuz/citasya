@@ -36,10 +36,10 @@ export function AppointmentModeSelector({ value, onChange, name = 'modalidad' }:
               className="peer sr-only"
             />
             <span
-              className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all
-                border-primary-200 text-text-secondary hover:border-primary-300
-                peer-checked:border-accent-400 peer-checked:bg-accent-400/10 peer-checked:text-accent-600
-                peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent-400"
+              className="flex items-center justify-center gap-2 min-h-12 py-3 px-4 rounded-xl border-2 text-sm font-medium presionable
+                border-line-input text-text-secondary hover:border-text-muted hover:text-text-primary
+                peer-checked:border-accent peer-checked:bg-accent-soft peer-checked:text-accent
+                peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent"
             >
               <span aria-hidden="true">{option.icon}</span>
               {APPOINTMENT_MODE_LABELS[option.value]}

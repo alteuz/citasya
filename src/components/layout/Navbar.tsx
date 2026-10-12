@@ -40,7 +40,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-[#0d0d1a]/55 backdrop-blur-md border-b border-white/5 py-3">
+      <header className="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-line py-3">
       <nav
         aria-label="Navegación principal"
         className="w-full px-5 sm:px-8 md:px-8 flex items-center justify-between"
@@ -48,7 +48,7 @@ export function Navbar() {
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-3 shrink-0"
+            className="flex items-center gap-3 shrink-0 rounded-xl"
             onClick={closeMobileMenu}
           >
             <img
@@ -56,8 +56,8 @@ export function Navbar() {
               alt=""
               className="h-14 w-14 object-contain shrink-0"
             />
-            <span className="font-serif text-[28px] tracking-tight font-normal text-white">
-              Citas<span className="text-accent-400">YA</span>
+            <span className="font-serif text-logo tracking-tight font-normal text-text-primary">
+              Citas<span className="text-accent">YA</span>
             </span>
             <span className="sr-only">, ir al inicio</span>
           </Link>
@@ -68,10 +68,12 @@ export function Navbar() {
               <Link
                 key={link.href}
                 to={link.href}
+                aria-current={location.pathname === link.href ? 'page' : undefined}
                 className={`
-                  text-[13px] font-semibold tracking-widest uppercase transition-colors duration-200
-                  hover:text-accent-400
-                  ${location.pathname === link.href ? 'text-white' : 'text-primary-300'}
+                  nav-link-underline inline-flex items-center min-h-11
+                  text-caption font-semibold tracking-widest uppercase
+                  hover:text-accent
+                  ${location.pathname === link.href ? 'text-text-primary' : 'text-text-secondary'}
                 `}
               >
                 {link.label}
@@ -82,15 +84,15 @@ export function Navbar() {
           {/* Desktop Auth Actions */}
           <div className="hidden lg:flex items-center gap-6">
             {isLoading ? (
-              <div className="h-8 w-24 bg-primary-800 rounded-lg animate-skeleton" />
+              <div className="h-11 w-28 bg-surface-strong rounded-full animate-skeleton" />
             ) : isAuthenticated ? (
               <>
                 <Link
                   to="/dashboard"
-                  className="text-[13px] font-semibold tracking-widest uppercase text-primary-200 hover:text-accent-400 transition-colors"
+                  className="inline-flex items-center min-h-11 text-caption font-semibold tracking-widest uppercase text-text-secondary hover:text-accent"
                 >
                   <span className="flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-full bg-accent-400 text-white text-xs font-bold flex items-center justify-center">
+                    <span className="w-8 h-8 rounded-full bg-accent text-text-inverse text-xs font-bold flex items-center justify-center">
                       {firstName.charAt(0).toUpperCase()}
                     </span>
                     {firstName}
@@ -99,7 +101,7 @@ export function Navbar() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="!text-white hover:!bg-primary-800 text-[13px] font-semibold tracking-widest uppercase"
+                  className="text-caption font-semibold tracking-widest uppercase"
                   onClick={() => { void handleLogout(); }}
                 >
                   Salir
@@ -109,12 +111,12 @@ export function Navbar() {
               <>
                 <Link
                   to="/iniciar-sesion"
-                  className="text-[13px] font-semibold tracking-widest uppercase text-primary-200 hover:text-accent-400 transition-colors"
+                  className="nav-link-underline inline-flex items-center min-h-11 text-caption font-semibold tracking-widest uppercase text-text-secondary hover:text-accent"
                 >
                   Iniciar sesión
                 </Link>
                 <Link to="/registrarse">
-                  <Button variant="secondary" size="sm" className="border-none rounded-full px-5 text-xs font-bold uppercase tracking-wider">
+                  <Button variant="accent" size="sm" className="rounded-full px-5 text-xs font-bold uppercase tracking-wider">
                     Registrarse
                   </Button>
                 </Link>
@@ -129,7 +131,7 @@ export function Navbar() {
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
             aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-            className="lg:hidden p-2 rounded-lg text-primary-200 hover:text-white hover:bg-primary-800 transition-colors cursor-pointer"
+            className="lg:hidden inline-flex items-center justify-center min-h-11 min-w-11 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface-hover presionable cursor-pointer"
           >
             <svg
               className="h-6 w-6"
@@ -153,7 +155,7 @@ export function Navbar() {
           <>
             {/* Backdrop */}
             <div
-              className="fixed inset-0 top-16 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+              className="fixed inset-0 top-20 bg-surface/70 backdrop-blur-sm z-40 lg:hidden animate-fade-in"
               onClick={closeMobileMenu}
               aria-hidden="true"
             />
@@ -161,18 +163,18 @@ export function Navbar() {
             id="mobile-menu"
             role="navigation"
             aria-label="Menú móvil"
-            className="fixed right-0 top-16 bottom-0 w-72 bg-primary-950 border-l border-primary-800 shadow-elevated z-50 lg:hidden animate-slide-in overflow-y-auto"
+            className="fixed right-0 top-20 bottom-0 w-[min(18rem,100vw)] bg-surface-muted border-l border-line shadow-elevated z-50 lg:hidden animate-slide-in overflow-y-auto"
           >
               <div className="flex flex-col p-6 gap-2">
                 {/* Auth user header for mobile */}
                 {isAuthenticated && profile && (
-                  <div className="flex items-center gap-3 px-4 py-3 mb-2 bg-primary-900 rounded-xl border border-primary-800">
-                    <span className="w-9 h-9 rounded-full bg-accent-400 text-primary-950 text-sm font-bold flex items-center justify-center">
+                  <div className="flex items-center gap-3 px-4 py-3 mb-2 bg-surface-card rounded-xl border border-line">
+                    <span className="w-9 h-9 shrink-0 rounded-full bg-accent text-text-inverse text-sm font-bold flex items-center justify-center">
                       {firstName.charAt(0).toUpperCase()}
                     </span>
                     <div>
-                      <p className="text-sm font-semibold text-white">{firstName}</p>
-                      <p className="text-xs text-primary-200">{profile.email}</p>
+                      <p className="text-sm font-semibold text-text-primary">{firstName}</p>
+                      <p className="text-xs text-text-secondary break-all">{profile.email}</p>
                     </div>
                   </div>
                 )}
@@ -183,10 +185,10 @@ export function Navbar() {
                     to={link.href}
                     onClick={closeMobileMenu}
                     className={`
-                      px-4 py-3 rounded-xl text-base font-medium transition-all duration-200
+                      flex items-center min-h-12 px-4 py-3 rounded-xl text-base font-medium
                       ${location.pathname === link.href
-                        ? 'bg-accent-400 text-primary-950 font-bold'
-                        : 'text-white/80 hover:bg-white/10 hover:text-white'
+                        ? 'bg-accent-soft text-accent font-bold'
+                        : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'
                       }
                     `}
                   >
@@ -199,10 +201,10 @@ export function Navbar() {
                     to="/dashboard"
                     onClick={closeMobileMenu}
                     className={`
-                      px-4 py-3 rounded-xl text-base font-medium transition-all duration-200
+                      flex items-center min-h-12 px-4 py-3 rounded-xl text-base font-medium
                       ${location.pathname === '/dashboard'
-                        ? 'bg-accent-400 text-primary-950 font-bold'
-                        : 'text-white/80 hover:bg-white/10 hover:text-white'
+                        ? 'bg-accent-soft text-accent font-bold'
+                        : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'
                       }
                     `}
                   >
@@ -210,7 +212,7 @@ export function Navbar() {
                   </Link>
                 )}
 
-                <hr className="my-3 border-primary-800" />
+                <hr className="my-3 border-line" />
 
                 {isAuthenticated ? (
                   <Button
@@ -227,10 +229,10 @@ export function Navbar() {
                       to="/iniciar-sesion"
                       onClick={closeMobileMenu}
                       className={`
-                        px-4 py-3 rounded-xl text-base font-medium transition-all duration-200
+                        flex items-center min-h-12 px-4 py-3 rounded-xl text-base font-medium
                         ${location.pathname === '/iniciar-sesion'
-                          ? 'bg-accent-400 text-primary-950 font-bold'
-                          : 'text-white/80 hover:bg-white/10 hover:text-white'
+                          ? 'bg-accent-soft text-accent font-bold'
+                          : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'
                         }
                       `}
                     >
