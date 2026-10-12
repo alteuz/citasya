@@ -108,7 +108,7 @@ export function AdminSlotsPage() {
           <Link to="/admin" className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-3">
             <span aria-hidden="true">←</span> Volver al panel
           </Link>
-          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
+          <h1 className="text-2xl md:text-3xl text-text-primary">
             Gestión de Disponibilidad 📋
           </h1>
         </div>
@@ -141,7 +141,7 @@ export function AdminSlotsPage() {
           <>
             {/* Generate Form */}
             <div className="bg-surface-card border border-line rounded-2xl p-6 mb-8">
-              <h2 className="text-lg font-semibold text-text-primary mb-4">Generar slots en lote</h2>
+              <h2 className="font-sans text-lg font-semibold text-text-primary mb-4">Generar slots en lote</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
                   <label htmlFor="gen-start" className="text-sm font-medium text-text-secondary block mb-1.5">Fecha inicio</label>
@@ -203,14 +203,14 @@ export function AdminSlotsPage() {
               )}
 
               <div className="mt-4">
-                <Button variant="accent" size="md" isLoading={isGenerating} onClick={() => { void handleGenerate(); }}>
+                <Button variant="primary" size="md" isLoading={isGenerating} onClick={() => { void handleGenerate(); }}>
                   Generar slots
                 </Button>
               </div>
             </div>
 
             {/* Slots List */}
-            <h2 className="text-lg font-semibold text-text-primary mb-4">
+            <h2 className="font-sans text-lg font-semibold text-text-primary mb-4">
               Slots existentes ({slots.length})
             </h2>
 

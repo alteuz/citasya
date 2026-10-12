@@ -39,7 +39,7 @@ export function AdminAppointmentsPage() {
           <Link to="/admin" className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-3">
             <span aria-hidden="true">←</span> Volver al panel
           </Link>
-          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
+          <h1 className="text-2xl md:text-3xl text-text-primary">
             Todas las Citas 🗓️
           </h1>
         </div>

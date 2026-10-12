@@ -108,10 +108,10 @@ export function AdminDoctorsPage() {
             <span aria-hidden="true">←</span> Volver al panel
           </Link>
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
+            <h1 className="text-2xl md:text-3xl text-text-primary">
               Gestión de Médicos 👨‍⚕️
             </h1>
-            <Button variant="accent" size="sm" onClick={() => setShowForm(!showForm)}>
+            <Button variant="primary" size="sm" onClick={() => setShowForm(!showForm)}>
               {showForm ? 'Cancelar' : '+ Nuevo médico'}
             </Button>
           </div>
@@ -122,7 +122,7 @@ export function AdminDoctorsPage() {
         {/* Create Form */}
         {showForm && (
           <div className="bg-surface-card border border-line rounded-2xl p-6 mb-8 animate-fade-in">
-            <h2 className="text-lg font-semibold text-text-primary mb-4">Registrar nuevo médico</h2>
+            <h2 className="font-sans text-lg font-semibold text-text-primary mb-4">Registrar nuevo médico</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="doc-name" className="text-sm font-medium text-text-secondary block mb-1.5">Nombre completo *</label>

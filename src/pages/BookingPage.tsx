@@ -146,7 +146,7 @@ export function BookingPage() {
     return (
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 text-center animate-fade-in">
         <span className="text-5xl mb-4 block" aria-hidden="true">😕</span>
-        <h1 className="text-2xl font-bold text-text-primary mb-2">Médico no encontrado</h1>
+        <h1 className="text-2xl text-text-primary mb-2">Médico no encontrado</h1>
         <p className="text-text-secondary mb-6">{error ?? 'El médico solicitado no existe.'}</p>
         <Link to="/buscar">
           <Button variant="primary" size="md">Volver al buscador</Button>
@@ -161,7 +161,7 @@ export function BookingPage() {
       <div className="mx-auto max-w-lg px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
         <div className="bg-surface-card border border-line rounded-2xl p-8 text-center">
           <span className="text-6xl mb-4 block" aria-hidden="true">🎉</span>
-          <h1 className="text-2xl font-bold text-text-primary mb-2">
+          <h1 className="text-2xl text-text-primary mb-2">
             ¡Cita agendada!
           </h1>
           <p className="text-text-secondary mb-6">
@@ -206,7 +206,7 @@ export function BookingPage() {
           <span aria-hidden="true">←</span> Cambiar horario
         </button>
 
-        <h1 className="text-2xl font-bold text-text-primary mb-6">
+        <h1 className="text-2xl text-text-primary mb-6">
           Confirmar cita
         </h1>
 
@@ -285,7 +285,7 @@ export function BookingPage() {
               {initials}
             </div>
             <div>
-              <h1 className="text-xl md:text-2xl font-bold text-text-primary">
+              <h1 className="text-xl md:text-2xl text-text-primary">
                 {doctor.fullName}
               </h1>
               <p className="text-accent font-medium">{doctor.specialtyName}</p>
@@ -297,7 +297,7 @@ export function BookingPage() {
 
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Date picker */}
-        <h2 className="text-lg font-semibold text-text-primary mb-4">
+        <h2 className="font-sans text-lg font-semibold text-text-primary mb-4">
           Selecciona una fecha
         </h2>
 
@@ -337,7 +337,7 @@ export function BookingPage() {
             </div>
 
             {/* Time slots */}
-            <h2 className="text-lg font-semibold text-text-primary mb-4">
+            <h2 className="font-sans text-lg font-semibold text-text-primary mb-4">
               Horarios disponibles — {formatDateLong(activeDate)}
             </h2>
 
@@ -356,7 +356,7 @@ export function BookingPage() {
                       onClick={() => handleSelectSlot(slot)}
                       className={`min-h-12 py-3 px-2 rounded-xl border-2 text-sm font-medium tabular-nums presionable cursor-pointer ${
                         isSelected
-                          ? 'border-accent bg-accent text-text-inverse shadow-glow'
+                          ? 'border-brand bg-brand text-white shadow-button'
                           : 'border-line-input text-text-secondary hover:border-accent/60 hover:bg-accent-soft hover:text-text-primary'
                       }`}
                     >

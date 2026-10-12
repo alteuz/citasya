@@ -99,7 +99,7 @@ export function RegisterPage() {
       <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 animate-fade-in">
         <div className="w-full max-w-md text-center">
           <span className="text-6xl mb-6 block" aria-hidden="true">🎉</span>
-          <h1 className="text-3xl font-bold text-text-primary mb-4">
+          <h1 className="text-3xl text-text-primary mb-4">
             ¡Registro exitoso!
           </h1>
           <p className="text-text-secondary mb-2">
@@ -129,7 +129,7 @@ export function RegisterPage() {
               Citas<span className="text-accent">YA</span>
             </span>
           </Link>
-          <h1 className="text-3xl font-bold text-text-primary mb-2">
+          <h1 className="text-3xl text-text-primary mb-2">
             Crear cuenta
           </h1>
           <p className="text-text-secondary">

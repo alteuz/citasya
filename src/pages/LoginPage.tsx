@@ -46,7 +46,7 @@ export function LoginPage() {
               Citas<span className="text-accent">YA</span>
             </span>
           </Link>
-          <h1 className="text-3xl font-bold text-text-primary mb-2">
+          <h1 className="text-3xl text-text-primary mb-2">
             Iniciar sesión
           </h1>
           <p className="text-text-secondary">

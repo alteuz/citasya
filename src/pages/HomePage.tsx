@@ -119,7 +119,7 @@ export function HomePage() {
 
   return (
     <MotionConfig reducedMotion={shouldReduceMotion ? "always" : "user"}>
-      <div className="relative w-full text-white overflow-x-hidden font-sans scroll-smooth bg-surface">
+      <div className="relative w-full text-white overflow-x-hidden font-sans scroll-smooth bg-black">
         
         {/* ─── HERO SCREEN CONTAINER (100vh) ─── */}
         <div className="relative w-full min-h-screen flex flex-col justify-between select-none">
@@ -262,7 +262,6 @@ export function HomePage() {
           variants={fadeUp(2)} 
           initial="initial" 
           animate="animate" 
-          whileHover={{ scale: 1.08, y: -4 }}
           className="text-right cursor-default select-none"
         >
           <div className="font-sans font-semibold text-white text-stat tracking-tight tabular-nums">
@@ -278,7 +277,6 @@ export function HomePage() {
           variants={fadeUp(3)} 
           initial="initial" 
           animate="animate" 
-          whileHover={{ scale: 1.08, y: -4 }}
           className="text-right cursor-default select-none"
         >
           <div className="font-sans font-semibold text-white text-stat tracking-tight tabular-nums">
@@ -294,7 +292,6 @@ export function HomePage() {
           variants={fadeUp(4)} 
           initial="initial" 
           animate="animate" 
-          whileHover={{ scale: 1.08, y: -4 }}
           className="text-right cursor-default select-none"
         >
           <div className="font-sans font-semibold text-white text-stat tracking-tight tabular-nums">
@@ -317,7 +314,7 @@ export function HomePage() {
           className="flex items-center justify-between gap-4 border-b border-white/10 pb-5 md:pb-6"
         >
           {/* Left: Tagline */}
-          <p className="text-xs font-semibold tracking-widest uppercase text-white/60 leading-normal hover:text-accent hover:translate-x-1.5 transicion cursor-default select-none">
+          <p className="text-xs font-semibold tracking-widest uppercase text-white/60 leading-normal hover:text-accent transicion cursor-default select-none">
             TU SALUD,<br />SIN FILAS<br />SIN ESPERAS<br />EN BOGOTÁ
           </p>
 
@@ -360,7 +357,7 @@ export function HomePage() {
               variants={fadeUp(6)}
               initial="initial"
               animate="animate"
-              className="text-xs font-semibold tracking-widest uppercase text-white/60 leading-relaxed hover:text-white/80 hover:translate-x-1 transicion cursor-default select-none"
+              className="text-xs font-semibold tracking-widest uppercase text-white/60 leading-relaxed hover:text-white/80 transicion cursor-default select-none"
             >
               Plataforma centralizada para gestionar tus citas con tu EPS en Bogotá. Rápido, seguro y accesible.
             </motion.p>
@@ -373,7 +370,7 @@ export function HomePage() {
                 variants={wordSlideUp(0.4)} 
                 initial="initial" 
                 animate="animate"
-                className={`transicion duration-200 cursor-default inline-block origin-right ${shouldReduceMotion ? '' : 'hover:drop-shadow-soft hover:scale-105'}`}
+                className={`transicion duration-200 cursor-default inline-block origin-right`}
               >
                 Agenda
               </motion.span>
@@ -383,7 +380,7 @@ export function HomePage() {
                 variants={wordSlideUp(0.54)} 
                 initial="initial" 
                 animate="animate" 
-                className={`text-accent italic font-normal transicion cursor-default inline-block origin-right ${shouldReduceMotion ? '' : 'hover:drop-shadow-glow hover:scale-105'}`}
+                className={`text-accent italic font-normal transicion cursor-default inline-block origin-right`}
               >
                 Sin
               </motion.span>
@@ -394,7 +391,7 @@ export function HomePage() {
                 initial="initial" 
                 animate="animate"
                 onAnimationComplete={() => setAnimationCompleted(true)}
-                className={`transicion duration-200 cursor-default inline-block origin-right ${shouldReduceMotion ? '' : 'hover:drop-shadow-soft hover:scale-105'}`}
+                className={`transicion duration-200 cursor-default inline-block origin-right`}
               >
                 Filas.
               </motion.span>
@@ -412,7 +409,7 @@ export function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: '-100%' }}
             transition={{ duration: 0.5, ease: transition }}
-            className="fixed inset-0 z-50 bg-surface flex flex-col p-5 sm:p-8 overflow-y-auto"
+            className="fixed inset-0 z-50 bg-black flex flex-col p-5 sm:p-8 overflow-y-auto"
           >
             {/* Top row */}
             <div className="w-full flex items-center justify-between">
@@ -515,7 +512,7 @@ export function HomePage() {
       {/* ─── SECTION: ¿CÓMO FUNCIONA? ─── */}
       <section 
         id="como-funciona" 
-        className="relative z-20 py-24 px-5 sm:px-8 md:px-16 lg:px-24 bg-surface/95 border-t border-white/10 text-white"
+        className="relative z-20 py-24 px-5 sm:px-8 md:px-16 lg:px-24 bg-black/90 border-t border-white/10 text-white"
       >
         <div className="max-w-6xl mx-auto flex flex-col gap-12">
           {/* Section Heading */}
@@ -553,11 +550,10 @@ export function HomePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -5 }}
               className="bg-surface-card/60 border border-line rounded-2xl p-6 flex flex-col gap-4 hover:border-accent/30 transicion cursor-default select-none"
             >
               <span className="text-3xl">🔍</span>
-              <h3 className="text-xl font-bold font-serif text-white">1. Encuentra tu Especialidad</h3>
+              <h3 className="text-xl font-serif text-white">1. Encuentra tu Especialidad</h3>
               <p className="text-sm text-white/60 leading-relaxed">
                 Selecciona la especialidad médica que necesitas y tu EPS correspondiente para filtrar las opciones disponibles de forma inmediata.
               </p>
@@ -568,11 +564,10 @@ export function HomePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -5 }}
               className="bg-surface-card/60 border border-line rounded-2xl p-6 flex flex-col gap-4 hover:border-accent/30 transicion cursor-default select-none"
             >
               <span className="text-3xl">📅</span>
-              <h3 className="text-xl font-bold font-serif text-white">2. Elige Médico y Horario</h3>
+              <h3 className="text-xl font-serif text-white">2. Elige Médico y Horario</h3>
               <p className="text-sm text-white/60 leading-relaxed">
                 Compara profesionales calificados, revisa sus agendas en tiempo real y escoge el horario que mejor se adapte a tu vida.
               </p>
@@ -583,11 +578,10 @@ export function HomePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -5 }}
               className="bg-surface-card/60 border border-line rounded-2xl p-6 flex flex-col gap-4 hover:border-accent/30 transicion cursor-default select-none"
             >
               <span className="text-3xl">✅</span>
-              <h3 className="text-xl font-bold font-serif text-white">3. Agenda e Historial</h3>
+              <h3 className="text-xl font-serif text-white">3. Agenda e Historial</h3>
               <p className="text-sm text-white/60 leading-relaxed">
                 Confirma tus datos y agenda tu cita en segundos. Podrás consultar, descargar o reprogramar tus citas cuando quieras en tu panel personal.
               </p>
@@ -599,7 +593,7 @@ export function HomePage() {
       {/* ─── SECTION: AYUDA Y SOPORTE ─── */}
       <section 
         id="ayuda" 
-        className="relative z-20 py-24 px-5 sm:px-8 md:px-16 lg:px-24 bg-surface-muted/95 border-t border-white/10 text-white"
+        className="relative z-20 py-24 px-5 sm:px-8 md:px-16 lg:px-24 bg-black border-t border-white/10 text-white"
       >
         <div className="max-w-6xl mx-auto flex flex-col gap-12">
           {/* Section Heading */}
@@ -657,37 +651,37 @@ export function HomePage() {
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
                 <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
-                  <p className="text-xs font-bold text-white font-serif">Sanitas</p>
+                  <p className="text-sm font-semibold text-white">Sanitas</p>
                   <a href="mailto:contacto@epssanitas.com" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
                     contacto@epssanitas.com
                   </a>
                 </div>
                 <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
-                  <p className="text-xs font-bold text-white font-serif">Sura</p>
+                  <p className="text-sm font-semibold text-white">Sura</p>
                   <a href="mailto:afiliados@epssura.com.co" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
                     afiliados@epssura.com.co
                   </a>
                 </div>
                 <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
-                  <p className="text-xs font-bold text-white font-serif">Compensar</p>
+                  <p className="text-sm font-semibold text-white">Compensar</p>
                   <a href="mailto:servicioalcliente@compensarsalud.com" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
                     servicioalcliente@compensarsalud.com
                   </a>
                 </div>
                 <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
-                  <p className="text-xs font-bold text-white font-serif">Salud Total</p>
+                  <p className="text-sm font-semibold text-white">Salud Total</p>
                   <a href="mailto:defensoria@saludtotal.com.co" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
                     defensoria@saludtotal.com.co
                   </a>
                 </div>
                 <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
-                  <p className="text-xs font-bold text-white font-serif">Famisanar</p>
+                  <p className="text-sm font-semibold text-white">Famisanar</p>
                   <a href="mailto:servicioalcliente@famisanar.com.co" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
                     servicioalcliente@famisanar.com.co
                   </a>
                 </div>
                 <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
-                  <p className="text-xs font-bold text-white font-serif">Coosalud</p>
+                  <p className="text-sm font-semibold text-white">Coosalud</p>
                   <a href="mailto:defensordelusuario@coosalud.com" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
                     defensordelusuario@coosalud.com
                   </a>

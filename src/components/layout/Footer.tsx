@@ -29,7 +29,7 @@ export function Footer() {
 
   return (
     <footer
-      className="bg-surface-muted text-text-secondary border-t border-line"
+      className="bg-surface-muted/80 text-text-secondary border-t border-line"
       aria-label="Pie de página"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16">
@@ -37,8 +37,8 @@ export function Footer() {
           {/* Brand */}
           <div className="flex flex-col gap-4">
             <Link to="/" className="flex items-center gap-3 self-start rounded-xl">
-              <img src="/logo.png" alt="" className="h-14 w-14 object-contain shrink-0" />
-              <span className="font-serif text-logo tracking-tight font-normal text-text-primary">
+              <img src="/logo.png" alt="" className="h-10 w-10 object-contain shrink-0" />
+              <span className="font-serif text-2xl tracking-tight text-text-primary">
                 Citas<span className="text-accent">YA</span>
               </span>
               <span className="sr-only">, ir al inicio</span>
@@ -51,7 +51,7 @@ export function Footer() {
           {/* Sections */}
           {FOOTER_SECTIONS.map((section) => (
             <div key={section.title} className="flex flex-col gap-4">
-              <h2 className="font-sans text-sm font-semibold text-text-primary uppercase tracking-wider">
+              <h2 className="font-sans text-sm font-semibold text-text-primary">
                 {section.title}
               </h2>
               {/* role="list" es intencional: Safari/VoiceOver elimina la semántica de lista cuando list-style es none (reset de Tailwind). */}
@@ -61,7 +61,7 @@ export function Footer() {
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="inline-flex items-center min-h-11 text-sm text-text-secondary hover:text-accent"
+                      className="inline-flex items-center min-h-11 text-sm text-text-muted hover:text-text-primary transition-colors duration-150"
                     >
                       {link.label}
                     </Link>
@@ -79,7 +79,7 @@ export function Footer() {
           </p>
           <div className="flex items-center gap-4">
             <span className="text-xs text-text-secondary">
-              Hecho con 💜 para la salud de los colombianos
+              Hecho en Bogotá para la salud de los colombianos
             </span>
           </div>
         </div>

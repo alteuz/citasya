@@ -16,7 +16,7 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
     'bg-brand text-white shadow-button hover:bg-brand-hover',
   secondary:
-    'bg-surface-card text-text-primary border border-line-input hover:bg-surface-hover hover:border-accent/60',
+    'bg-surface-card text-text-primary border border-line-input hover:bg-surface-hover hover:border-text-muted',
   ghost:
     'bg-transparent text-text-secondary hover:bg-surface-hover hover:text-text-primary',
   danger:

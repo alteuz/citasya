@@ -91,7 +91,7 @@ export function SearchPage() {
       <div className="py-12 px-4">
         <div className="mx-auto max-w-2xl bg-surface-card border border-line rounded-3xl p-6 sm:p-8 md:p-12 shadow-elevated text-center">
           <span className="text-6xl mb-6 block" aria-hidden="true">🩺</span>
-          <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
+          <h1 className="text-3xl md:text-4xl text-text-primary mb-4">
             ¿Qué médico necesitas hoy?
           </h1>
           <p className="text-text-secondary text-base md:text-lg mb-10 max-w-md mx-auto leading-relaxed">
@@ -147,7 +147,7 @@ export function SearchPage() {
           </div>
 
           <Button
-            variant="accent"
+            variant="primary"
             size="lg"
             fullWidth
             onClick={handleSearchSubmit}
@@ -166,7 +166,7 @@ export function SearchPage() {
       <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
+            <h1 className="text-2xl md:text-3xl text-text-primary">
               Médicos Disponibles
             </h1>
             <p className="text-text-secondary mt-1 flex flex-wrap gap-2 items-center">
@@ -234,7 +234,7 @@ export function SearchPage() {
         {!isLoading && !error && doctors.length === 0 && (
           <div className="bg-surface-card border border-line rounded-2xl p-10 text-center">
             <span className="text-5xl mb-4 block" aria-hidden="true">🔍</span>
-            <h2 className="text-lg font-semibold text-text-primary mb-2">
+            <h2 className="font-sans text-lg font-semibold text-text-primary mb-2">
               No se encontraron médicos
             </h2>
             <p className="text-text-secondary mb-6 max-w-md mx-auto">
@@ -283,7 +283,7 @@ function DoctorCard({ doctor, modeParam }: DoctorCardProps) {
           {initials}
         </div>
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-text-primary truncate">
+          <h2 className="font-sans text-base font-semibold text-text-primary truncate">
             {doctor.fullName}
           </h2>
           <p className="text-sm text-accent font-medium">
@@ -308,7 +308,7 @@ function DoctorCard({ doctor, modeParam }: DoctorCardProps) {
       </div>
 
       <Link to={`/buscar/${doctor.id}${modeParam ? `?modo=${modeParam}` : ''}`}>
-        <Button variant="accent" size="sm" fullWidth>
+        <Button variant="primary" size="sm" fullWidth>
           Ver disponibilidad
           <span aria-hidden="true">→</span>
         </Button>

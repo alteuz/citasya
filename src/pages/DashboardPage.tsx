@@ -106,7 +106,7 @@ export function DashboardPage() {
       {/* Header */}
       <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
+          <h1 className="text-2xl md:text-3xl text-text-primary">
             ¡Hola, {firstName}! 👋
           </h1>
           <p className="text-text-secondary mt-1">
@@ -124,7 +124,7 @@ export function DashboardPage() {
             description="Busca médicos disponibles y agenda tu próxima cita."
             href="/buscar"
             ctaText="Agendar cita"
-            variant="accent"
+            variant="primary"
           />
           <QuickActionCard
             icon="📋"
@@ -149,7 +149,7 @@ export function DashboardPage() {
                 description="Gestión del sistema, usuarios y estadísticas globales."
                 href="/admin"
                 ctaText="Ir al Panel"
-                variant="accent"
+                variant="primary"
               />
             )}
           </div>
@@ -157,7 +157,7 @@ export function DashboardPage() {
         {/* Upcoming Appointments */}
         <section aria-labelledby="upcoming-heading">
           <div className="flex items-center justify-between mb-6">
-            <h2 id="upcoming-heading" className="text-xl font-semibold text-text-primary">
+            <h2 id="upcoming-heading" className="font-sans text-xl font-semibold text-text-primary">
               Próximas citas
             </h2>
             <Link to="/dashboard/historial" className="inline-flex items-center min-h-11 px-1 rounded-lg text-sm text-accent hover:text-accent-hover hover:underline underline-offset-4 font-medium">
@@ -184,7 +184,7 @@ export function DashboardPage() {
                 Agenda tu primera cita con uno de nuestros médicos afiliados.
               </p>
               <Link to="/buscar">
-                <Button variant="accent" size="md">
+                <Button variant="primary" size="md">
                   Buscar médico disponible
                   <span aria-hidden="true">→</span>
                 </Button>
@@ -257,7 +257,7 @@ export function DashboardPage() {
         {profile && (
           <section className="mt-10" aria-labelledby="profile-heading">
             <div className="flex items-center justify-between mb-4">
-              <h2 id="profile-heading" className="text-xl font-semibold text-text-primary">
+              <h2 id="profile-heading" className="font-sans text-xl font-semibold text-text-primary">
                 Tu información
               </h2>
               {!isEditingProfile && (

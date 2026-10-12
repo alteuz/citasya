@@ -6,7 +6,7 @@ export function NotFoundPage() {
     <div className="min-h-[60vh] flex items-center justify-center px-4 py-12 animate-fade-in">
       <div className="text-center max-w-md">
         <span className="text-7xl mb-6 block" aria-hidden="true">🔎</span>
-        <h1 className="text-4xl font-bold text-text-primary mb-3">404</h1>
+        <h1 className="text-4xl text-text-primary mb-3">404</h1>
         <p className="text-lg text-text-secondary mb-8">
           La página que buscas no existe o fue movida.
         </p>

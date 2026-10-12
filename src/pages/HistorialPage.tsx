@@ -56,7 +56,7 @@ export function HistorialPage() {
           >
             <span aria-hidden="true">←</span> Volver al panel
           </Link>
-          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
+          <h1 className="text-2xl md:text-3xl text-text-primary">
             Mis citas
           </h1>
           <p className="text-text-secondary mt-1">
@@ -97,7 +97,7 @@ export function HistorialPage() {
               Agenda tu primera cita con uno de nuestros médicos.
             </p>
             <Link to="/buscar">
-              <Button variant="accent" size="md">
+              <Button variant="primary" size="md">
                 Buscar médico
                 <span aria-hidden="true">→</span>
               </Button>

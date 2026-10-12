@@ -22,7 +22,7 @@ export function AdminDashboardPage() {
       {/* Header */}
       <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
+          <h1 className="text-2xl md:text-3xl text-text-primary">
             Panel de Administración 🛠️
           </h1>
           <p className="text-text-secondary mt-1">
@@ -49,7 +49,7 @@ export function AdminDashboardPage() {
         ) : null}
 
         {/* Quick Actions */}
-        <h2 className="text-xl font-semibold text-text-primary mb-4">Gestión</h2>
+        <h2 className="font-sans text-xl font-semibold text-text-primary mb-4">Gestión</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <AdminCard
             icon="👨‍⚕️"

@@ -27,7 +27,7 @@ export function RootLayout() {
 
   return (
     <AuthProvider>
-      <div className="flex flex-col min-h-screen">
+      <div className={`flex flex-col min-h-screen ${isHomePage ? 'bg-black' : 'fondo-app'}`}>
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-3 focus:bg-accent focus:text-text-inverse focus:font-semibold focus:rounded-lg focus:shadow-elevated"
