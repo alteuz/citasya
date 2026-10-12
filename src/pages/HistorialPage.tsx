@@ -7,10 +7,10 @@ import type { AppointmentStatus } from '@/types/database';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
 
 const STATUS_CONFIG: Record<AppointmentStatus, { label: string; color: string; icon: string }> = {
-  scheduled: { label: 'Programada', color: 'bg-blue-100 text-blue-700', icon: '📅' },
-  completed: { label: 'Completada', color: 'bg-green-100 text-green-700', icon: '✅' },
-  cancelled: { label: 'Cancelada', color: 'bg-red-100 text-red-700', icon: '❌' },
-  rescheduled: { label: 'Reprogramada', color: 'bg-amber-100 text-amber-700', icon: '🔄' },
+  scheduled: { label: 'Programada', color: 'bg-info-soft text-info border border-info/30', icon: '📅' },
+  completed: { label: 'Completada', color: 'bg-success-soft text-success border border-success/30', icon: '✅' },
+  cancelled: { label: 'Cancelada', color: 'bg-error-soft text-error border border-error/30', icon: '❌' },
+  rescheduled: { label: 'Reprogramada', color: 'bg-warning-soft text-warning border border-warning/30', icon: '🔄' },
 };
 
 export function HistorialPage() {
@@ -48,15 +48,15 @@ export function HistorialPage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="bg-primary-50 border-b border-primary-100">
+      <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
           <Link
             to="/dashboard"
-            className="text-sm text-text-muted hover:text-primary-700 font-medium mb-4 flex items-center gap-1"
+            className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-3"
           >
             <span aria-hidden="true">←</span> Volver al panel
           </Link>
-          <h1 className="text-2xl md:text-3xl font-bold text-primary-800">
+          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
             Mis citas
           </h1>
           <p className="text-text-secondary mt-1">
@@ -77,7 +77,7 @@ export function HistorialPage() {
 
         {/* Error */}
         {error && !isLoading && (
-          <div className="bg-surface-card border border-error/20 rounded-2xl p-8 text-center">
+          <div className="bg-error-soft border border-error/30 rounded-2xl p-8 text-center">
             <span className="text-4xl mb-3 block" aria-hidden="true">⚠️</span>
             <p className="text-error font-medium">{error}</p>
             <Button variant="secondary" size="sm" onClick={reload} className="mt-4">
@@ -88,9 +88,9 @@ export function HistorialPage() {
 
         {/* Empty */}
         {!isLoading && !error && appointments.length === 0 && (
-          <div className="bg-surface-card border border-primary-100 rounded-2xl p-10 text-center">
+          <div className="bg-surface-card border border-line rounded-2xl p-10 text-center">
             <span className="text-5xl mb-4 block" aria-hidden="true">🗓️</span>
-            <h3 className="text-lg font-semibold text-primary-800 mb-2">
+            <h3 className="text-lg font-semibold text-text-primary mb-2">
               No tienes citas registradas
             </h3>
             <p className="text-text-secondary mb-6">
@@ -116,12 +116,12 @@ export function HistorialPage() {
               return (
                 <div
                   key={apt.id}
-                  className="bg-surface-card border border-primary-100 rounded-2xl p-6 hover:shadow-subtle transition-shadow"
+                  className="bg-surface-card border border-line rounded-2xl p-5 sm:p-6 hover:border-line-strong"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${config.color}`}>
+                        <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${config.color}`}>
                           {config.icon} {config.label}
                         </span>
                         <span className="text-xs text-text-muted">
@@ -129,10 +129,10 @@ export function HistorialPage() {
                         </span>
                       </div>
 
-                      <h3 className="text-base font-semibold text-primary-800 mb-1">
+                      <h3 className="text-base font-semibold text-text-primary mb-1">
                         {apt.doctorName}
                       </h3>
-                      <p className="text-sm text-accent-500 font-medium mb-2">
+                      <p className="text-sm text-accent font-medium mb-2">
                         {apt.specialtyName} · {apt.epsName}
                       </p>
 

@@ -89,9 +89,9 @@ export function SearchPage() {
   if (!hasSearched) {
     return (
       <div className="py-12 px-4">
-        <div className="mx-auto max-w-2xl bg-surface-card border-2 border-primary-100 rounded-[2.5rem] p-8 md:p-12 shadow-xl text-center">
+        <div className="mx-auto max-w-2xl bg-surface-card border border-line rounded-3xl p-6 sm:p-8 md:p-12 shadow-elevated text-center">
           <span className="text-6xl mb-6 block" aria-hidden="true">🩺</span>
-          <h1 className="text-3xl md:text-4xl font-bold text-primary-950 mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
             ¿Qué médico necesitas hoy?
           </h1>
           <p className="text-text-secondary text-base md:text-lg mb-10 max-w-md mx-auto leading-relaxed">
@@ -101,7 +101,7 @@ export function SearchPage() {
           <div className="space-y-6 text-left mb-10">
             {/* Especialidad */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="filter-specialty" className="text-base font-bold text-primary-900">
+              <label htmlFor="filter-specialty" className="text-base font-bold text-text-primary">
                 1. Especialidad Médica
               </label>
               <div className="relative">
@@ -109,14 +109,14 @@ export function SearchPage() {
                   id="filter-specialty"
                   value={selectedSpecialty}
                   onChange={(e) => setSelectedSpecialty(e.target.value)}
-                  className="w-full rounded-2xl border-2 border-primary-200 bg-surface-card px-5 py-4 text-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-accent-400 hover:border-primary-350 transition-all appearance-none cursor-pointer pr-12 font-medium"
+                  className="control-campo min-h-14 rounded-2xl border-2 px-5 py-4 text-base sm:text-lg appearance-none cursor-pointer pr-12 font-medium"
                 >
                   <option value="">Selecciona una especialidad...</option>
                   {specialties.map((s) => (
                     <option key={s.id} value={s.id}>{s.name}</option>
                   ))}
                 </select>
-                <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none text-primary-500 font-bold" aria-hidden="true">
+                <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none text-accent font-bold" aria-hidden="true">
                   ▼
                 </div>
               </div>
@@ -124,7 +124,7 @@ export function SearchPage() {
 
             {/* EPS */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="filter-eps" className="text-base font-bold text-primary-900">
+              <label htmlFor="filter-eps" className="text-base font-bold text-text-primary">
                 2. Aseguradora (EPS)
               </label>
               <div className="relative">
@@ -132,14 +132,14 @@ export function SearchPage() {
                   id="filter-eps"
                   value={selectedEps}
                   onChange={(e) => setSelectedEps(e.target.value)}
-                  className="w-full rounded-2xl border-2 border-primary-200 bg-surface-card px-5 py-4 text-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-accent-400 hover:border-primary-350 transition-all appearance-none cursor-pointer pr-12 font-medium"
+                  className="control-campo min-h-14 rounded-2xl border-2 px-5 py-4 text-base sm:text-lg appearance-none cursor-pointer pr-12 font-medium"
                 >
                   <option value="">Selecciona tu EPS...</option>
                   {epsList.map((e) => (
                     <option key={e.id} value={e.id}>{e.name}</option>
                   ))}
                 </select>
-                <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none text-primary-500 font-bold" aria-hidden="true">
+                <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none text-accent font-bold" aria-hidden="true">
                   ▼
                 </div>
               </div>
@@ -151,7 +151,7 @@ export function SearchPage() {
             size="lg"
             fullWidth
             onClick={handleSearchSubmit}
-            className="py-4.5 text-lg font-bold rounded-2xl shadow-lg shadow-accent-400/25 hover:shadow-accent-400/40 cursor-pointer"
+            className="min-h-14 text-lg font-bold rounded-2xl"
           >
             🔍 Encontrar Médicos Disponibles
           </Button>
@@ -163,19 +163,19 @@ export function SearchPage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="bg-primary-50 border-b border-primary-100">
+      <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-primary-800">
+            <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
               Médicos Disponibles
             </h1>
             <p className="text-text-secondary mt-1 flex flex-wrap gap-2 items-center">
               <span>Criterio seleccionado:</span>
-              <span className="font-semibold px-2 py-0.5 bg-primary-100 rounded-md text-primary-850 text-xs">
+              <span className="font-semibold px-2.5 py-1 bg-accent-soft text-accent border border-accent/30 rounded-full text-xs">
                 {specialties.find(s => s.id === selectedSpecialty)?.name || 'Cualquier especialidad'}
               </span>
-              <span className="text-primary-300">•</span>
-              <span className="font-semibold px-2 py-0.5 bg-primary-100 rounded-md text-primary-850 text-xs">
+              <span className="text-text-secondary">•</span>
+              <span className="font-semibold px-2.5 py-1 bg-accent-soft text-accent border border-accent/30 rounded-full text-xs">
                 {epsList.find(e => e.id === selectedEps)?.name || 'Cualquier EPS'}
               </span>
             </p>
@@ -186,7 +186,7 @@ export function SearchPage() {
               variant="secondary"
               size="sm"
               onClick={() => setHasSearched(false)}
-              className="font-bold border-2 border-primary-800 text-primary-850 hover:bg-primary-100 cursor-pointer"
+              className="font-bold"
             >
               ✏️ Modificar Búsqueda
             </Button>
@@ -194,7 +194,7 @@ export function SearchPage() {
               variant="ghost"
               size="sm"
               onClick={handleClearFilters}
-              className="text-primary-600 font-semibold cursor-pointer"
+              className="font-semibold"
             >
               Limpiar y Volver
             </Button>
@@ -221,7 +221,7 @@ export function SearchPage() {
 
         {/* Error state */}
         {error && !isLoading && (
-          <div className="bg-surface-card border border-error/20 rounded-2xl p-8 text-center">
+          <div className="bg-error-soft border border-error/30 rounded-2xl p-8 text-center">
             <span className="text-4xl mb-3 block" aria-hidden="true">⚠️</span>
             <p className="text-error font-medium">{error}</p>
             <Button variant="secondary" size="sm" onClick={search.reload} className="mt-4">
@@ -232,9 +232,9 @@ export function SearchPage() {
 
         {/* Empty state */}
         {!isLoading && !error && doctors.length === 0 && (
-          <div className="bg-surface-card border border-primary-100 rounded-2xl p-10 text-center">
+          <div className="bg-surface-card border border-line rounded-2xl p-10 text-center">
             <span className="text-5xl mb-4 block" aria-hidden="true">🔍</span>
-            <h2 className="text-lg font-semibold text-primary-800 mb-2">
+            <h2 className="text-lg font-semibold text-text-primary mb-2">
               No se encontraron médicos
             </h2>
             <p className="text-text-secondary mb-6 max-w-md mx-auto">
@@ -276,17 +276,17 @@ function DoctorCard({ doctor, modeParam }: DoctorCardProps) {
     .join('');
 
   return (
-    <div className="bg-surface-card border border-primary-100 rounded-2xl p-6 hover:shadow-elevated hover:-translate-y-0.5 transition-all duration-300 flex flex-col">
+    <div className="bg-surface-card border border-line rounded-2xl p-6 hover:border-line-strong hover:shadow-elevated hover:-translate-y-0.5 transicion flex flex-col">
       <div className="flex items-start gap-4 mb-4">
         {/* Avatar */}
-        <div className="w-14 h-14 rounded-full bg-primary-100 text-primary-800 font-bold text-lg flex items-center justify-center shrink-0">
+        <div className="w-14 h-14 rounded-full bg-brand-soft text-accent border border-accent/20 font-bold text-lg flex items-center justify-center shrink-0">
           {initials}
         </div>
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-primary-800 truncate">
+          <h2 className="text-base font-semibold text-text-primary truncate">
             {doctor.fullName}
           </h2>
-          <p className="text-sm text-accent-500 font-medium">
+          <p className="text-sm text-accent font-medium">
             {doctor.specialtyName}
           </p>
         </div>

@@ -18,7 +18,7 @@ export function Toggle({ value, onChange }: ToggleProps) {
     <div
       role="radiogroup"
       aria-label="Modalidad de atención"
-      className="inline-flex items-center bg-primary-100 rounded-full p-1 gap-1"
+      className="inline-flex items-center bg-surface-muted border border-line rounded-full p-1 gap-1"
     >
       {MODES.map((mode) => {
         const isSelected = value === mode;
@@ -31,14 +31,13 @@ export function Toggle({ value, onChange }: ToggleProps) {
             aria-checked={isSelected}
             onClick={() => onChange(mode)}
             className={`
-              inline-flex items-center gap-2 px-5 py-2.5
+              inline-flex items-center gap-2 min-h-11 px-5 py-2.5
               rounded-full text-sm font-semibold
-              transition-all duration-200 ease-out
-              cursor-pointer
+              presionable cursor-pointer
               ${
                 isSelected
-                  ? 'bg-surface-card text-primary-800 shadow-card'
-                  : 'text-text-muted hover:text-primary-700'
+                  ? 'bg-brand text-white shadow-button'
+                  : 'text-text-muted hover:text-text-primary hover:bg-surface-hover'
               }
             `}
           >

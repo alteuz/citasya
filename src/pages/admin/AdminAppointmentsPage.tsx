@@ -14,10 +14,10 @@ const STATUS_TABS: Array<{ value: AppointmentStatus | 'all'; label: string; icon
 ];
 
 const STATUS_BADGE: Record<AppointmentStatus, { label: string; className: string }> = {
-  scheduled: { label: 'Programada', className: 'bg-blue-100 text-blue-700' },
-  completed: { label: 'Completada', className: 'bg-green-100 text-green-700' },
-  cancelled: { label: 'Cancelada', className: 'bg-red-100 text-red-700' },
-  rescheduled: { label: 'Reprogramada', className: 'bg-amber-100 text-amber-700' },
+  scheduled: { label: 'Programada', className: 'bg-info-soft text-info border border-info/30' },
+  completed: { label: 'Completada', className: 'bg-success-soft text-success border border-success/30' },
+  cancelled: { label: 'Cancelada', className: 'bg-error-soft text-error border border-error/30' },
+  rescheduled: { label: 'Reprogramada', className: 'bg-warning-soft text-warning border border-warning/30' },
 };
 
 export function AdminAppointmentsPage() {
@@ -34,12 +34,12 @@ export function AdminAppointmentsPage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="bg-primary-50 border-b border-primary-100">
+      <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          <Link to="/admin" className="text-sm text-text-muted hover:text-primary-700 font-medium mb-4 flex items-center gap-1">
+          <Link to="/admin" className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-3">
             <span aria-hidden="true">←</span> Volver al panel
           </Link>
-          <h1 className="text-2xl md:text-3xl font-bold text-primary-800">
+          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
             Todas las Citas 🗓️
           </h1>
         </div>
@@ -54,10 +54,10 @@ export function AdminAppointmentsPage() {
               type="button"
               aria-pressed={activeTab === tab.value}
               onClick={() => setActiveTab(tab.value)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all cursor-pointer ${
+              className={`inline-flex items-center min-h-11 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap presionable cursor-pointer ${
                 activeTab === tab.value
-                  ? 'bg-primary-800 text-white'
-                  : 'bg-surface-card border border-primary-200 text-text-secondary hover:border-primary-300'
+                  ? 'bg-brand text-white border border-brand'
+                  : 'bg-surface-card border border-line-input text-text-secondary hover:border-text-muted hover:text-text-primary'
               }`}
             >
               <span aria-hidden="true">{tab.icon}</span> {tab.label}
@@ -74,7 +74,7 @@ export function AdminAppointmentsPage() {
 
         {/* Error */}
         {error && !isLoading && (
-          <div className="bg-surface-card border border-error/20 rounded-2xl p-8 text-center">
+          <div className="bg-error-soft border border-error/30 rounded-2xl p-8 text-center">
             <p className="text-error font-medium">{error}</p>
             <Button variant="secondary" size="sm" onClick={reload} className="mt-4">Reintentar</Button>
           </div>
@@ -84,37 +84,37 @@ export function AdminAppointmentsPage() {
         {!isLoading && !error && (
           <>
             <p className="text-sm text-text-muted mb-4">{appointments.length} cita(s) encontrada(s)</p>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto bg-surface-card border border-line rounded-2xl">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="border-b border-primary-100">
-                    <th className="py-3 px-3 text-xs font-semibold text-text-muted uppercase">Paciente</th>
-                    <th className="py-3 px-3 text-xs font-semibold text-text-muted uppercase">Médico</th>
-                    <th className="py-3 px-3 text-xs font-semibold text-text-muted uppercase">Especialidad</th>
-                    <th className="py-3 px-3 text-xs font-semibold text-text-muted uppercase">Fecha</th>
-                    <th className="py-3 px-3 text-xs font-semibold text-text-muted uppercase">Hora</th>
-                    <th className="py-3 px-3 text-xs font-semibold text-text-muted uppercase">Modo</th>
-                    <th className="py-3 px-3 text-xs font-semibold text-text-muted uppercase">Estado</th>
+                  <tr className="border-b border-line bg-surface-muted">
+                    <th scope="col" className="py-3 px-4 text-xs font-semibold text-text-secondary uppercase tracking-wider">Paciente</th>
+                    <th scope="col" className="py-3 px-4 text-xs font-semibold text-text-secondary uppercase tracking-wider">Médico</th>
+                    <th scope="col" className="py-3 px-4 text-xs font-semibold text-text-secondary uppercase tracking-wider">Especialidad</th>
+                    <th scope="col" className="py-3 px-4 text-xs font-semibold text-text-secondary uppercase tracking-wider">Fecha</th>
+                    <th scope="col" className="py-3 px-4 text-xs font-semibold text-text-secondary uppercase tracking-wider">Hora</th>
+                    <th scope="col" className="py-3 px-4 text-xs font-semibold text-text-secondary uppercase tracking-wider">Modo</th>
+                    <th scope="col" className="py-3 px-4 text-xs font-semibold text-text-secondary uppercase tracking-wider">Estado</th>
                   </tr>
                 </thead>
                 <tbody>
                   {appointments.map((apt) => {
                     const badge = STATUS_BADGE[apt.status];
                     return (
-                      <tr key={apt.id} className="border-b border-primary-50 hover:bg-primary-50/50 transition-colors">
-                        <td className="py-3 px-3">
-                          <p className="text-sm font-medium text-primary-800">{apt.patientName}</p>
+                      <tr key={apt.id} className="border-b border-line last:border-b-0 hover:bg-surface-hover">
+                        <td className="py-3 px-4">
+                          <p className="text-sm font-medium text-text-primary">{apt.patientName}</p>
                           <p className="text-xs text-text-muted">{apt.patientEmail}</p>
                         </td>
-                        <td className="py-3 px-3 text-sm text-text-secondary">{apt.doctorName}</td>
-                        <td className="py-3 px-3 text-sm text-accent-500 font-medium">{apt.specialtyName}</td>
-                        <td className="py-3 px-3 text-sm text-text-secondary">{formatDateShort(apt.slotDate)}</td>
-                        <td className="py-3 px-3 text-sm text-text-secondary">{formatTime(apt.slotStartTime)}</td>
-                        <td className="py-3 px-3 text-xs text-text-muted">
+                        <td className="py-3 px-4 text-sm text-text-secondary">{apt.doctorName}</td>
+                        <td className="py-3 px-4 text-sm text-accent font-medium">{apt.specialtyName}</td>
+                        <td className="py-3 px-4 text-sm text-text-secondary">{formatDateShort(apt.slotDate)}</td>
+                        <td className="py-3 px-4 text-sm text-text-secondary">{formatTime(apt.slotStartTime)}</td>
+                        <td className="py-3 px-4 text-xs text-text-muted">
                           {apt.mode === 'presencial' ? '🏥' : '💻'}
                         </td>
-                        <td className="py-3 px-3">
-                          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${badge.className}`}>
+                        <td className="py-3 px-4">
+                          <span className={`inline-flex text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${badge.className}`}>
                             {badge.label}
                           </span>
                         </td>
@@ -125,7 +125,7 @@ export function AdminAppointmentsPage() {
               </table>
 
               {appointments.length === 0 && (
-                <div className="text-center py-12 text-text-muted">
+                <div className="text-center py-12 px-6 text-text-muted bg-surface-card border border-line rounded-2xl">
                   No hay citas con este filtro.
                 </div>
               )}

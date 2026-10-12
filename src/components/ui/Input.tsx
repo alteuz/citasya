@@ -40,14 +40,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           aria-invalid={error ? 'true' : undefined}
           aria-describedby={describedBy}
           className={`
-            w-full rounded-xl border bg-surface-card px-4 py-3
+            w-full min-h-12 rounded-xl border bg-surface-card px-4 py-3
             text-base text-text-primary placeholder:text-text-muted
-            transition-colors duration-200
-            focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-accent-400
-            disabled:opacity-50 disabled:cursor-not-allowed
+            focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent
+            disabled:opacity-60 disabled:cursor-not-allowed
             ${leftIcon ? 'pl-10' : ''}
             ${rightIcon ? 'pr-10' : ''}
-            ${error ? 'border-error ring-1 ring-error/20' : 'border-primary-200 hover:border-primary-300'}
+            ${error ? 'border-error ring-1 ring-error/30' : 'border-line-input hover:border-text-muted'}
             ${className}
           `}
           {...rest}
@@ -59,7 +58,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         )}
       </div>
       {error && (
-        <p id={errorId} className="text-sm text-error font-medium" role="alert">
+        <p id={errorId} className="flex items-start gap-1.5 text-sm text-error font-medium" role="alert">
+          <span aria-hidden="true">⚠</span>
           {error}
         </p>
       )}

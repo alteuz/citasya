@@ -32,7 +32,7 @@ export function AdminRoute() {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 p-8 animate-fade-in">
         <span className="text-6xl" aria-hidden="true">🔒</span>
-        <h1 className="text-2xl font-bold text-primary-800">Acceso denegado</h1>
+        <h1 className="text-2xl font-bold text-text-primary">Acceso denegado</h1>
         <p className="text-text-secondary text-center max-w-md">
           No tienes permisos de administrador para acceder a esta sección.
         </p>

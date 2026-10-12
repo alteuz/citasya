@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
 /*
- * Design System — CitasYA
- * Paleta basada en el logo: navy oscuro, púrpura/violeta, turquesa/teal, lavanda
+ * Sistema de diseño — CitasYA
+ *
+ * Todos los colores salen de la paleta del logo (public/logo.png):
+ *   azul #3B75FF (núcleo) · azul profundo #1833DB · cian #17EEFF / #1DA8FD.
+ * De ahí se derivan tres escalas: `brand` (azul), `accent` (cian) y `night`
+ * (neutros azulados del azul profundo, para superficies y texto). Los colores
+ * de estado (éxito, advertencia, error) son la única excepción: comunican
+ * significado y no pueden salir del azul; se mantienen en tokens propios.
+ *
+ * Los componentes usan solo los tokens semánticos (surface-*, text-*, line-*,
+ * brand, accent, success, warning, error); nunca valores sueltos.
+ * Contraste verificado (WCAG 2.2 AA): texto ≥ 4,5:1 y bordes de controles
+ * ≥ 3:1 sobre todas las superficies.
  */
 
 /*
@@ -33,91 +44,205 @@
 }
 
 @theme {
-  /* ─── Colores primarios: Azul marino oscuro → Púrpura ─── */
-  --color-primary-950: #0f0e2e;
-  --color-primary-900: #1a1852;
-  --color-primary-850: #201e5d;
-  --color-primary-800: #252367;
-  --color-primary-700: #2d2b7a;
-  --color-primary-600: #3d3a9e;
-  --color-primary-500: #5550b8;
-  --color-primary-400: #7b6fd0;
-  --color-primary-300: #a89ee3;
-  --color-primary-200: #cdc7f0;
-  --color-primary-100: #e8e5f7;
-  --color-primary-50: #f4f3fb;
+  /* Desactiva la paleta por defecto de Tailwind: solo existen los colores de la marca. */
+  --color-*: initial;
 
-  /* ─── Acento: Turquesa/Teal del logo ─── */
-  --color-accent-600: #0d9488;
-  --color-accent-500: #14b8a6;
-  --color-accent-400: #2dd4bf;
-  --color-accent-300: #5eead4;
-  --color-accent-200: #99f6e4;
-  --color-accent-100: #ccfbf1;
-  --color-accent-50: #f0fdfa;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-transparent: transparent;
+  --color-current: currentColor;
 
-  /* ─── Superficies ─── */
-  --color-surface: #fafaff;
-  --color-surface-card: #ffffff;
-  --color-surface-hover: #f0eefa;
-  --color-surface-muted: #f5f3fc;
+  /* ─── Escala brand: azul del logo (#3B75FF) ─── */
+  --color-brand-50: #eef3ff;
+  --color-brand-100: #dbe6ff;
+  --color-brand-200: #b9cdff;
+  --color-brand-300: #8eadff;
+  --color-brand-400: #6690ff;
+  --color-brand-500: #3b75ff;
+  --color-brand-600: #2f62e6;
+  --color-brand-700: #2554cf;
+  --color-brand-800: #1f44a8;
+  --color-brand-900: #1833db;
+  --color-brand-950: #0f1d4a;
 
-  /* ─── Feedback ─── */
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
-  --color-info: #3b82f6;
+  /* ─── Escala accent: cian del logo (#17EEFF) ─── */
+  --color-accent-50: #e8fdff;
+  --color-accent-100: #c6f9ff;
+  --color-accent-200: #8ef1fd;
+  --color-accent-300: #4fe6fb;
+  --color-accent-400: #17d4f0;
+  --color-accent-500: #0eb7d4;
+  --color-accent-600: #0b93ad;
+  --color-accent-700: #0b748a;
+  --color-accent-800: #0d5d6f;
+  --color-accent-900: #0f4c5c;
+  --color-accent-950: #062f3a;
 
-  /* ─── Texto ─── */
-  --color-text-primary: #1a1852;
-  --color-text-secondary: #4a4578;
-  --color-text-muted: #7c779e;
-  --color-text-inverse: #ffffff;
+  /* ─── Escala night: neutros azulados (tono del azul profundo #1833DB) ─── */
+  --color-night-50: #f3f5fc;
+  --color-night-100: #e4e9f7;
+  --color-night-200: #c9d1ec;
+  --color-night-300: #a3aed4;
+  --color-night-400: #6473aa;
+  --color-night-500: #46578f;
+  --color-night-600: #2a3a72;
+  --color-night-700: #1c2a5a;
+  --color-night-800: #142048;
+  --color-night-850: #0f1733;
+  --color-night-900: #0b1129;
+  --color-night-950: #070b1c;
 
-  /* ─── Tipografía ─── */
+  /* ─── Tokens semánticos (los que usan los componentes) ─── */
+  --color-surface: var(--color-night-950);          /* fondo de la página */
+  --color-surface-card: var(--color-night-850);     /* tarjetas, paneles */
+  --color-surface-muted: var(--color-night-900);    /* bandas, cabeceras de sección */
+  --color-surface-hover: var(--color-night-800);    /* hover de superficies */
+  --color-surface-strong: var(--color-night-700);   /* rellenos de énfasis, esqueletos */
+
+  --color-line: var(--color-night-700);             /* separadores */
+  --color-line-strong: var(--color-night-600);      /* bordes de tarjetas destacadas */
+  --color-line-input: var(--color-night-400);       /* bordes de controles (≥ 3:1) */
+
+  --color-text-primary: var(--color-white);
+  --color-text-secondary: var(--color-night-200);
+  --color-text-muted: var(--color-night-300);
+  --color-text-inverse: var(--color-night-950);
+
+  --color-brand: var(--color-brand-600);            /* acción principal (blanco ≥ 5,2:1) */
+  --color-brand-hover: var(--color-brand-700);
+  --color-brand-soft: var(--color-brand-950);
+  --color-link: var(--color-brand-300);
+
+  --color-accent: var(--color-accent-400);          /* resaltes, foco, acción secundaria */
+  --color-accent-hover: var(--color-accent-300);
+  --color-accent-soft: var(--color-accent-950);
+
+  --color-success: #34d399;
+  --color-success-soft: #0c2e27;
+  --color-warning: #fbbf24;
+  --color-warning-soft: #2e2410;
+  --color-error: #f87171;
+  --color-error-strong: #dc2626;                    /* fondo de acción destructiva (blanco ≥ 4,8:1) */
+  --color-error-soft: #33141c;
+  --color-info: var(--color-brand-300);
+  --color-info-soft: var(--color-brand-950);
+
+  /* ─── Tipografía: 2 familias, ambas con font-display: swap (@fontsource) ─── */
   --font-sans: 'DM Sans Variable', 'DM Sans Fallback', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-serif: 'DM Serif Display', 'DM Serif Display Fallback', Georgia, serif;
 
-  /* ─── Sombras ─── */
-  --shadow-card: 0 1px 3px rgba(26, 24, 82, 0.06), 0 1px 2px rgba(26, 24, 82, 0.04);
-  --shadow-elevated: 0 4px 16px rgba(26, 24, 82, 0.10);
-  --shadow-button: 0 2px 8px rgba(26, 24, 82, 0.15);
+  /* Escala tipográfica: se suman a xs (12) · sm (14) · base (16) · lg (18) · xl (20) · 2xl (24) · 3xl (30) … */
+  --text-caption: 0.8125rem;            /* 13px: etiquetas en mayúsculas */
+  --text-caption--line-height: 1.4;
+  --text-logo: 1.75rem;                 /* 28px: logotipo */
+  --text-logo--line-height: 1;
+  --text-logo-lg: 2rem;                 /* 32px: logotipo en pie de página */
+  --text-logo-lg--line-height: 1;
+  --leading-display: 0.92;
+  --text-superscript: 0.5em;
+  --text-stat: clamp(1.6rem, 5vw, 3.5rem);   /* cifras de la portada */
+  --text-stat--line-height: 1;
+  --text-hero: clamp(2.2rem, 10vw, 9rem);    /* titular de la portada */
+  --text-hero--line-height: 0.92;
+  --color-overlay: rgb(7 11 28);            /* night-950 para velos sobre el video */            /* signos "+" junto a cifras */
 
-  /* ─── Border Radius ─── */
+  /* ─── Radios (concéntricos: exterior = interior + relleno) ─── */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
   --radius-full: 9999px;
+
+  /* ─── Sombras (tintadas con el azul profundo del logo) ─── */
+  --shadow-card: 0 1px 2px rgb(7 11 28 / 0.4), 0 1px 3px rgb(7 11 28 / 0.3);
+  --shadow-elevated: 0 8px 24px rgb(7 11 28 / 0.45), 0 2px 6px rgb(7 11 28 / 0.35);
+  --shadow-button: 0 1px 2px rgb(7 11 28 / 0.4), 0 4px 12px rgb(24 51 219 / 0.25);
+  --shadow-glow: 0 0 16px rgb(23 212 240 / 0.25);
+  --drop-shadow-glow: 0 0 20px rgb(23 212 240 / 0.6);
+  --drop-shadow-soft: 0 0 20px rgb(255 255 255 / 0.35);
+
+  /* ─── Movimiento: microinteracciones de 150–250 ms, solo transform y opacity ─── */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-fade-in: fade-in 220ms var(--ease-out);
+  --animate-skeleton: skeleton-pulse 1.5s ease-in-out infinite;
+  --animate-slide-in: slide-in-right 220ms var(--ease-out);
+  --animate-slide-out: slide-out-right 180ms ease-in;
 }
 
-/* ─── Base Styles ─── */
+/* ─── Base (en @layer base para que las utilidades de Tailwind puedan sobrescribirla) ─── */
 
-html {
-  scroll-behavior: smooth;
-}
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-body {
-  font-family: var(--font-sans);
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  font-size: 16px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-h1, h2 {
-  font-family: var(--font-serif);
-}
+  h1, h2 {
+    font-family: var(--font-serif);
+    text-wrap: balance;
+  }
 
-/* ─── Accesibilidad: anillos de foco visibles ─── */
+  h3, h4, figcaption, label, legend {
+    text-wrap: balance;
+  }
 
-*:focus-visible {
-  outline: 2px solid var(--color-accent-400);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
+  p, li, dd {
+    text-wrap: pretty;
+  }
+
+  table, time, [data-numeric] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background-color: var(--color-brand-600);
+    color: var(--color-white);
+  }
+
+  /* Controles de formulario: superficie y borde de la marca, foco visible. */
+  input, select, textarea {
+    color: var(--color-text-primary);
+    background-color: var(--color-surface-card);
+    border-color: var(--color-line-input);
+    accent-color: var(--color-accent);
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+  }
+
+  input:disabled, select:disabled, textarea:disabled {
+    background-color: var(--color-surface-muted);
+    color: var(--color-text-muted);
+    cursor: not-allowed;
+  }
+
+  option {
+    background-color: var(--color-surface-card);
+    color: var(--color-text-primary);
+  }
+
+  /* ─── Accesibilidad: anillo de foco visible y consistente ─── */
+
+  *:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
 }
 
 /* ─── Skip link para lectores de pantalla ─── */
@@ -134,15 +259,49 @@ h1, h2 {
   border-width: 0;
 }
 
+/* Campo de formulario nativo (select, textarea, date…): mismos estados que <Input>. */
+@utility control-campo {
+  width: 100%;
+  min-height: 3rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-line-input);
+  background-color: var(--color-surface-card);
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  &:hover:not(:disabled) { border-color: var(--color-text-muted); }
+  &:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 3px rgb(23 212 240 / 0.3); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &[aria-invalid="true"] { border-color: var(--color-error); }
+}
+
+/* ─── Microinteracciones (solo transform y opacity) ─── */
+
+@utility transicion {
+  transition-property: transform, opacity;
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-out);
+}
+
+@utility presionable {
+  transition-property: transform, opacity;
+  transition-duration: 160ms;
+  transition-timing-function: var(--ease-out);
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
 /* ─── Animaciones ─── */
 
 @keyframes skeleton-pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  50% { opacity: 0.45; }
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -156,93 +315,90 @@ h1, h2 {
   to { transform: translateX(100%); }
 }
 
-.animate-fade-in {
-  animation: fade-in 0.4s ease-out;
+/* ─── Velo sobre el video de la portada (night-950 con transparencia) ─── */
+
+.velo-portada {
+  background: linear-gradient(180deg,
+    rgb(7 11 28 / 0.55) 0%, rgb(7 11 28 / 0.2) 40%, rgb(7 11 28 / 0.7) 80%, rgb(7 11 28 / 0.92) 100%);
 }
 
-.animate-skeleton {
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
-}
-
-.animate-slide-in {
-  animation: slide-in-right 0.3s ease-out;
-}
-
-.animate-slide-out {
-  animation: slide-out-right 0.3s ease-in;
-}
-
-/* ─── Gradientes reutilizables ─── */
+/* ─── Gradientes de marca (del logo: azul → cian) ─── */
 
 .gradient-hero {
-  background: linear-gradient(180deg, var(--color-primary-50) 0%, var(--color-surface) 100%);
+  background: linear-gradient(180deg, var(--color-surface-muted) 0%, var(--color-surface) 100%);
 }
 
 .gradient-text-accent {
-  background: linear-gradient(135deg, var(--color-accent-400) 0%, var(--color-accent-500) 100%);
+  background: linear-gradient(135deg, var(--color-accent-300) 0%, var(--color-accent-400) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .gradient-text-primary {
-  background: linear-gradient(135deg, var(--color-primary-700) 0%, var(--color-primary-500) 100%);
+  background: linear-gradient(135deg, var(--color-brand-400) 0%, var(--color-accent-400) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* ─── Accesibilidad / Alto Contraste ─── */
-html.high-contrast {
-  --color-primary-950: #000000;
-  --color-primary-900: #000000;
-  --color-primary-850: #000000;
-  --color-primary-800: #000000;
-  --color-primary-700: #000000;
-  --color-primary-600: #111111;
-  --color-primary-500: #0000ee;
-  --color-primary-400: #0000ee;
-  --color-primary-300: #0000ee;
-  --color-primary-200: #ffffff;
-  --color-primary-100: #ffffff;
-  --color-primary-50: #ffffff;
+/* ─── Subrayado animado de los enlaces de navegación ─── */
 
-  --color-accent-600: #0000ee;
-  --color-accent-500: #0000ee;
-  --color-accent-400: #0000ee;
-  --color-accent-300: #0000ee;
-  --color-accent-200: #ffffff;
-  --color-accent-100: #ffffff;
-  --color-accent-50: #ffffff;
-
-  --color-surface: #ffffff;
-  --color-surface-card: #ffffff;
-  --color-surface-hover: #e0e0e0;
-  --color-surface-muted: #d0d0d0;
-
-  --color-text-primary: #000000;
-  --color-text-secondary: #000000;
-  --color-text-muted: #111111;
-  --color-text-inverse: #ffffff;
+.nav-link-underline {
+  position: relative;
 }
 
-html.high-contrast .gradient-text-primary,
-html.high-contrast .gradient-text-accent {
-  background: none;
-  -webkit-background-clip: initial;
-  -webkit-text-fill-color: initial;
-  background-clip: initial;
-  color: #000000;
+.nav-link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 200ms var(--ease-out);
 }
 
-html.high-contrast select,
-html.high-contrast input {
-  border: 2px solid #000000 !important;
-  color: #000000 !important;
-  background-color: #ffffff !important;
+.nav-link-underline:hover::after,
+.nav-link-underline:focus-visible::after {
+  transform: scaleX(1);
 }
 
-/* ─── Accesibilidad / Animaciones Reducidas ─── */
+/* ─── Barras de desplazamiento ─── */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-line-strong);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-night-500);
+}
+
+/* ─── Movimiento reducido: preferencia del sistema y opción del widget ─── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}
+
 html.reduce-motion *,
 html.reduce-motion ::before,
 html.reduce-motion ::after {
@@ -255,369 +411,87 @@ html.reduce-motion ::after {
   transition-delay: 0s !important;
 }
 
-/* ─── Premium Dark Mode Overrides (Landing Page Style) ─── */
-html:not(.high-contrast) {
-  --color-surface: #0d0d1a;
-  --color-surface-card: #131326;
-  --color-surface-hover: #1e1d3d;
-  --color-surface-muted: #151430;
+/* ─── Alto contraste (opción del widget de accesibilidad) ───
+ * Reasigna los tokens semánticos a blanco y negro puros; el resto de la
+ * interfaz se adapta sola porque solo usa esos tokens. */
 
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #cdc7f0;
-  --color-text-muted: #9f99c7;
-  --color-text-inverse: #0d0d1a;
+html.high-contrast {
+  color-scheme: light;
 
-  --color-primary-950: #ffffff;
-  --color-primary-900: #ffffff;
-  --color-primary-850: #f4f3fb;
-  --color-primary-800: #e8e5f7;
-  --color-primary-700: #cdc7f0;
-  --color-primary-600: #a89ee3;
-  --color-primary-500: #00C9A7;
-  --color-primary-400: #7b6fd0;
-  --color-primary-300: #2d2b7a;
-  --color-primary-200: #1c1b47;
-  --color-primary-100: #131326;
-  --color-primary-50: #0d0d1a;
+  --color-surface: #ffffff;
+  --color-surface-card: #ffffff;
+  --color-surface-muted: #ffffff;
+  --color-surface-hover: #e6e6e6;
+  --color-surface-strong: #d4d4d4;
 
-  --color-accent-600: #00a385;
-  --color-accent-500: #00C9A7;
-  --color-accent-400: #00C9A7;
-  --color-accent-300: #5eead4;
-  --color-accent-200: #99f6e4;
-  --color-accent-100: #ccfbf1;
-  --color-accent-50: #102a25;
-}
+  --color-line: #000000;
+  --color-line-strong: #000000;
+  --color-line-input: #000000;
 
-/* Primary Button Styling under Premium Dark Theme */
-html:not(.high-contrast) .bg-primary-800 {
-  background-color: #635fc7 !important;
-  color: #ffffff !important;
-}
+  --color-text-primary: #000000;
+  --color-text-secondary: #000000;
+  --color-text-muted: #1a1a1a;
+  --color-text-inverse: #ffffff;
 
-html:not(.high-contrast) .bg-primary-800:hover {
-  background-color: #7875d6 !important;
-  color: #ffffff !important;
+  --color-brand: #0000ee;
+  --color-brand-hover: #000099;
+  --color-brand-soft: #ffffff;
+  --color-link: #0000ee;
+
+  --color-accent: #0000ee;
+  --color-accent-hover: #000099;
+  --color-accent-soft: #ffffff;
+
+  --color-success: #006400;
+  --color-success-soft: #ffffff;
+  --color-warning: #6b4e00;
+  --color-warning-soft: #ffffff;
+  --color-error: #b00000;
+  --color-error-strong: #b00000;
+  --color-error-soft: #ffffff;
+  --color-info: #0000ee;
+  --color-info-soft: #ffffff;
 }
 
-/* Secondary Button Styling under Premium Dark Theme */
-html:not(.high-contrast) button.bg-surface-card.text-primary-800,
-html:not(.high-contrast) a button.bg-surface-card.text-primary-800,
-html:not(.high-contrast) .bg-surface-card.text-primary-800 {
-  background-color: #1e1d3d !important;
-  color: #ffffff !important;
-  border-color: #635fc7 !important;
+html.high-contrast .gradient-text-primary,
+html.high-contrast .gradient-text-accent {
+  background: none;
+  -webkit-background-clip: initial;
+  -webkit-text-fill-color: initial;
+  background-clip: initial;
+  color: #000000;
 }
 
-html:not(.high-contrast) button.bg-surface-card.text-primary-800:hover,
-html:not(.high-contrast) .bg-surface-card.text-primary-800:hover {
-  background-color: #2d2b7a !important;
-  border-color: #7875d6 !important;
+html.high-contrast input,
+html.high-contrast select,
+html.high-contrast textarea {
+  border: 2px solid #000000;
 }
 
-/* Accent buttons (Teal) */
-html:not(.high-contrast) .bg-accent-500 {
-  background-color: #00C9A7 !important;
-  color: #0d0d1a !important;
-}
-
-html:not(.high-contrast) .bg-accent-500:hover {
-  background-color: #00a385 !important;
-}
-
-/* Form Inputs, Selects and Textareas */
-html:not(.high-contrast) input,
-html:not(.high-contrast) select,
-html:not(.high-contrast) textarea {
-  background-color: #131326 !important;
-  color: #ffffff !important;
-  border-color: #1c1b47 !important;
-}
-
-html:not(.high-contrast) input:focus,
-html:not(.high-contrast) select:focus,
-html:not(.high-contrast) textarea:focus {
-  border-color: #00C9A7 !important;
-  box-shadow: 0 0 0 2px rgba(0, 201, 167, 0.2) !important;
-}
-
-html:not(.high-contrast) option {
-  background-color: #131326 !important;
-  color: #ffffff !important;
-}
-
-/* Tags and Badges */
-html:not(.high-contrast) .bg-primary-100.text-primary-700 {
-  background-color: rgba(0, 201, 167, 0.12) !important;
-  color: #00C9A7 !important;
-  border: 1px solid rgba(0, 201, 167, 0.3) !important;
-}
-
-/* Skeletons and secondary cards */
-html:not(.high-contrast) .animate-skeleton,
-html:not(.high-contrast) .bg-primary-200 {
-  background-color: #1e1d3d !important;
-}
-
-/* Header & Navbar Dark Override */
-html:not(.high-contrast) header.bg-primary-950\/95,
-html:not(.high-contrast) header {
-  background-color: rgba(13, 13, 26, 0.55) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border-color: rgba(255, 255, 255, 0.05) !important;
-}
-
-html:not(.high-contrast) header .text-white {
-  color: #ffffff !important;
-}
-
-html:not(.high-contrast) header .text-primary-300 {
-  color: #cdc7f0 !important;
-}
-
-html:not(.high-contrast) header .text-primary-200 {
-  color: #e8e5f7 !important;
-}
-
-html:not(.high-contrast) header a:hover {
-  color: #00C9A7 !important;
-}
-
-/* Mobile Navigation Menu */
-html:not(.high-contrast) #mobile-menu.bg-primary-950,
-html:not(.high-contrast) #mobile-menu {
-  background-color: #131326 !important;
-  border-color: #1e1d3d !important;
-}
-
-html:not(.high-contrast) #mobile-menu hr.border-primary-800 {
-  border-color: #1e1d3d !important;
-}
-
-/* Footer Dark Override */
-html:not(.high-contrast) footer.bg-primary-950,
-html:not(.high-contrast) footer {
-  background-color: #0d0d1a !important;
-  border-color: #1e1d3d !important;
-}
-
-html:not(.high-contrast) footer .text-white {
-  color: #ffffff !important;
-}
-
-html:not(.high-contrast) footer .text-primary-300 {
-  color: #cdc7f0 !important;
-}
-
-html:not(.high-contrast) footer .text-primary-200 {
-  color: #e8e5f7 !important;
-}
-
-html:not(.high-contrast) footer .text-primary-400 {
-  color: #cdc7f0 !important;
-}
-
-html:not(.high-contrast) footer a:hover {
-  color: #00C9A7 !important;
-}
-
-/* Accent Badges, Icons and Avatars text contrast */
-html:not(.high-contrast) .bg-accent-400 {
-  color: #0d0d1a !important;
-}
-html:not(.high-contrast) .bg-accent-400 * {
-  color: #0d0d1a !important;
-}
-
-/* Scrollbars */
-html:not(.high-contrast) ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-html:not(.high-contrast) ::-webkit-scrollbar-track {
-  background: #0d0d1a;
-}
-html:not(.high-contrast) ::-webkit-scrollbar-thumb {
-  background: #1c1b47;
-  border-radius: 4px;
-}
-html:not(.high-contrast) ::-webkit-scrollbar-thumb:hover {
-  background: #252367;
-}
-
-/* Accessibility Widget High Contrast overrides */
-html.high-contrast .accessibility-widget-panel {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  border: 4px solid #000000 !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-}
-
-html.high-contrast .accessibility-widget-panel * {
-  color: #000000 !important;
-}
-
-html.high-contrast .accessibility-widget-panel button,
-html.high-contrast .accessibility-widget-panel label {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  border: 2px solid #000000 !important;
-}
-
-html.high-contrast .accessibility-widget-panel button:hover,
-html.high-contrast .accessibility-widget-panel label:hover {
-  background-color: #000000 !important;
-  color: #ffffff !important;
-}
-
-html.high-contrast .accessibility-widget-panel button:hover *,
-html.high-contrast .accessibility-widget-panel label:hover * {
-  color: #ffffff !important;
-}
-
-/* Specific high-contrast button styling inside widget */
-html.high-contrast .accessibility-widget-panel button.bg-accent-400 {
-  background-color: #000000 !important;
-  color: #ffffff !important;
-  border: 2px solid #000000 !important;
-}
-
-html.high-contrast .accessibility-widget-panel button.bg-accent-400 * {
-  color: #ffffff !important;
-}
-
-/* Accessibility Trigger Button Contrast */
-html.high-contrast .accessibility-trigger-btn {
-  background-color: #000000 !important;
-  color: #ffffff !important;
-  border: 3px solid #ffffff !important;
-  box-shadow: 0 0 0 3px #000000 !important;
-}
-
-/* Underline link animation for navigation links */
-.nav-link-underline {
-  position: relative;
-}
-.nav-link-underline::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: #00C9A7;
-  transform: scale-x(0);
-  transform-origin: center;
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.nav-link-underline:hover::after {
-  transform: scale-x(1);
-}
-
-/* Disabled input styling in dark mode */
-html:not(.high-contrast) input:disabled,
-html:not(.high-contrast) select:disabled,
-html:not(.high-contrast) textarea:disabled {
-  background-color: #1e1d3d !important;
-  color: #9f99c7 !important;
-  border-color: #2c2a57 !important;
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Ghost button hover style in dark mode */
-html:not(.high-contrast) button.bg-transparent:hover,
-html:not(.high-contrast) button.bg-transparent.text-primary-700:hover {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  color: #ffffff !important;
-}
-
-/* Unified dark mode borders for tables and dividers */
-html:not(.high-contrast) tr,
-html:not(.high-contrast) th,
-html:not(.high-contrast) td,
-html:not(.high-contrast) .border-primary-50,
-html:not(.high-contrast) .border-primary-100,
-html:not(.high-contrast) .border-primary-200 {
-  border-color: #211f4d !important;
-}
-
-/* Dark mode text and background overrides for accessibility/contrast */
-html:not(.high-contrast) .text-primary-800,
-html:not(.high-contrast) .text-primary-900,
-html:not(.high-contrast) .text-primary-950 {
-  color: #ffffff !important;
-}
-
-html:not(.high-contrast) .text-text-secondary,
-html:not(.high-contrast) .text-primary-700 {
-  color: #cdc7f0 !important;
-}
-
-html:not(.high-contrast) .text-text-muted,
-html:not(.high-contrast) .text-primary-600 {
-  color: #9f99c7 !important;
-}
-
-html:not(.high-contrast) .bg-primary-50 {
-  background-color: #151430 !important;
-}
-
-html:not(.high-contrast) .bg-primary-100 {
-  background-color: #1e1d3d !important;
-}
-
-html:not(.high-contrast) .bg-primary-200 {
-  background-color: #252367 !important;
-  color: #ffffff !important;
-}
-
-html:not(.high-contrast) .hover\:bg-primary-50\/50:hover {
-  background-color: rgba(33, 31, 77, 0.4) !important;
-}
-
-/* Inputs, selects, textareas in default dark mode */
-html:not(.high-contrast) input,
-html:not(.high-contrast) select,
-html:not(.high-contrast) textarea {
-  background-color: #131326 !important;
-  color: #ffffff !important;
-  border-color: #211f4d !important;
-}
-
-/* Secondary & Ghost buttons in default dark mode */
-html:not(.high-contrast) button.bg-surface-card {
-  color: #ffffff !important;
-  border-color: #211f4d !important;
-}
-
-html:not(.high-contrast) button.bg-surface-card:hover {
-  background-color: #1e1d3d !important;
-}
-
-html:not(.high-contrast) button.bg-transparent {
-  color: #cdc7f0 !important;
-}
-
-/* Global High Contrast button overrides */
 html.high-contrast button,
-html.high-contrast a button,
 html.high-contrast .button {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  border: 3px solid #000000 !important;
-  box-shadow: none !important;
-  text-decoration: none !important;
+  box-shadow: none;
 }
 
-html.high-contrast button:hover,
-html.high-contrast a button:hover,
-html.high-contrast .button:hover {
-  background-color: #000000 !important;
-  color: #ffffff !important;
+/* Botones con relleno de marca: texto blanco legible también en alto contraste. */
+html.high-contrast .bg-brand,
+html.high-contrast .bg-accent,
+html.high-contrast .bg-error-strong {
+  color: #ffffff;
 }
 
+/* Widget de accesibilidad en alto contraste */
+html.high-contrast .accessibility-widget-panel {
+  background-color: #ffffff;
+  color: #000000;
+  border: 4px solid #000000;
+  box-shadow: none;
+  backdrop-filter: none;
+}
 
-
+html.high-contrast .accessibility-trigger-btn {
+  background-color: #000000;
+  color: #ffffff;
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 0 3px #000000;
+}

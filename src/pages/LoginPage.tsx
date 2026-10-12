@@ -40,13 +40,13 @@ export function LoginPage() {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-3 mb-6">
+          <Link to="/" className="inline-flex items-center gap-3 mb-6 rounded-xl">
             <img src="/logo.png" alt="" className="h-20 w-20 object-contain shrink-0" />
-            <span className="font-serif text-[32px] tracking-tight font-normal text-text-primary">
-              Citas<span className="text-accent-400">YA</span>
+            <span className="font-serif text-logo-lg tracking-tight font-normal text-text-primary">
+              Citas<span className="text-accent">YA</span>
             </span>
           </Link>
-          <h1 className="text-3xl font-bold text-primary-800 mb-2">
+          <h1 className="text-3xl font-bold text-text-primary mb-2">
             Iniciar sesión
           </h1>
           <p className="text-text-secondary">
@@ -57,14 +57,14 @@ export function LoginPage() {
         {/* Form */}
         <form
           onSubmit={(e) => { void handleSubmit(e); }}
-          className="bg-surface-card rounded-2xl shadow-elevated p-8 space-y-5"
+          className="bg-surface-card border border-line rounded-2xl shadow-elevated p-6 sm:p-8 space-y-5"
           noValidate
         >
           {/* Error global */}
           {error && (
             <div
               role="alert"
-              className="bg-red-50 border border-error/20 text-error text-sm font-medium px-4 py-3 rounded-xl"
+              className="bg-error-soft border border-error/30 text-error text-sm font-medium px-4 py-3 rounded-xl"
             >
               {error}
             </div>
@@ -116,7 +116,7 @@ export function LoginPage() {
             ¿No tienes cuenta?{' '}
             <Link
               to="/registrarse"
-              className="text-accent-500 hover:text-accent-600 font-semibold transition-colors"
+              className="text-accent hover:text-accent-hover font-semibold underline-offset-4 hover:underline rounded"
             >
               Regístrate gratis
             </Link>
