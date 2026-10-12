@@ -1,19 +1,71 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
-import { motion, AnimatePresence, MotionConfig } from 'framer-motion';
-import { ArrowUpRight, X } from 'lucide-react';
+import { motion, AnimatePresence, MotionConfig, type Variants } from 'framer-motion';
+import { ArrowRight, Building2, CalendarClock, ChevronDown, CircleCheck, Monitor, Search, X } from 'lucide-react';
 import heroBgVideo from '@/assets/hero-bg.mp4';
 import { useAuthContext } from '@/hooks/useAuthContext';
 import { Footer } from '@/components/layout/Footer';
+import { IconBadge } from '@/components/ui/IconBadge';
 
-const Logo = ({ dark = false }: { dark?: boolean }) => (
-  <div className="flex items-center gap-3">
-    <img
-      src="/logo.png"
-      alt="CitasYA"
-      className="h-14 w-14 object-contain shrink-0"
-    />
-    <span className={`font-serif text-logo tracking-tight font-normal ${dark ? 'text-text-primary' : 'text-white'}`}>
+// ─── Movimiento ───────────────────────────────────────────────────────────────
+// Una sola curva (ease-out exponencial) y un solo ritmo de escalonado para toda
+// la portada: los elementos entran como una secuencia, no cada uno por su lado.
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const secuencia: Variants = {
+  oculto: {},
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+};
+
+const aparecer: Variants = {
+  oculto: { opacity: 0, y: 14, filter: 'blur(6px)' },
+  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.7, ease: EASE } },
+};
+
+// Cada línea del titular sube desde detrás de una máscara.
+const linea: Variants = {
+  oculto: { y: '105%' },
+  visible: { y: '0%', transition: { duration: 0.9, ease: EASE } },
+};
+
+// Cifras reales de la base de datos (EPS, sedes IPS y especialidades cargadas).
+const CIFRAS = [
+  { valor: '11', etiqueta: 'EPS vinculadas' },
+  { valor: '32', etiqueta: 'Sedes en Bogotá' },
+  { valor: '12', etiqueta: 'Especialidades' },
+] as const;
+
+const PASOS = [
+  {
+    icono: Search,
+    titulo: 'Encuentra tu especialidad',
+    texto: 'Selecciona la especialidad médica que necesitas y tu EPS correspondiente para filtrar las opciones disponibles de forma inmediata.',
+  },
+  {
+    icono: CalendarClock,
+    titulo: 'Elige médico y horario',
+    texto: 'Compara profesionales calificados, revisa sus agendas en tiempo real y escoge el horario que mejor se adapte a tu vida.',
+  },
+  {
+    icono: CircleCheck,
+    titulo: 'Agenda e historial',
+    texto: 'Confirma tus datos y agenda tu cita en segundos. Podrás consultar, descargar o reprogramar tus citas cuando quieras en tu panel personal.',
+  },
+] as const;
+
+const CONTACTOS_EPS = [
+  { nombre: 'Sanitas', correo: 'contacto@epssanitas.com' },
+  { nombre: 'Sura', correo: 'afiliados@epssura.com.co' },
+  { nombre: 'Compensar', correo: 'servicioalcliente@compensarsalud.com' },
+  { nombre: 'Salud Total', correo: 'defensoria@saludtotal.com.co' },
+  { nombre: 'Famisanar', correo: 'servicioalcliente@famisanar.com.co' },
+  { nombre: 'Coosalud', correo: 'defensordelusuario@coosalud.com' },
+] as const;
+
+const Logo = () => (
+  <div className="flex items-center gap-2.5">
+    <img src="/logo.png" alt="" className="h-10 w-10 object-contain shrink-0" />
+    <span className="font-serif text-2xl tracking-tight text-white">
       Citas<span className="text-accent">YA</span>
     </span>
   </div>
@@ -22,11 +74,11 @@ const Logo = ({ dark = false }: { dark?: boolean }) => (
 export function HomePage() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [animationCompleted, setAnimationCompleted] = useState(false);
+  const [videoListo, setVideoListo] = useState(false);
   const { isAuthenticated, logout, isLoading } = useAuthContext();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // ─── ACCESSIBILITY REDUCE MOTION STATE ───
+  // ─── Movimiento reducido (opción del widget de accesibilidad) ───
   const [shouldReduceMotion, setShouldReduceMotion] = useState(() => {
     return document.documentElement.classList.contains('reduce-motion');
   });
@@ -42,18 +94,19 @@ export function HomePage() {
     return () => observer.disconnect();
   }, []);
 
-  // ─── REDUCE MOTION VIDEO CONTROL ───
+  // ─── Video: pausa con movimiento reducido; aparece con fundido al cargar ───
   useEffect(() => {
-    if (videoRef.current) {
-      if (shouldReduceMotion) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play().catch(() => {});
-      }
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.readyState >= 2) setVideoListo(true);
+    if (shouldReduceMotion) {
+      video.pause();
+    } else {
+      video.play().catch(() => {});
     }
   }, [shouldReduceMotion]);
 
-  // ─── MOUNT SCROLL TO HASH ───
+  // ─── Desplazamiento al ancla de la URL al montar ───
   useEffect(() => {
     const hash = window.location.hash;
     if (hash) {
@@ -68,46 +121,16 @@ export function HomePage() {
     }
   }, []);
 
-  // Motion transitions
-  const transition = [0.22, 1, 0.36, 1] as const;
+  // ─── Menú móvil: Escape lo cierra ───
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsMenuOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isMenuOpen]);
 
-  const fadeDown = (index: number) => ({
-    initial: shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 },
-    animate: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        delay: shouldReduceMotion ? 0 : index * 0.1,
-        duration: shouldReduceMotion ? 0 : 0.6,
-        ease: transition
-      }
-    }
-  });
-
-  const fadeUp = (index: number) => ({
-    initial: shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 },
-    animate: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        delay: shouldReduceMotion ? 0 : index * 0.12,
-        duration: shouldReduceMotion ? 0 : 0.6,
-        ease: transition
-      }
-    }
-  });
-
-  const wordSlideUp = (delay: number) => ({
-    initial: shouldReduceMotion ? { y: 0 } : { y: '110%' },
-    animate: { 
-      y: 0,
-      transition: {
-        delay: shouldReduceMotion ? 0 : delay,
-        duration: shouldReduceMotion ? 0 : 0.7,
-        ease: transition
-      }
-    }
-  });
+  // Con movimiento reducido todo arranca ya en su estado final.
+  const inicial = shouldReduceMotion ? false : 'oculto';
 
   const navLinks = [
     { label: 'Inicio', path: '/' },
@@ -117,587 +140,367 @@ export function HomePage() {
     { label: 'Ayuda', path: '#ayuda' }
   ];
 
+  const irA = (path: string) => {
+    if (path.startsWith('#')) {
+      document.querySelector(path)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate(path);
+    }
+  };
+
   return (
-    <MotionConfig reducedMotion={shouldReduceMotion ? "always" : "user"}>
-      <div className="relative w-full text-white overflow-x-hidden font-sans scroll-smooth bg-black">
-        
-        {/* ─── HERO SCREEN CONTAINER (100vh) ─── */}
-        <div className="relative w-full min-h-screen flex flex-col justify-between select-none">
-          
-      {/* ─── VIDEO BACKGROUND ─── */}
-      <video
-        ref={videoRef}
-        autoPlay={!shouldReduceMotion}
-        loop
-        muted
-        playsInline
-        aria-hidden="true"
-        className="fixed inset-0 w-full h-full object-contain z-[1] pointer-events-none"
-        onEnded={(e) => {
-          // Garantiza loop sin cortes en navegadores que ignoran el atributo loop
-          const video = e.currentTarget;
-          video.currentTime = 0;
-          void video.play();
-        }}
-      >
-        <source src={heroBgVideo} type="video/mp4" />
-      </video>
+    <MotionConfig reducedMotion={shouldReduceMotion ? 'always' : 'user'}>
+      <div className="relative w-full bg-black text-white overflow-x-hidden font-sans">
 
-
-      {/* ─── GRADIENT OVERLAY ─── */}
-      <div 
-        className="fixed inset-0 z-[2] pointer-events-none velo-portada"
-      />
-
-      {/* ─── NAVIGATION BAR (Top) ─── */}
-      <nav className="relative z-30 w-full flex items-center justify-between px-5 sm:px-8 md:px-8 pt-5 md:pt-5">
-        {/* Left: Logo */}
-        <motion.div 
-          variants={fadeDown(0)} 
-          initial="initial" 
-          animate="animate"
-          className="cursor-pointer"
-          onClick={() => navigate('/')}
+        {/* ─── Video de fondo: mismo negro que la página, sin recuadro visible ─── */}
+        <video
+          ref={videoRef}
+          autoPlay={!shouldReduceMotion}
+          loop
+          muted
+          playsInline
+          aria-hidden="true"
+          onLoadedData={() => setVideoListo(true)}
+          className={`fixed inset-0 w-full h-full object-contain max-lg:top-10 max-lg:bottom-auto max-lg:h-[44svh] z-[1] pointer-events-none transition-opacity duration-[1400ms] ease-out ${videoListo ? 'opacity-100' : 'opacity-0'}`}
+          onEnded={(e) => {
+            // Garantiza loop sin cortes en navegadores que ignoran el atributo loop
+            const video = e.currentTarget;
+            video.currentTime = 0;
+            void video.play();
+          }}
         >
-          <Logo />
-        </motion.div>
+          <source src={heroBgVideo} type="video/mp4" />
+        </video>
+        <div className="fixed inset-0 z-[2] pointer-events-none velo-portada" />
 
-        {/* Center: Links (hidden on mobile, visible md+) */}
-        <div className="hidden md:flex items-center gap-8 lg:gap-10">
-          {navLinks.map((link, idx) => (
-            <motion.button
-              key={link.label}
-              variants={fadeDown(idx + 1)}
-              initial="initial"
-              animate="animate"
-              onClick={() => {
-                if (link.path.startsWith('#')) {
-                  const el = document.querySelector(link.path);
-                  if (el) {
-                    el.scrollIntoView({ behavior: 'smooth' });
-                  }
-                } else {
-                  navigate(link.path);
-                }
-              }}
-              className="nav-link-underline inline-flex items-center min-h-11 text-caption font-semibold tracking-widest uppercase text-white/80 hover:text-accent transicion cursor-pointer"
-            >
-              {link.label}
-            </motion.button>
-          ))}
-        </div>
+        {/* ─── Portada (alto de pantalla) ─── */}
+        <div className="relative z-20 min-h-svh flex flex-col">
 
-        {/* Right: Actions / Hamburger */}
-        <div className="flex items-center gap-6">
-          {!isLoading && (
-            <div className="hidden md:flex items-center gap-6">
-              {isAuthenticated ? (
-                <>
-                  <motion.button
-                    variants={fadeDown(6)}
-                    initial="initial"
-                    animate="animate"
-                    onClick={() => navigate('/dashboard')}
-                    className="nav-link-underline inline-flex items-center min-h-11 text-caption font-semibold tracking-widest uppercase text-white/80 hover:text-accent cursor-pointer"
-                  >
-                    Mi Panel
-                  </motion.button>
-                  <motion.button
-                    variants={fadeDown(7)}
-                    initial="initial"
-                    animate="animate"
-                    onClick={() => void logout()}
-                    className="inline-flex items-center min-h-11 text-caption font-semibold tracking-widest uppercase text-error hover:opacity-80 transicion cursor-pointer"
-                  >
-                    Cerrar Sesión
-                  </motion.button>
-                </>
-              ) : (
-                <>
-                  <motion.button
-                    variants={fadeDown(6)}
-                    initial="initial"
-                    animate="animate"
-                    onClick={() => navigate('/iniciar-sesion')}
-                    className="nav-link-underline inline-flex items-center min-h-11 text-caption font-semibold tracking-widest uppercase text-white/80 hover:text-accent cursor-pointer"
-                  >
-                    Iniciar Sesión
-                  </motion.button>
-                  {/* Texto oscuro (text-inverse) sobre el cian de la marca: contraste ≥ 10:1. */}
-                  <motion.button
-                    variants={fadeDown(7)}
-                    initial="initial"
-                    animate="animate"
-                    onClick={() => navigate('/registrarse')}
-                    className="inline-flex items-center min-h-11 bg-accent hover:bg-accent-hover text-text-inverse px-5 rounded-full text-xs font-bold uppercase tracking-wider presionable hover:scale-105 cursor-pointer shadow-glow"
-                  >
-                    Registrarse
-                  </motion.button>
-                </>
-              )}
-            </div>
-          )}
-
-          <motion.button
-            variants={fadeDown(8)}
-            initial="initial"
-            animate="animate"
-            onClick={() => setIsMenuOpen(true)}
-            aria-label="Abrir menú de navegación"
-            className="w-11 h-11 rounded-full bg-white/15 backdrop-blur flex items-center justify-center cursor-pointer hover:bg-white/25 presionable"
-          >
-            <svg width="18" height="12" viewBox="0 0 18 12" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="0" y1="1" x2="18" y2="1" />
-              <line x1="0" y1="6" x2="18" y2="6" />
-              <line x1="0" y1="11" x2="18" y2="11" />
-            </svg>
-          </motion.button>
-        </div>
-      </nav>
-
-      {/* ─── STATS ROW (Middle Section) ─── */}
-      <div className="relative z-20 flex-1 grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:flex sm:justify-end sm:px-8 sm:gap-8 md:gap-10 mt-16 md:mt-0">
-        {/* Stat 1 */}
-        <motion.div 
-          variants={fadeUp(2)} 
-          initial="initial" 
-          animate="animate" 
-          className="text-right cursor-default select-none"
-        >
-          <div className="font-sans font-semibold text-white text-stat tracking-tight tabular-nums">
-            <span className="text-accent text-superscript align-super font-semibold">+</span >50
-          </div>
-          <div className="text-xs font-semibold tracking-normal sm:tracking-widest uppercase text-white/60 whitespace-pre-line leading-tight mt-2.5 hyphens-auto">
-            {"EPS\nDISPONIBLES"}
-          </div>
-        </motion.div>
-
-        {/* Stat 2 */}
-        <motion.div 
-          variants={fadeUp(3)} 
-          initial="initial" 
-          animate="animate" 
-          className="text-right cursor-default select-none"
-        >
-          <div className="font-sans font-semibold text-white text-stat tracking-tight tabular-nums">
-            <span className="text-accent text-superscript align-super font-semibold">+</span >200
-          </div>
-          <div className="text-xs font-semibold tracking-normal sm:tracking-widest uppercase text-white/60 whitespace-pre-line leading-tight mt-2.5 hyphens-auto">
-            {"ESPECIALIDADES\nMÉDICAS"}
-          </div>
-        </motion.div>
-
-        {/* Stat 3 */}
-        <motion.div 
-          variants={fadeUp(4)} 
-          initial="initial" 
-          animate="animate" 
-          className="text-right cursor-default select-none"
-        >
-          <div className="font-sans font-semibold text-white text-stat tracking-tight tabular-nums">
-            <span className="text-accent text-superscript align-super font-semibold">+</span >10K
-          </div>
-          <div className="text-xs font-semibold tracking-normal sm:tracking-widest uppercase text-white/60 whitespace-pre-line leading-tight mt-2.5 hyphens-auto">
-            {"CITAS\nAGENDADAS"}
-          </div>
-        </motion.div>
-      </div>
-
-      {/* ─── BOTTOM SECTION ─── */}
-      <div className="relative z-20 px-5 sm:px-8 md:px-8 pb-8 md:pb-10 flex flex-col gap-5 md:gap-8 mt-auto">
-        
-        {/* Row A: Tagline + CTA */}
-        <motion.div 
-          variants={fadeUp(5)}
-          initial="initial"
-          animate="animate"
-          className="flex items-center justify-between gap-4 border-b border-white/10 pb-5 md:pb-6"
-        >
-          {/* Left: Tagline */}
-          <p className="text-xs font-semibold tracking-widest uppercase text-white/60 leading-normal hover:text-accent transicion cursor-default select-none">
-            TU SALUD,<br />SIN FILAS<br />SIN ESPERAS<br />EN BOGOTÁ
-          </p>
-
-          {/* Right: CTA Button */}
-          <button 
-            onClick={() => navigate('/buscar')}
-            className="flex items-center gap-3 cursor-pointer group select-none"
-          >
-            <span className="text-base sm:text-xl text-accent font-semibold uppercase tracking-wide group-hover:opacity-85 transicion">
-              Agendar Cita
-            </span>
-            <div className="w-7 h-7 rounded-full border border-accent flex items-center justify-center shrink-0 group-hover:bg-accent group-hover:scale-110 transicion">
-              <ArrowUpRight size={12} className="text-accent group-hover:text-text-inverse group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transicion" />
-            </div>
-          </button>
-        </motion.div>
-
-        {/* Row B: Description + Main Heading */}
-        <div className="flex items-end justify-between gap-3 sm:gap-4">
-          {/* Left Description Column */}
-          <div className="w-36 sm:w-48 shrink-0 flex flex-col gap-3">
-            {/* Pill Badge */}
-            <motion.div 
-              variants={fadeUp(3)}
-              initial="initial"
-              animate="animate"
-              className="inline-flex items-center gap-2 bg-accent/12 border border-accent/30 rounded-full px-3.5 py-1.5 w-fit shadow-glow"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
-              </span>
-              <span className="text-xs font-bold tracking-widest uppercase text-accent">
-                Disponible 24/7
-              </span>
-            </motion.div>
-
-            {/* Description Text */}
-            <motion.p 
-              variants={fadeUp(6)}
-              initial="initial"
-              animate="animate"
-              className="text-xs font-semibold tracking-widest uppercase text-white/60 leading-relaxed hover:text-white/80 transicion cursor-default select-none"
-            >
-              Plataforma centralizada para gestionar tus citas con tu EPS en Bogotá. Rápido, seguro y accesible.
-            </motion.p>
-          </div>
-
-          {/* Right Heading Column */}
-          <h1 className="flex flex-col items-end select-none font-serif text-white uppercase text-right text-hero leading-display">
-            <span className={`block p-6 -m-6 transicion ${animationCompleted ? '' : 'overflow-hidden'}`}>
-              <motion.span 
-                variants={wordSlideUp(0.4)} 
-                initial="initial" 
-                animate="animate"
-                className={`transicion duration-200 cursor-default inline-block origin-right`}
-              >
-                Agenda
-              </motion.span>
-            </span>
-            <span className={`block p-6 -m-6 transicion ${animationCompleted ? '' : 'overflow-hidden'}`}>
-              <motion.span 
-                variants={wordSlideUp(0.54)} 
-                initial="initial" 
-                animate="animate" 
-                className={`text-accent italic font-normal transicion cursor-default inline-block origin-right`}
-              >
-                Sin
-              </motion.span>
-            </span>
-            <span className={`block p-6 -m-6 transicion ${animationCompleted ? '' : 'overflow-hidden'}`}>
-              <motion.span 
-                variants={wordSlideUp(0.68)} 
-                initial="initial" 
-                animate="animate"
-                onAnimationComplete={() => setAnimationCompleted(true)}
-                className={`transicion duration-200 cursor-default inline-block origin-right`}
-              >
-                Filas.
-              </motion.span>
-            </span>
-          </h1>
-        </div>
-      </div>
-      </div>
-
-      {/* ─── MOBILE MENU OVERLAY ─── */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: '-100%' }}
+          {/* Barra de navegación */}
+          <motion.nav
+            aria-label="Navegación principal"
+            initial={shouldReduceMotion ? false : { opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: '-100%' }}
-            transition={{ duration: 0.5, ease: transition }}
-            className="fixed inset-0 z-50 bg-black flex flex-col p-5 sm:p-8 overflow-y-auto"
+            transition={{ duration: 0.6, ease: EASE }}
+            className="w-full max-w-7xl mx-auto flex items-center justify-between gap-6 px-5 sm:px-8 pt-5"
           >
-            {/* Top row */}
-            <div className="w-full flex items-center justify-between">
+            <button type="button" onClick={() => navigate('/')} className="rounded-xl cursor-pointer" aria-label="CitasYA, ir al inicio">
               <Logo />
-              
+            </button>
+
+            <div className="hidden lg:flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-md p-1">
+              {navLinks.map((link) => (
+                <button
+                  key={link.label}
+                  type="button"
+                  onClick={() => irA(link.path)}
+                  className="inline-flex items-center min-h-10 px-4 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-white/[0.08] transicion cursor-pointer whitespace-nowrap"
+                >
+                  {link.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              {!isLoading && (
+                <div className="hidden lg:flex items-center gap-2">
+                  {isAuthenticated ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => navigate('/dashboard')}
+                        className="inline-flex items-center min-h-11 px-4 rounded-full text-sm font-medium text-white/80 hover:text-white transicion cursor-pointer"
+                      >
+                        Mi Panel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void logout()}
+                        className="inline-flex items-center min-h-11 px-4 rounded-full text-sm font-medium text-error hover:bg-error/10 transicion cursor-pointer"
+                      >
+                        Cerrar Sesión
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => navigate('/iniciar-sesion')}
+                        className="inline-flex items-center min-h-11 px-4 rounded-full text-sm font-medium text-white/80 hover:text-white transicion cursor-pointer"
+                      >
+                        Iniciar Sesión
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => navigate('/registrarse')}
+                        className="inline-flex items-center min-h-11 px-5 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/85 presionable cursor-pointer"
+                      >
+                        Registrarse
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+
               <button
-                onClick={() => setIsMenuOpen(false)}
-                aria-label="Cerrar menú de navegación"
-                className="w-11 h-11 rounded-full bg-white/10 backdrop-blur flex items-center justify-center cursor-pointer hover:bg-white/20 presionable"
+                type="button"
+                onClick={() => setIsMenuOpen(true)}
+                aria-label="Abrir menú de navegación"
+                aria-expanded={isMenuOpen}
+                className="lg:hidden w-11 h-11 rounded-full border border-white/15 bg-white/[0.06] backdrop-blur-md flex items-center justify-center cursor-pointer hover:bg-white/[0.12] presionable"
               >
-                <X size={18} className="text-white" />
+                <svg width="18" height="12" viewBox="0 0 18 12" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden="true">
+                  <line x1="1" y1="1" x2="17" y2="1" />
+                  <line x1="1" y1="6" x2="17" y2="6" />
+                  <line x1="1" y1="11" x2="17" y2="11" />
+                </svg>
               </button>
             </div>
+          </motion.nav>
 
-            {/* Vertical list of links */}
-            <div className="flex flex-col gap-7 mt-16">
-              {navLinks.map((link) => {
-                const isAnchor = link.path.startsWith('#');
-                return (
+          {/* Contenido de la portada, anclado abajo para dejar ver el logo del video */}
+          <motion.div
+            variants={secuencia}
+            initial={inicial}
+            animate="visible"
+            className="flex-1 w-full max-w-7xl mx-auto px-5 sm:px-8 pt-[34svh] lg:pt-0 pb-8 md:pb-12 flex flex-col justify-end"
+          >
+            <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+              <div className="max-w-2xl">
+                <motion.div
+                  variants={aparecer}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] backdrop-blur-md px-3 py-1.5 text-xs font-medium text-white/80"
+                >
+                  <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-accent opacity-60 motion-safe:animate-ping" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
+                  </span>
+                  Disponible 24/7 · Bogotá
+                </motion.div>
+
+                <h1 className="mt-5 font-serif text-hero text-white">
+                  <span className="block overflow-hidden pb-[0.06em]">
+                    <motion.span variants={linea} className="block">Agenda</motion.span>
+                  </span>
+                  <span className="block overflow-hidden pb-[0.1em] pr-[0.08em]">
+                    <motion.span variants={linea} className="block">
+                      <em className="italic text-accent">sin</em> filas.
+                    </motion.span>
+                  </span>
+                </h1>
+
+                <motion.p variants={aparecer} className="mt-5 max-w-md text-base md:text-lg leading-relaxed text-white/70">
+                  Plataforma centralizada para gestionar tus citas con tu EPS en Bogotá. Rápido, seguro y accesible.
+                </motion.p>
+
+                <motion.div variants={aparecer} className="mt-8 flex flex-col sm:flex-row sm:items-center gap-3">
                   <button
+                    type="button"
+                    onClick={() => navigate('/buscar')}
+                    className="group inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-full bg-brand text-white text-base font-semibold shadow-button hover:bg-brand-hover presionable cursor-pointer"
+                  >
+                    Agendar cita
+                    <ArrowRight size={18} aria-hidden="true" className="transition-transform duration-200 ease-out group-hover:translate-x-0.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => irA('#como-funciona')}
+                    className="inline-flex items-center justify-center gap-1.5 min-h-12 px-5 rounded-full text-base font-medium text-white/80 hover:text-white hover:bg-white/[0.06] transicion cursor-pointer"
+                  >
+                    Cómo funciona
+                    <ChevronDown size={18} aria-hidden="true" />
+                  </button>
+                </motion.div>
+              </div>
+
+              {/* Cifras reales */}
+              <motion.dl
+                variants={aparecer}
+                className="grid grid-cols-3 gap-3 pr-16 border-t border-white/10 pt-5 lg:gap-0 lg:pr-0 lg:border-t-0 lg:pt-0 lg:flex lg:divide-x lg:divide-white/10"
+              >
+                {CIFRAS.map((cifra) => (
+                  <div key={cifra.etiqueta} className="flex flex-col-reverse justify-end gap-1 lg:px-8 lg:last:pr-0">
+                    <dt className="text-xs sm:text-sm text-white/60 leading-snug">{cifra.etiqueta}</dt>
+                    <dd className="font-serif text-stat text-white tabular-nums">{cifra.valor}</dd>
+                  </div>
+                ))}
+              </motion.dl>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* ─── Menú móvil ─── */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.15 } }}
+              transition={{ duration: 0.25, ease: EASE }}
+              className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col px-5 pt-5 pb-8 sm:px-8 overflow-y-auto"
+            >
+              <div className="w-full flex items-center justify-between">
+                <Logo />
+                <button
+                  type="button"
+                  onClick={() => setIsMenuOpen(false)}
+                  aria-label="Cerrar menú de navegación"
+                  className="w-11 h-11 rounded-full border border-white/15 bg-white/[0.06] flex items-center justify-center cursor-pointer hover:bg-white/[0.12] presionable"
+                >
+                  <X size={18} aria-hidden="true" />
+                </button>
+              </div>
+
+              <motion.div
+                variants={secuencia}
+                initial={inicial}
+                animate="visible"
+                className="flex flex-col mt-12"
+              >
+                {[
+                  ...navLinks,
+                  ...(isAuthenticated
+                    ? [{ label: 'Mi Panel', path: '/dashboard' }]
+                    : [{ label: 'Iniciar Sesión', path: '/iniciar-sesion' }, { label: 'Registrarse', path: '/registrarse' }]),
+                ].map((link) => (
+                  <motion.button
                     key={link.label}
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      if (isAnchor) {
-                        const el = document.querySelector(link.path);
-                        if (el) {
-                          el.scrollIntoView({ behavior: 'smooth' });
-                        }
-                      } else {
-                        navigate(link.path);
-                      }
-                    }}
-                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-accent transicion"
+                    type="button"
+                    variants={aparecer}
+                    onClick={() => { setIsMenuOpen(false); irA(link.path); }}
+                    className="text-left font-serif text-4xl py-2.5 text-white/90 hover:text-white transicion cursor-pointer"
                   >
                     {link.label}
-                  </button>
-                );
-              })}
-
-              {/* Botones de Iniciar sesión, Registro, Mi Panel y Cerrar Sesión en menú móvil */}
-              {isAuthenticated ? (
-                <>
-                  <button
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      navigate('/dashboard');
-                    }}
-                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-accent transicion"
-                  >
-                    Mi Panel
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      void logout();
-                    }}
-                    className="text-left text-3xl font-semibold tracking-widest uppercase text-error cursor-pointer hover:text-error transicion"
+                  </motion.button>
+                ))}
+                {isAuthenticated && (
+                  <motion.button
+                    type="button"
+                    variants={aparecer}
+                    onClick={() => { setIsMenuOpen(false); void logout(); }}
+                    className="text-left font-serif text-4xl py-2.5 text-error cursor-pointer"
                   >
                     Cerrar Sesión
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      navigate('/iniciar-sesion');
-                    }}
-                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-accent transicion"
-                  >
-                    Iniciar Sesión
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      navigate('/registrarse');
-                    }}
-                    className="text-left text-3xl font-semibold tracking-widest uppercase text-white cursor-pointer hover:text-accent transicion"
-                  >
-                    Registrarse
-                  </button>
-                </>
-              )}
-            </div>
+                  </motion.button>
+                )}
+              </motion.div>
 
-            {/* Bottom CTA */}
-            <button
-              onClick={() => {
-                setIsMenuOpen(false);
-                navigate('/buscar');
-              }}
-              className="mt-auto pt-8 text-left text-xl font-semibold tracking-wide uppercase text-accent flex items-center gap-1.5 cursor-pointer hover:opacity-85 transicion"
-            >
-              Agendar Cita <span aria-hidden="true">↗</span>
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <button
+                type="button"
+                onClick={() => { setIsMenuOpen(false); navigate('/buscar'); }}
+                className="mt-auto inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-full bg-brand text-white text-base font-semibold shadow-button hover:bg-brand-hover presionable cursor-pointer"
+              >
+                Agendar cita <ArrowRight size={18} aria-hidden="true" />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* ─── SECTION: ¿CÓMO FUNCIONA? ─── */}
-      <section 
-        id="como-funciona" 
-        className="relative z-20 py-24 px-5 sm:px-8 md:px-16 lg:px-24 bg-black/90 border-t border-white/10 text-white"
-      >
-        <div className="max-w-6xl mx-auto flex flex-col gap-12">
-          {/* Section Heading */}
-          <motion.div 
-            initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="flex flex-col gap-3"
-          >
-            <span className="text-xs font-bold tracking-widest uppercase text-accent">
-              ¿Qué es CitasYA?
-            </span>
-            <h2 className="text-3xl md:text-5xl font-serif font-normal">
-              Cómo funciona la plataforma
-            </h2>
-            <div className="w-16 h-1 bg-accent mt-2 rounded-full" />
-          </motion.div>
- 
-          {/* Description Block */}
-          <motion.p 
-            initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-base sm:text-lg text-white/70 leading-relaxed max-w-4xl"
-          >
-            <strong>CitasYA</strong> es tu puerta de entrada inteligente a la salud en Bogotá. Somos una plataforma centralizada que conecta a los ciudadanos directamente con sus Entidades Promotoras de Salud (EPS), eliminando las filas físicas y telefónicas. Facilitamos la búsqueda de médicos, la consulta de especialidades y el agendamiento o reprogramación de citas en un entorno 100% digital, accesible e inclusivo para todas las edades.
-          </motion.p>
- 
-          {/* Timeline Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-            <motion.div 
-              initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="bg-surface-card/60 border border-line rounded-2xl p-6 flex flex-col gap-4 hover:border-accent/30 transicion cursor-default select-none"
-            >
-              <span className="text-3xl">🔍</span>
-              <h3 className="text-xl font-serif text-white">1. Encuentra tu Especialidad</h3>
-              <p className="text-sm text-white/60 leading-relaxed">
-                Selecciona la especialidad médica que necesitas y tu EPS correspondiente para filtrar las opciones disponibles de forma inmediata.
+        {/* ─── ¿Cómo funciona? ─── */}
+        <section id="como-funciona" className="relative z-20 bg-black border-t border-white/10 py-24 md:py-32 px-5 sm:px-8">
+          <div className="max-w-7xl mx-auto">
+            <Revelar reducir={shouldReduceMotion} className="max-w-3xl">
+              <p className="text-sm font-medium text-accent">¿Qué es CitasYA?</p>
+              <h2 className="mt-3 text-4xl md:text-5xl text-white">Cómo funciona la plataforma</h2>
+              <p className="mt-6 text-base md:text-lg leading-relaxed text-white/65">
+                <strong className="font-semibold text-white">CitasYA</strong> es tu puerta de entrada inteligente a la salud en Bogotá. Somos una plataforma centralizada que conecta a los ciudadanos directamente con sus Entidades Promotoras de Salud (EPS), eliminando las filas físicas y telefónicas. Facilitamos la búsqueda de médicos, la consulta de especialidades y el agendamiento o reprogramación de citas en un entorno 100% digital, accesible e inclusivo para todas las edades.
               </p>
-            </motion.div>
-            
-            <motion.div 
-              initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-surface-card/60 border border-line rounded-2xl p-6 flex flex-col gap-4 hover:border-accent/30 transicion cursor-default select-none"
-            >
-              <span className="text-3xl">📅</span>
-              <h3 className="text-xl font-serif text-white">2. Elige Médico y Horario</h3>
-              <p className="text-sm text-white/60 leading-relaxed">
-                Compara profesionales calificados, revisa sus agendas en tiempo real y escoge el horario que mejor se adapte a tu vida.
-              </p>
-            </motion.div>
-            
-            <motion.div 
-              initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="bg-surface-card/60 border border-line rounded-2xl p-6 flex flex-col gap-4 hover:border-accent/30 transicion cursor-default select-none"
-            >
-              <span className="text-3xl">✅</span>
-              <h3 className="text-xl font-serif text-white">3. Agenda e Historial</h3>
-              <p className="text-sm text-white/60 leading-relaxed">
-                Confirma tus datos y agenda tu cita en segundos. Podrás consultar, descargar o reprogramar tus citas cuando quieras en tu panel personal.
-              </p>
-            </motion.div>
+            </Revelar>
+
+            <Revelar reducir={shouldReduceMotion} escalonar className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              {PASOS.map((paso, i) => (
+                <motion.article
+                  key={paso.titulo}
+                  variants={aparecer}
+                  className="relative rounded-3xl border border-white/10 bg-white/[0.03] tarjeta-luz p-7 hover:border-white/20 hover:bg-white/[0.05] transicion"
+                >
+                  <div className="flex items-start justify-between">
+                    <IconBadge icon={paso.icono} tone="brand" size="sm" />
+                    <span className="font-serif text-2xl text-white/25 tabular-nums" aria-hidden="true">0{i + 1}</span>
+                  </div>
+                  <h3 className="mt-6 text-lg font-semibold text-white">
+                    <span className="sr-only">Paso {i + 1}: </span>{paso.titulo}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-white/60">{paso.texto}</p>
+                </motion.article>
+              ))}
+            </Revelar>
           </div>
-        </div>
-      </section>
- 
-      {/* ─── SECTION: AYUDA Y SOPORTE ─── */}
-      <section 
-        id="ayuda" 
-        className="relative z-20 py-24 px-5 sm:px-8 md:px-16 lg:px-24 bg-black border-t border-white/10 text-white"
-      >
-        <div className="max-w-6xl mx-auto flex flex-col gap-12">
-          {/* Section Heading */}
-          <motion.div 
-            initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="flex flex-col gap-3"
-          >
-            <span className="text-xs font-bold tracking-widest uppercase text-accent">
-              Soporte Directo
-            </span>
-            <h2 className="text-3xl md:text-5xl font-serif font-normal">
-              Centro de Ayuda
-            </h2>
-            <div className="w-16 h-1 bg-accent mt-2 rounded-full" />
-          </motion.div>
- 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            {/* Left Box: CitasYA support */}
-            <motion.div 
-              initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="bg-surface-card/60 border border-line rounded-3xl p-8 flex flex-col gap-5 hover:border-line-strong transicion"
-            >
-              <span className="text-4xl">💻</span>
-              <h3 className="text-2xl font-serif font-normal">Soporte Técnico de la Página</h3>
-              <p className="text-sm text-white/70 leading-relaxed">
-                Si experimentas problemas técnicos con el funcionamiento de CitasYA, como errores al iniciar sesión, problemas al agendar o fallas en el visualizador, por favor contacta a nuestro equipo de desarrollo:
-              </p>
-              <div className="bg-surface-muted p-4 rounded-xl border border-line flex flex-col gap-1.5 hover:border-accent/30 transicion">
-                <span className="text-xs text-white/60 uppercase tracking-widest">Correo de soporte</span>
-                <a href="mailto:soporte@citasya.com" className="inline-flex items-center min-h-11 text-base font-bold text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
-                  soporte@citasya.com
-                </a>
-              </div>
-            </motion.div>
- 
-            {/* Right Box: EPS support */}
-            <motion.div 
-              initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="bg-surface-card/60 border border-line rounded-3xl p-8 flex flex-col gap-5 hover:border-line-strong transicion"
-            >
-              <span className="text-4xl">🏥</span>
-              <h3 className="text-2xl font-serif font-normal">Asuntos de tu EPS</h3>
-              <p className="text-sm text-white/70 leading-relaxed">
-                Si tu consulta está relacionada con autorizaciones de servicios, reclamos, entrega de medicamentos o peticiones directamente relacionadas con tu EPS, comunícate a sus canales oficiales:
-              </p>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-                <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
-                  <p className="text-sm font-semibold text-white">Sanitas</p>
-                  <a href="mailto:contacto@epssanitas.com" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
-                    contacto@epssanitas.com
-                  </a>
-                </div>
-                <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
-                  <p className="text-sm font-semibold text-white">Sura</p>
-                  <a href="mailto:afiliados@epssura.com.co" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
-                    afiliados@epssura.com.co
-                  </a>
-                </div>
-                <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
-                  <p className="text-sm font-semibold text-white">Compensar</p>
-                  <a href="mailto:servicioalcliente@compensarsalud.com" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
-                    servicioalcliente@compensarsalud.com
-                  </a>
-                </div>
-                <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
-                  <p className="text-sm font-semibold text-white">Salud Total</p>
-                  <a href="mailto:defensoria@saludtotal.com.co" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
-                    defensoria@saludtotal.com.co
-                  </a>
-                </div>
-                <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
-                  <p className="text-sm font-semibold text-white">Famisanar</p>
-                  <a href="mailto:servicioalcliente@famisanar.com.co" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
-                    servicioalcliente@famisanar.com.co
-                  </a>
-                </div>
-                <div className="bg-surface-muted p-3 rounded-xl border border-line hover:border-accent/30 transicion">
-                  <p className="text-sm font-semibold text-white">Coosalud</p>
-                  <a href="mailto:defensordelusuario@coosalud.com" className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
-                    defensordelusuario@coosalud.com
-                  </a>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Footer */}
-      <div className="relative z-20">
-        <Footer />
+        {/* ─── Ayuda y soporte ─── */}
+        <section id="ayuda" className="relative z-20 bg-black border-t border-white/10 py-24 md:py-32 px-5 sm:px-8">
+          <div className="max-w-7xl mx-auto">
+            <Revelar reducir={shouldReduceMotion} className="max-w-3xl">
+              <p className="text-sm font-medium text-accent">Soporte directo</p>
+              <h2 className="mt-3 text-4xl md:text-5xl text-white">Centro de Ayuda</h2>
+            </Revelar>
+
+            <Revelar reducir={shouldReduceMotion} escalonar className="mt-14 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+              <motion.article variants={aparecer} className="rounded-3xl border border-white/10 bg-white/[0.03] tarjeta-luz p-7 md:p-8 flex flex-col gap-5">
+                <IconBadge icon={Monitor} tone="brand" size="sm" />
+                <h3 className="text-xl font-semibold text-white">Soporte técnico de la página</h3>
+                <p className="text-sm leading-relaxed text-white/65">
+                  Si experimentas problemas técnicos con el funcionamiento de CitasYA, como errores al iniciar sesión, problemas al agendar o fallas en el visualizador, por favor contacta a nuestro equipo de desarrollo:
+                </p>
+                <div className="mt-auto rounded-2xl border border-white/10 bg-black/40 p-4">
+                  <p className="text-xs text-white/60">Correo de soporte</p>
+                  <a href="mailto:soporte@citasya.com" className="inline-flex items-center min-h-11 text-base font-semibold text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
+                    soporte@citasya.com
+                  </a>
+                </div>
+              </motion.article>
+
+              <motion.article variants={aparecer} className="rounded-3xl border border-white/10 bg-white/[0.03] tarjeta-luz p-7 md:p-8 flex flex-col gap-5">
+                <IconBadge icon={Building2} tone="brand" size="sm" />
+                <h3 className="text-xl font-semibold text-white">Asuntos de tu EPS</h3>
+                <p className="text-sm leading-relaxed text-white/65">
+                  Si tu consulta está relacionada con autorizaciones de servicios, reclamos, entrega de medicamentos o peticiones directamente relacionadas con tu EPS, comunícate a sus canales oficiales:
+                </p>
+                {/* role="list": Safari/VoiceOver quita la semántica de lista cuando list-style es none. */}
+                {/* eslint-disable-next-line jsx-a11y/no-redundant-roles */}
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2" role="list">
+                  {CONTACTOS_EPS.map((eps) => (
+                    <li key={eps.nombre} className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3">
+                      <p className="text-sm font-semibold text-white">{eps.nombre}</p>
+                      <a href={`mailto:${eps.correo}`} className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
+                        {eps.correo}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </motion.article>
+            </Revelar>
+          </div>
+        </section>
+
+        <div className="relative z-20">
+          <Footer />
+        </div>
       </div>
-
-    </div>
     </MotionConfig>
+  );
+}
+
+// ─── Revela un bloque al entrar en pantalla (una sola vez) ───────────────────
+interface RevelarProps {
+  readonly children: ReactNode;
+  readonly className?: string;
+  readonly reducir: boolean;
+  /** Si es true, los hijos (motion con `variants={aparecer}`) entran escalonados. */
+  readonly escalonar?: boolean;
+}
+
+function Revelar({ children, className = '', reducir, escalonar = false }: RevelarProps) {
+  return (
+    <motion.div
+      variants={escalonar ? secuencia : aparecer}
+      initial={reducir ? false : 'oculto'}
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.25 }}
+      className={className}
+    >
+      {children}
+    </motion.div>
   );
 }

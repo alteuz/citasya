@@ -9,6 +9,8 @@ import type { AppointmentMode } from '@/types/database';
 import { AppointmentModeSelector } from '@/components/appointments/AppointmentModeSelector';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
 import type { ServiceResult } from '@/types/common';
+import { ArrowLeft, ArrowRight, CalendarCheck, CalendarX, SearchX } from 'lucide-react';
+import { IconBadge } from '@/components/ui/IconBadge';
 
 interface DoctorAgenda {
   readonly doctor: DoctorSearchResult;
@@ -145,7 +147,7 @@ export function BookingPage() {
   if (error || !doctor) {
     return (
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 text-center animate-fade-in">
-        <span className="text-5xl mb-4 block" aria-hidden="true">😕</span>
+        <IconBadge icon={SearchX} size="lg" className="mb-5" />
         <h1 className="text-2xl text-text-primary mb-2">Médico no encontrado</h1>
         <p className="text-text-secondary mb-6">{error ?? 'El médico solicitado no existe.'}</p>
         <Link to="/buscar">
@@ -160,7 +162,7 @@ export function BookingPage() {
     return (
       <div className="mx-auto max-w-lg px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
         <div className="bg-surface-card border border-line rounded-2xl p-8 text-center">
-          <span className="text-6xl mb-4 block" aria-hidden="true">🎉</span>
+          <IconBadge icon={CalendarCheck} tone="success" size="lg" className="mb-5" />
           <h1 className="text-2xl text-text-primary mb-2">
             ¡Cita agendada!
           </h1>
@@ -174,7 +176,7 @@ export function BookingPage() {
             <InfoRow label="EPS" value={bookedAppointment.epsName} />
             <InfoRow label="Fecha" value={formatDateLong(bookedAppointment.slotDate)} />
             <InfoRow label="Hora" value={`${formatTime(bookedAppointment.slotStartTime)} - ${formatTime(bookedAppointment.slotEndTime)}`} />
-            <InfoRow label="Modalidad" value={bookedAppointment.mode === 'presencial' ? '🏥 Presencial' : '💻 Telemedicina'} />
+            <InfoRow label="Modalidad" value={bookedAppointment.mode === 'presencial' ? 'Presencial' : 'Telemedicina'} />
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
@@ -203,7 +205,7 @@ export function BookingPage() {
           onClick={() => setStep('select')}
           className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-4 cursor-pointer"
         >
-          <span aria-hidden="true">←</span> Cambiar horario
+          <ArrowLeft size={16} aria-hidden="true" /> Cambiar horario
         </button>
 
         <h1 className="text-2xl text-text-primary mb-6">
@@ -277,7 +279,7 @@ export function BookingPage() {
             to="/buscar"
             className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-3"
           >
-            <span aria-hidden="true">←</span> Volver al buscador
+            <ArrowLeft size={16} aria-hidden="true" /> Volver al buscador
           </Link>
 
           <div className="flex items-center gap-4">
@@ -303,7 +305,7 @@ export function BookingPage() {
 
         {availableDates.length === 0 ? (
           <div className="bg-surface-card border border-line rounded-2xl p-8 text-center mb-8">
-            <span className="text-4xl mb-3 block" aria-hidden="true">📅</span>
+            <IconBadge icon={CalendarX} size="md" className="mb-4" />
             <p className="text-text-secondary">No hay horarios disponibles en los próximos 14 días.</p>
           </div>
         ) : (
@@ -378,7 +380,7 @@ export function BookingPage() {
                 </div>
                 <Button variant="primary" size="md" onClick={handleConfirm}>
                   Continuar
-                  <span aria-hidden="true">→</span>
+                  <ArrowRight size={16} aria-hidden="true" />
                 </Button>
               </div>
             )}

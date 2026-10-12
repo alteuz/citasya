@@ -1,4 +1,5 @@
 import { forwardRef, type InputHTMLAttributes, type ReactNode } from 'react';
+import { CircleAlert } from 'lucide-react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   readonly label?: string;
@@ -59,7 +60,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       </div>
       {error && (
         <p id={errorId} className="flex items-start gap-1.5 text-sm text-error font-medium" role="alert">
-          <span aria-hidden="true">⚠</span>
+          <CircleAlert size={14} aria-hidden="true" className="shrink-0" />
           {error}
         </p>
       )}

@@ -6,6 +6,7 @@ import { AdminService, type AdminDoctor, type CreateDoctorInput } from '@/servic
 import { DoctorsService, type SpecialtyOption, type EpsOption } from '@/services/doctors.service';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
 import type { ServiceResult } from '@/types/common';
+import { ArrowLeft } from 'lucide-react';
 
 interface DoctorsCatalog {
   readonly doctors: readonly AdminDoctor[];
@@ -105,11 +106,11 @@ export function AdminDoctorsPage() {
       <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <Link to="/admin" className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-3">
-            <span aria-hidden="true">←</span> Volver al panel
+            <ArrowLeft size={16} aria-hidden="true" /> Volver al panel
           </Link>
           <div className="flex items-center justify-between">
             <h1 className="text-2xl md:text-3xl text-text-primary">
-              Gestión de Médicos 👨‍⚕️
+              Gestión de Médicos
             </h1>
             <Button variant="primary" size="sm" onClick={() => setShowForm(!showForm)}>
               {showForm ? 'Cancelar' : '+ Nuevo médico'}
@@ -218,7 +219,7 @@ export function AdminDoctorsPage() {
                     <td className="py-3 px-4 text-sm text-text-muted">{doc.licenseNumber}</td>
                     <td className="py-3 px-4">
                       <span className={`inline-flex text-xs font-semibold px-2.5 py-1 rounded-full border whitespace-nowrap ${doc.active ? 'bg-success-soft text-success border-success/30' : 'bg-error-soft text-error border-error/30'}`}>
-                        {doc.active ? '✅ Activo' : '❌ Inactivo'}
+                        {doc.active ? 'Activo' : 'Inactivo'}
                       </span>
                     </td>
                     <td className="py-3 px-4">

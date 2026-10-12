@@ -3,6 +3,8 @@ import { Link } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { AdminService, type AdminStats } from '@/services/admin.service';
+import { ArrowRight, CalendarCheck, CalendarDays, CircleX, ClipboardList, Stethoscope, type LucideIcon } from 'lucide-react';
+import { IconBadge } from '@/components/ui/IconBadge';
 
 export function AdminDashboardPage() {
   const [stats, setStats] = useState<AdminStats | null>(null);
@@ -23,7 +25,7 @@ export function AdminDashboardPage() {
       <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-2xl md:text-3xl text-text-primary">
-            Panel de Administración 🛠️
+            Panel de Administración
           </h1>
           <p className="text-text-secondary mt-1">
             Gestiona médicos, disponibilidad y citas de la plataforma.
@@ -41,10 +43,10 @@ export function AdminDashboardPage() {
           </div>
         ) : stats ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-            <StatItem icon="👨‍⚕️" label="Médicos" value={stats.totalDoctors} />
-            <StatItem icon="📅" label="Total citas" value={stats.totalAppointments} />
-            <StatItem icon="🟢" label="Citas hoy" value={stats.scheduledToday} />
-            <StatItem icon="❌" label="Canceladas" value={stats.cancelledTotal} />
+            <StatItem icon={Stethoscope} label="Médicos" value={stats.totalDoctors} />
+            <StatItem icon={CalendarDays} label="Total citas" value={stats.totalAppointments} />
+            <StatItem icon={CalendarCheck} label="Citas hoy" value={stats.scheduledToday} />
+            <StatItem icon={CircleX} label="Canceladas" value={stats.cancelledTotal} />
           </div>
         ) : null}
 
@@ -52,21 +54,21 @@ export function AdminDashboardPage() {
         <h2 className="font-sans text-xl font-semibold text-text-primary mb-4">Gestión</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <AdminCard
-            icon="👨‍⚕️"
+            icon={Stethoscope}
             title="Médicos"
             description="Crear, editar y activar/desactivar médicos."
             href="/admin/medicos"
             ctaText="Gestionar médicos"
           />
           <AdminCard
-            icon="📋"
+            icon={ClipboardList}
             title="Disponibilidad"
             description="Generar y administrar slots de horarios."
             href="/admin/disponibilidad"
             ctaText="Gestionar slots"
           />
           <AdminCard
-            icon="🗓️"
+            icon={CalendarDays}
             title="Citas"
             description="Ver todas las citas de los pacientes."
             href="/admin/citas"
@@ -81,7 +83,7 @@ export function AdminDashboardPage() {
 // ─── Componentes internos ───────────────────────────────────────────────────
 
 interface StatItemProps {
-  readonly icon: string;
+  readonly icon: LucideIcon;
   readonly label: string;
   readonly value: number;
 }
@@ -89,7 +91,7 @@ interface StatItemProps {
 function StatItem({ icon, label, value }: StatItemProps) {
   return (
     <div className="bg-surface-card border border-line rounded-2xl p-5">
-      <span className="text-2xl" aria-hidden="true">{icon}</span>
+      <IconBadge icon={icon} size="sm" />
       <p className="text-3xl font-bold text-text-primary mt-2 tabular-nums">{value}</p>
       <p className="text-sm text-text-muted">{label}</p>
     </div>
@@ -97,7 +99,7 @@ function StatItem({ icon, label, value }: StatItemProps) {
 }
 
 interface AdminCardProps {
-  readonly icon: string;
+  readonly icon: LucideIcon;
   readonly title: string;
   readonly description: string;
   readonly href: string;
@@ -107,13 +109,13 @@ interface AdminCardProps {
 function AdminCard({ icon, title, description, href, ctaText }: AdminCardProps) {
   return (
     <div className="bg-surface-card border border-line rounded-2xl p-6 hover:border-line-strong hover:shadow-elevated hover:-translate-y-0.5 transicion h-full">
-      <span className="text-3xl mb-3 block" aria-hidden="true">{icon}</span>
+      <IconBadge icon={icon} tone="brand" size="sm" className="mb-4" />
       <h3 className="text-lg font-semibold text-text-primary mb-1">{title}</h3>
       <p className="text-sm text-text-secondary mb-4">{description}</p>
       <Link to={href}>
         <Button variant="primary" size="sm">
           {ctaText}
-          <span aria-hidden="true">→</span>
+          <ArrowRight size={16} aria-hidden="true" />
         </Button>
       </Link>
     </div>

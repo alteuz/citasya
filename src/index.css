@@ -331,6 +331,13 @@
     linear-gradient(90deg, rgb(0 0 0 / 0.55) 0%, rgb(0 0 0 / 0) 55%);
 }
 
+/* En celular el logo queda arriba y el texto debajo: solo se oscurece la parte baja. */
+@media (width < 64rem) {
+  .velo-portada {
+    background: linear-gradient(180deg, rgb(0 0 0 / 0) 0%, rgb(0 0 0 / 0) 40%, rgb(0 0 0 / 0.6) 60%, rgb(0 0 0 / 0.9) 100%);
+  }
+}
+
 /* Fondo de las pantallas internas: grafito con un halo azul tenue del logo arriba. */
 .fondo-app {
   background-color: var(--color-surface);

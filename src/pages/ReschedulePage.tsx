@@ -9,6 +9,8 @@ import type { AppointmentMode } from '@/types/database';
 import { AppointmentModeSelector } from '@/components/appointments/AppointmentModeSelector';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
 import type { ServiceResult } from '@/types/common';
+import { ArrowLeft, ArrowRight, CalendarCheck, CalendarX, TriangleAlert } from 'lucide-react';
+import { IconBadge } from '@/components/ui/IconBadge';
 
 interface RescheduleContext {
   readonly appointment: AppointmentDetail;
@@ -130,7 +132,7 @@ export function ReschedulePage() {
   if (error || !appointment) {
     return (
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 text-center animate-fade-in">
-        <span className="text-5xl mb-4 block" aria-hidden="true">😕</span>
+        <IconBadge icon={TriangleAlert} tone="error" size="lg" className="mb-5" />
         <h1 className="text-2xl text-text-primary mb-2">Error al cargar</h1>
         <p className="text-text-secondary mb-6">{error ?? 'La cita solicitada no existe o no tienes permisos.'}</p>
         <Link to="/dashboard">
@@ -145,7 +147,7 @@ export function ReschedulePage() {
     return (
       <div className="mx-auto max-w-lg px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
         <div className="bg-surface-card border border-line rounded-2xl p-8 text-center">
-          <span className="text-6xl mb-4 block" aria-hidden="true">✅</span>
+          <IconBadge icon={CalendarCheck} tone="success" size="lg" className="mb-5" />
           <h1 className="text-2xl text-text-primary mb-2">
             ¡Cita reprogramada!
           </h1>
@@ -157,7 +159,7 @@ export function ReschedulePage() {
             <InfoRow label="Médico" value={appointment.doctorName} />
             <InfoRow label="Nueva Fecha" value={formatDateLong(selectedSlot!.date)} />
             <InfoRow label="Nueva Hora" value={`${formatTime(selectedSlot!.startTime)} - ${formatTime(selectedSlot!.endTime)}`} />
-            <InfoRow label="Modalidad" value={mode === 'presencial' ? '🏥 Presencial' : '💻 Telemedicina'} />
+            <InfoRow label="Modalidad" value={mode === 'presencial' ? 'Presencial' : 'Telemedicina'} />
           </div>
 
           <Link to="/dashboard/historial" className="block w-full">
@@ -179,7 +181,7 @@ export function ReschedulePage() {
           onClick={() => setStep('select')}
           className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-4 cursor-pointer"
         >
-          <span aria-hidden="true">←</span> Cambiar horario
+          <ArrowLeft size={16} aria-hidden="true" /> Cambiar horario
         </button>
 
         <h1 className="text-2xl text-text-primary mb-6">
@@ -241,7 +243,7 @@ export function ReschedulePage() {
             to="/dashboard/historial"
             className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-3"
           >
-            <span aria-hidden="true">←</span> Volver al historial
+            <ArrowLeft size={16} aria-hidden="true" /> Volver al historial
           </Link>
 
           <div className="flex items-center gap-4">
@@ -266,7 +268,7 @@ export function ReschedulePage() {
 
         {availableDates.length === 0 ? (
           <div className="bg-surface-card border border-line rounded-2xl p-8 text-center mb-8">
-            <span className="text-4xl mb-3 block" aria-hidden="true">📅</span>
+            <IconBadge icon={CalendarX} size="md" className="mb-4" />
             <p className="text-text-secondary">No hay horarios disponibles en los próximos 14 días para este médico.</p>
           </div>
         ) : (
@@ -341,7 +343,7 @@ export function ReschedulePage() {
                 </div>
                 <Button variant="primary" size="md" onClick={handleConfirm}>
                   Continuar
-                  <span aria-hidden="true">→</span>
+                  <ArrowRight size={16} aria-hidden="true" />
                 </Button>
               </div>
             )}

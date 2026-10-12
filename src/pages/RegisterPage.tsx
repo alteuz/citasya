@@ -6,6 +6,8 @@ import { useAuthContext } from '@/hooks/useAuthContext';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
 import { DoctorsService } from '@/services/doctors.service';
 import { problemaDeContrasena, vecesFiltrada } from '@/lib/contrasena';
+import { ArrowLeft, ArrowRight, MailCheck } from 'lucide-react';
+import { IconBadge } from '@/components/ui/IconBadge';
 
 interface EpsOption {
   readonly id: string;
@@ -98,7 +100,7 @@ export function RegisterPage() {
     return (
       <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 animate-fade-in">
         <div className="w-full max-w-md text-center">
-          <span className="text-6xl mb-6 block" aria-hidden="true">🎉</span>
+          <IconBadge icon={MailCheck} tone="success" size="lg" className="mb-6" />
           <h1 className="text-3xl text-text-primary mb-4">
             ¡Registro exitoso!
           </h1>
@@ -217,7 +219,7 @@ export function RegisterPage() {
                 onClick={handleNextStep}
               >
                 Siguiente
-                <span aria-hidden="true">→</span>
+                <ArrowRight size={16} aria-hidden="true" />
               </Button>
             </>
           ) : (
@@ -299,7 +301,7 @@ export function RegisterPage() {
                   onClick={handlePrevStep}
                   className="flex-1"
                 >
-                  <span aria-hidden="true">←</span>
+                  <ArrowLeft size={16} aria-hidden="true" />
                   Atrás
                 </Button>
                 <Button

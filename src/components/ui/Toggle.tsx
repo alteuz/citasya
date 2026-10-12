@@ -1,5 +1,7 @@
 import type { AppointmentMode } from '@/types/database';
 import { APPOINTMENT_MODE_LABELS } from '@/lib/constants';
+import { createElement } from 'react';
+import { Building2, Video, type LucideIcon } from 'lucide-react';
 
 interface ToggleProps {
   readonly value: AppointmentMode;
@@ -8,9 +10,9 @@ interface ToggleProps {
 
 const MODES: readonly AppointmentMode[] = ['presencial', 'telemedicina'];
 
-const MODE_ICONS: Record<AppointmentMode, string> = {
-  presencial: '🏥',
-  telemedicina: '💻',
+const MODE_ICONS: Record<AppointmentMode, LucideIcon> = {
+  presencial: Building2,
+  telemedicina: Video,
 };
 
 export function Toggle({ value, onChange }: ToggleProps) {
@@ -41,7 +43,7 @@ export function Toggle({ value, onChange }: ToggleProps) {
               }
             `}
           >
-            <span aria-hidden="true">{MODE_ICONS[mode]}</span>
+            {createElement(MODE_ICONS[mode], { size: 16, 'aria-hidden': true })}
             {APPOINTMENT_MODE_LABELS[mode]}
           </button>
         );

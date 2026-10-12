@@ -5,12 +5,14 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { AppointmentsService, type AppointmentDetail } from '@/services/appointments.service';
 import type { AppointmentStatus } from '@/types/database';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
+import { ArrowLeft, ArrowRight, Building2, CalendarClock, CalendarDays, CircleCheck, CircleX, RefreshCw, TriangleAlert, Video, type LucideIcon } from 'lucide-react';
+import { IconBadge } from '@/components/ui/IconBadge';
 
-const STATUS_CONFIG: Record<AppointmentStatus, { label: string; color: string; icon: string }> = {
-  scheduled: { label: 'Programada', color: 'bg-info-soft text-info border border-info/30', icon: '📅' },
-  completed: { label: 'Completada', color: 'bg-success-soft text-success border border-success/30', icon: '✅' },
-  cancelled: { label: 'Cancelada', color: 'bg-error-soft text-error border border-error/30', icon: '❌' },
-  rescheduled: { label: 'Reprogramada', color: 'bg-warning-soft text-warning border border-warning/30', icon: '🔄' },
+const STATUS_CONFIG: Record<AppointmentStatus, { label: string; color: string; icon: LucideIcon }> = {
+  scheduled: { label: 'Programada', color: 'bg-info-soft text-info border border-info/30', icon: CalendarClock },
+  completed: { label: 'Completada', color: 'bg-success-soft text-success border border-success/30', icon: CircleCheck },
+  cancelled: { label: 'Cancelada', color: 'bg-error-soft text-error border border-error/30', icon: CircleX },
+  rescheduled: { label: 'Reprogramada', color: 'bg-warning-soft text-warning border border-warning/30', icon: RefreshCw },
 };
 
 export function HistorialPage() {
@@ -54,7 +56,7 @@ export function HistorialPage() {
             to="/dashboard"
             className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-3"
           >
-            <span aria-hidden="true">←</span> Volver al panel
+            <ArrowLeft size={16} aria-hidden="true" /> Volver al panel
           </Link>
           <h1 className="text-2xl md:text-3xl text-text-primary">
             Mis citas
@@ -78,7 +80,7 @@ export function HistorialPage() {
         {/* Error */}
         {error && !isLoading && (
           <div className="bg-error-soft border border-error/30 rounded-2xl p-8 text-center">
-            <span className="text-4xl mb-3 block" aria-hidden="true">⚠️</span>
+            <IconBadge icon={TriangleAlert} tone="error" size="md" className="mb-4" />
             <p className="text-error font-medium">{error}</p>
             <Button variant="secondary" size="sm" onClick={reload} className="mt-4">
               Reintentar
@@ -89,7 +91,7 @@ export function HistorialPage() {
         {/* Empty */}
         {!isLoading && !error && appointments.length === 0 && (
           <div className="bg-surface-card border border-line rounded-2xl p-10 text-center">
-            <span className="text-5xl mb-4 block" aria-hidden="true">🗓️</span>
+            <IconBadge icon={CalendarDays} size="lg" className="mb-5" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">
               No tienes citas registradas
             </h3>
@@ -99,7 +101,7 @@ export function HistorialPage() {
             <Link to="/buscar">
               <Button variant="primary" size="md">
                 Buscar médico
-                <span aria-hidden="true">→</span>
+                <ArrowRight size={16} aria-hidden="true" />
               </Button>
             </Link>
           </div>
@@ -122,10 +124,10 @@ export function HistorialPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
                         <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${config.color}`}>
-                          {config.icon} {config.label}
+                          <config.icon size={13} aria-hidden="true" /> {config.label}
                         </span>
                         <span className="text-xs text-text-muted">
-                          {apt.mode === 'presencial' ? '🏥 Presencial' : '💻 Telemedicina'}
+                          <span className="inline-flex items-center gap-1.5">{apt.mode === 'presencial' ? <Building2 size={14} aria-hidden="true" /> : <Video size={14} aria-hidden="true" />}{apt.mode === 'presencial' ? 'Presencial' : 'Telemedicina'}</span>
                         </span>
                       </div>
 

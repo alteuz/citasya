@@ -1,5 +1,6 @@
 import { APPOINTMENT_MODE_LABELS } from '@/lib/constants';
 import type { AppointmentMode } from '@/types/database';
+import { Building2, Video, type LucideIcon } from 'lucide-react';
 
 interface AppointmentModeSelectorProps {
   readonly value: AppointmentMode;
@@ -7,9 +8,9 @@ interface AppointmentModeSelectorProps {
   readonly name?: string;
 }
 
-const OPTIONS: readonly { readonly value: AppointmentMode; readonly icon: string }[] = [
-  { value: 'presencial', icon: '🏥' },
-  { value: 'telemedicina', icon: '💻' },
+const OPTIONS: readonly { readonly value: AppointmentMode; readonly icon: LucideIcon }[] = [
+  { value: 'presencial', icon: Building2 },
+  { value: 'telemedicina', icon: Video },
 ];
 
 /**
@@ -41,7 +42,7 @@ export function AppointmentModeSelector({ value, onChange, name = 'modalidad' }:
                 peer-checked:border-accent peer-checked:bg-accent-soft peer-checked:text-accent
                 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent"
             >
-              <span aria-hidden="true">{option.icon}</span>
+              <option.icon size={18} aria-hidden="true" />
               {APPOINTMENT_MODE_LABELS[option.value]}
             </span>
           </label>
