@@ -144,8 +144,8 @@
   --text-superscript: 0.5em;
   --text-stat: clamp(1.75rem, 3.2vw, 2.75rem); /* cifras de la portada */
   --text-stat--line-height: 1;
-  --text-hero: clamp(3rem, 7.4vw, 7rem);     /* titular de la portada */
-  --text-hero--line-height: 0.95;
+  --text-hero: clamp(2.75rem, 10vw, 9rem);   /* titular de la portada */
+  --text-hero--line-height: 0.92;
 
   /* ─── Radios (concéntricos: exterior = interior + relleno) ─── */
   --radius-sm: 0.375rem;
@@ -301,6 +301,25 @@
   }
 }
 
+/* Tarjeta que se eleva al pasar el mouse (solo con puntero fino; nunca con movimiento reducido). */
+@utility levitar {
+  transition-property: transform, border-color, background-color, box-shadow;
+  transition-duration: 220ms;
+  transition-timing-function: var(--ease-out);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { transform: translateY(-4px); box-shadow: var(--shadow-elevated); }
+  }
+}
+
+/* Ícono de tarjeta que crece un poco cuando se pasa el mouse por la tarjeta. */
+.icono-realce {
+  transition: transform 220ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .group:hover .icono-realce { transform: scale(1.08) rotate(-4deg); }
+}
+
 /* ─── Animaciones ─── */
 
 @keyframes skeleton-pulse {
@@ -427,6 +446,16 @@
     transition-duration: 0s !important;
     transition-delay: 0s !important;
   }
+}
+
+/* Sin desplazamientos al pasar el mouse con movimiento reducido (sistema o widget). */
+@media (prefers-reduced-motion: reduce) {
+  .levitar:hover, .group:hover .icono-realce { transform: none !important; }
+}
+
+html.reduce-motion .levitar:hover,
+html.reduce-motion .group:hover .icono-realce {
+  transform: none !important;
 }
 
 html.reduce-motion *,

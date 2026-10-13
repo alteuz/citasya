@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
-import { motion, AnimatePresence, MotionConfig, type Variants } from 'framer-motion';
+import {
+  motion, AnimatePresence, MotionConfig, animate, useInView, useMotionTemplate,
+  useMotionValueEvent, useReducedMotion, useScroll, useTransform, type Variants,
+} from 'framer-motion';
 import { ArrowRight, Building2, CalendarClock, ChevronDown, CircleCheck, Monitor, Search, X } from 'lucide-react';
 import heroBgVideo from '@/assets/hero-bg.mp4';
 import { useAuthContext } from '@/hooks/useAuthContext';
@@ -8,8 +11,12 @@ import { Footer } from '@/components/layout/Footer';
 import { IconBadge } from '@/components/ui/IconBadge';
 
 // ─── Movimiento ───────────────────────────────────────────────────────────────
-// Una sola curva (ease-out exponencial) y un solo ritmo de escalonado para toda
-// la portada: los elementos entran como una secuencia, no cada uno por su lado.
+// Una sola curva (la --ease-out del sistema de diseño) y un solo ritmo de
+// escalonado para toda la portada. Se anima con cadenas `transform` completas
+// (aceleradas por GPU) en lugar de los atajos x/y, porque la entrada ocurre
+// mientras la página todavía carga.
+// Todo se apaga con "Reducir movimiento" del widget o con la preferencia del
+// sistema: los elementos aparecen ya en su estado final.
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const secuencia: Variants = {
@@ -18,21 +25,26 @@ const secuencia: Variants = {
 };
 
 const aparecer: Variants = {
-  oculto: { opacity: 0, y: 14, filter: 'blur(6px)' },
-  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.7, ease: EASE } },
+  oculto: { opacity: 0, transform: 'translateY(14px)', filter: 'blur(6px)' },
+  visible: { opacity: 1, transform: 'translateY(0px)', filter: 'blur(0px)', transition: { duration: 0.7, ease: EASE } },
 };
 
-// Cada línea del titular sube desde detrás de una máscara.
+// Cada palabra del titular sube desde detrás de una máscara.
 const linea: Variants = {
-  oculto: { y: '105%' },
-  visible: { y: '0%', transition: { duration: 0.9, ease: EASE } },
+  oculto: { transform: 'translateY(110%)' },
+  visible: { transform: 'translateY(0%)', transition: { duration: 0.8, ease: EASE } },
+};
+
+const titular: Variants = {
+  oculto: {},
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.2 } },
 };
 
 // Cifras reales de la base de datos (EPS, sedes IPS y especialidades cargadas).
 const CIFRAS = [
-  { valor: '11', etiqueta: 'EPS vinculadas' },
-  { valor: '32', etiqueta: 'Sedes en Bogotá' },
-  { valor: '12', etiqueta: 'Especialidades' },
+  { valor: 11, etiqueta: 'EPS vinculadas' },
+  { valor: 32, etiqueta: 'Sedes en Bogotá' },
+  { valor: 12, etiqueta: 'Especialidades' },
 ] as const;
 
 const PASOS = [
@@ -78,14 +90,14 @@ export function HomePage() {
   const { isAuthenticated, logout, isLoading } = useAuthContext();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // ─── Movimiento reducido (opción del widget de accesibilidad) ───
-  const [shouldReduceMotion, setShouldReduceMotion] = useState(() => {
+  // ─── Movimiento reducido: opción del widget de accesibilidad o del sistema ───
+  const [widgetReduce, setWidgetReduce] = useState(() => {
     return document.documentElement.classList.contains('reduce-motion');
   });
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
-      setShouldReduceMotion(document.documentElement.classList.contains('reduce-motion'));
+      setWidgetReduce(document.documentElement.classList.contains('reduce-motion'));
     });
     observer.observe(document.documentElement, {
       attributes: true,
@@ -93,6 +105,21 @@ export function HomePage() {
     });
     return () => observer.disconnect();
   }, []);
+
+  const sistemaReduce = useReducedMotion() ?? false;
+  const shouldReduceMotion = widgetReduce || sistemaReduce;
+
+  // ─── Desplazamiento: barra con fondo y portada que se aleja con suavidad ───
+  const { scrollY } = useScroll();
+  const [barraConFondo, setBarraConFondo] = useState(false);
+  useMotionValueEvent(scrollY, 'change', (y) => setBarraConFondo(y > 24));
+
+  const escalaVideo = useTransform(scrollY, [0, 700], [1, 0.88]);
+  const opacidadVideo = useTransform(scrollY, [0, 700], [1, 0.3]);
+  const subidaPortada = useTransform(scrollY, [0, 700], [0, -90]);
+  const opacidadPortada = useTransform(scrollY, [0, 500], [1, 0]);
+  const transformVideo = useMotionTemplate`scale(${escalaVideo})`;
+  const transformPortada = useMotionTemplate`translate3d(0, ${subidaPortada}px, 0)`;
 
   // ─── Video: pausa con movimiento reducido; aparece con fundido al cargar ───
   useEffect(() => {
@@ -152,37 +179,45 @@ export function HomePage() {
     <MotionConfig reducedMotion={shouldReduceMotion ? 'always' : 'user'}>
       <div className="relative w-full bg-black text-white overflow-x-hidden font-sans">
 
-        {/* ─── Video de fondo: mismo negro que la página, sin recuadro visible ─── */}
-        <video
-          ref={videoRef}
-          autoPlay={!shouldReduceMotion}
-          loop
-          muted
-          playsInline
+        {/* ─── Video de fondo: mismo negro que la página, sin recuadro visible.
+             Al desplazarse se aleja y se apaga un poco (no ocurre con movimiento reducido). ─── */}
+        <motion.div
           aria-hidden="true"
-          onLoadedData={() => setVideoListo(true)}
-          className={`fixed inset-0 w-full h-full object-contain max-lg:top-10 max-lg:bottom-auto max-lg:h-[44svh] z-[1] pointer-events-none transition-opacity duration-[1400ms] ease-out ${videoListo ? 'opacity-100' : 'opacity-0'}`}
-          onEnded={(e) => {
-            // Garantiza loop sin cortes en navegadores que ignoran el atributo loop
-            const video = e.currentTarget;
-            video.currentTime = 0;
-            void video.play();
-          }}
+          style={shouldReduceMotion ? { transform: 'none', opacity: 1 } : { transform: transformVideo, opacity: opacidadVideo }}
+          className="fixed inset-0 z-[1] pointer-events-none origin-top lg:origin-center"
         >
-          <source src={heroBgVideo} type="video/mp4" />
-        </video>
+          <video
+            ref={videoRef}
+            autoPlay={!shouldReduceMotion}
+            loop
+            muted
+            playsInline
+            onLoadedData={() => setVideoListo(true)}
+            className={`absolute inset-0 w-full h-full object-contain max-lg:top-10 max-lg:bottom-auto max-lg:h-[44svh] transition-opacity duration-[1400ms] ease-out ${videoListo ? 'opacity-100' : 'opacity-0'}`}
+            onEnded={(e) => {
+              // Garantiza loop sin cortes en navegadores que ignoran el atributo loop
+              const video = e.currentTarget;
+              video.currentTime = 0;
+              void video.play();
+            }}
+          >
+            <source src={heroBgVideo} type="video/mp4" />
+          </video>
+        </motion.div>
         <div className="fixed inset-0 z-[2] pointer-events-none velo-portada" />
 
-        {/* ─── Portada (alto de pantalla) ─── */}
-        <div className="relative z-20 min-h-svh flex flex-col">
-
-          {/* Barra de navegación */}
+        {/* ─── Barra de navegación fija: gana fondo al desplazarse ─── */}
+        <header className="fixed inset-x-0 top-0 z-40">
+          <div
+            aria-hidden="true"
+            className={`absolute inset-0 bg-black/70 backdrop-blur-xl border-b border-white/10 transition-opacity duration-300 ease-out ${barraConFondo ? 'opacity-100' : 'opacity-0'}`}
+          />
           <motion.nav
             aria-label="Navegación principal"
-            initial={shouldReduceMotion ? false : { opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, transform: 'translateY(-8px)' }}
+            animate={{ opacity: 1, transform: 'translateY(0px)' }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="w-full max-w-7xl mx-auto flex items-center justify-between gap-6 px-5 sm:px-8 pt-5"
+            className="relative w-full max-w-7xl mx-auto flex items-center justify-between gap-6 px-5 sm:px-8 py-4"
           >
             <button type="button" onClick={() => navigate('/')} className="rounded-xl cursor-pointer" aria-label="CitasYA, ir al inicio">
               <Logo />
@@ -257,16 +292,31 @@ export function HomePage() {
               </button>
             </div>
           </motion.nav>
+        </header>
 
-          {/* Contenido de la portada, anclado abajo para dejar ver el logo del video */}
+        {/* ─── Portada (alto de pantalla); sube y se desvanece al desplazarse ─── */}
+        <motion.div
+          style={shouldReduceMotion ? { transform: 'none', opacity: 1 } : { transform: transformPortada, opacity: opacidadPortada }}
+          className="relative z-20 min-h-svh flex flex-col pt-[4.75rem]"
+        >
           <motion.div
             variants={secuencia}
             initial={inicial}
             animate="visible"
-            className="flex-1 w-full max-w-7xl mx-auto px-5 sm:px-8 pt-[34svh] lg:pt-0 pb-8 md:pb-12 flex flex-col justify-end"
+            className="flex-1 w-full max-w-7xl mx-auto px-5 sm:px-8 pt-[28svh] lg:pt-0 pb-8 md:pb-12 flex flex-col justify-end"
           >
-            <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-              <div className="max-w-2xl">
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-end lg:gap-12">
+              {/* Titular original: mayúsculas, a la derecha, una palabra por línea */}
+              <motion.h1
+                variants={titular}
+                className="lg:order-2 flex flex-col items-end font-serif uppercase text-right text-hero text-white"
+              >
+                <Palabra>Agenda</Palabra>
+                <Palabra className="italic text-accent">Sin</Palabra>
+                <Palabra>Filas.</Palabra>
+              </motion.h1>
+
+              <div className="lg:order-1 flex flex-col items-start">
                 <motion.div
                   variants={aparecer}
                   className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] backdrop-blur-md px-3 py-1.5 text-xs font-medium text-white/80"
@@ -278,22 +328,11 @@ export function HomePage() {
                   Disponible 24/7 · Bogotá
                 </motion.div>
 
-                <h1 className="mt-5 font-serif text-hero text-white">
-                  <span className="block overflow-hidden pb-[0.06em]">
-                    <motion.span variants={linea} className="block">Agenda</motion.span>
-                  </span>
-                  <span className="block overflow-hidden pb-[0.1em] pr-[0.08em]">
-                    <motion.span variants={linea} className="block">
-                      <em className="italic text-accent">sin</em> filas.
-                    </motion.span>
-                  </span>
-                </h1>
-
                 <motion.p variants={aparecer} className="mt-5 max-w-md text-base md:text-lg leading-relaxed text-white/70">
                   Plataforma centralizada para gestionar tus citas con tu EPS en Bogotá. Rápido, seguro y accesible.
                 </motion.p>
 
-                <motion.div variants={aparecer} className="mt-8 flex flex-col sm:flex-row sm:items-center gap-3">
+                <motion.div variants={aparecer} className="mt-7 w-full flex flex-col sm:flex-row sm:items-center gap-3">
                   <button
                     type="button"
                     onClick={() => navigate('/buscar')}
@@ -305,29 +344,32 @@ export function HomePage() {
                   <button
                     type="button"
                     onClick={() => irA('#como-funciona')}
-                    className="inline-flex items-center justify-center gap-1.5 min-h-12 px-5 rounded-full text-base font-medium text-white/80 hover:text-white hover:bg-white/[0.06] transicion cursor-pointer"
+                    className="group inline-flex items-center justify-center gap-1.5 min-h-12 px-5 rounded-full text-base font-medium text-white/80 hover:text-white hover:bg-white/[0.06] transicion cursor-pointer"
                   >
                     Cómo funciona
-                    <ChevronDown size={18} aria-hidden="true" />
+                    <ChevronDown size={18} aria-hidden="true" className="transition-transform duration-200 ease-out group-hover:translate-y-0.5" />
                   </button>
                 </motion.div>
-              </div>
 
-              {/* Cifras reales */}
-              <motion.dl
-                variants={aparecer}
-                className="grid grid-cols-3 gap-3 pr-16 border-t border-white/10 pt-5 lg:gap-0 lg:pr-0 lg:border-t-0 lg:pt-0 lg:flex lg:divide-x lg:divide-white/10"
-              >
-                {CIFRAS.map((cifra) => (
-                  <div key={cifra.etiqueta} className="flex flex-col-reverse justify-end gap-1 lg:px-8 lg:last:pr-0">
-                    <dt className="text-xs sm:text-sm text-white/60 leading-snug">{cifra.etiqueta}</dt>
-                    <dd className="font-serif text-stat text-white tabular-nums">{cifra.valor}</dd>
-                  </div>
-                ))}
-              </motion.dl>
+                {/* Cifras reales: cuentan desde cero al aparecer */}
+                <motion.dl
+                  variants={aparecer}
+                  className="mt-8 w-full grid grid-cols-3 gap-3 pr-16 lg:pr-0 border-t border-white/10 pt-5"
+                >
+                  {CIFRAS.map((cifra) => (
+                    <div key={cifra.etiqueta} className="flex flex-col-reverse justify-end gap-1">
+                      <dt className="text-xs sm:text-sm text-white/60 leading-snug">{cifra.etiqueta}</dt>
+                      <dd className="font-serif text-stat text-white tabular-nums">
+                        <span className="sr-only">{cifra.valor}</span>
+                        <Contador valor={cifra.valor} reducir={shouldReduceMotion} />
+                      </dd>
+                    </div>
+                  ))}
+                </motion.dl>
+              </div>
             </div>
           </motion.div>
-        </div>
+        </motion.div>
 
         {/* ─── Menú móvil ─── */}
         <AnimatePresence>
@@ -401,7 +443,9 @@ export function HomePage() {
           <div className="max-w-7xl mx-auto">
             <Revelar reducir={shouldReduceMotion} className="max-w-3xl">
               <p className="text-sm font-medium text-accent">¿Qué es CitasYA?</p>
-              <h2 className="mt-3 text-4xl md:text-5xl text-white">Cómo funciona la plataforma</h2>
+              <h2 className="mt-3 overflow-hidden pb-[0.1em] text-4xl md:text-5xl text-white">
+                <motion.span variants={linea} className="block">Cómo funciona la plataforma</motion.span>
+              </h2>
               <p className="mt-6 text-base md:text-lg leading-relaxed text-white/65">
                 <strong className="font-semibold text-white">CitasYA</strong> es tu puerta de entrada inteligente a la salud en Bogotá. Somos una plataforma centralizada que conecta a los ciudadanos directamente con sus Entidades Promotoras de Salud (EPS), eliminando las filas físicas y telefónicas. Facilitamos la búsqueda de médicos, la consulta de especialidades y el agendamiento o reprogramación de citas en un entorno 100% digital, accesible e inclusivo para todas las edades.
               </p>
@@ -409,19 +453,17 @@ export function HomePage() {
 
             <Revelar reducir={shouldReduceMotion} escalonar className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {PASOS.map((paso, i) => (
-                <motion.article
-                  key={paso.titulo}
-                  variants={aparecer}
-                  className="relative rounded-3xl border border-white/10 bg-white/[0.03] tarjeta-luz p-7 hover:border-white/20 hover:bg-white/[0.05] transicion"
-                >
+                <motion.article key={paso.titulo} variants={aparecer} className="h-full">
+                  <div className="levitar group relative h-full rounded-3xl border border-white/10 bg-white/[0.03] tarjeta-luz p-7 hover:border-white/20 hover:bg-white/[0.05]">
                   <div className="flex items-start justify-between">
-                    <IconBadge icon={paso.icono} tone="brand" size="sm" />
+                    <IconBadge icon={paso.icono} tone="brand" size="sm" className="icono-realce" />
                     <span className="font-serif text-2xl text-white/25 tabular-nums" aria-hidden="true">0{i + 1}</span>
                   </div>
                   <h3 className="mt-6 text-lg font-semibold text-white">
                     <span className="sr-only">Paso {i + 1}: </span>{paso.titulo}
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-white/60">{paso.texto}</p>
+                  </div>
                 </motion.article>
               ))}
             </Revelar>
@@ -433,12 +475,14 @@ export function HomePage() {
           <div className="max-w-7xl mx-auto">
             <Revelar reducir={shouldReduceMotion} className="max-w-3xl">
               <p className="text-sm font-medium text-accent">Soporte directo</p>
-              <h2 className="mt-3 text-4xl md:text-5xl text-white">Centro de Ayuda</h2>
+              <h2 className="mt-3 overflow-hidden pb-[0.1em] text-4xl md:text-5xl text-white">
+                <motion.span variants={linea} className="block">Centro de Ayuda</motion.span>
+              </h2>
             </Revelar>
 
             <Revelar reducir={shouldReduceMotion} escalonar className="mt-14 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-              <motion.article variants={aparecer} className="rounded-3xl border border-white/10 bg-white/[0.03] tarjeta-luz p-7 md:p-8 flex flex-col gap-5">
-                <IconBadge icon={Monitor} tone="brand" size="sm" />
+              <motion.article variants={aparecer} className="group rounded-3xl border border-white/10 bg-white/[0.03] tarjeta-luz p-7 md:p-8 flex flex-col gap-5 hover:border-white/20 transicion">
+                <IconBadge icon={Monitor} tone="brand" size="sm" className="icono-realce" />
                 <h3 className="text-xl font-semibold text-white">Soporte técnico de la página</h3>
                 <p className="text-sm leading-relaxed text-white/65">
                   Si experimentas problemas técnicos con el funcionamiento de CitasYA, como errores al iniciar sesión, problemas al agendar o fallas en el visualizador, por favor contacta a nuestro equipo de desarrollo:
@@ -451,8 +495,8 @@ export function HomePage() {
                 </div>
               </motion.article>
 
-              <motion.article variants={aparecer} className="rounded-3xl border border-white/10 bg-white/[0.03] tarjeta-luz p-7 md:p-8 flex flex-col gap-5">
-                <IconBadge icon={Building2} tone="brand" size="sm" />
+              <motion.article variants={aparecer} className="group rounded-3xl border border-white/10 bg-white/[0.03] tarjeta-luz p-7 md:p-8 flex flex-col gap-5 hover:border-white/20 transicion">
+                <IconBadge icon={Building2} tone="brand" size="sm" className="icono-realce" />
                 <h3 className="text-xl font-semibold text-white">Asuntos de tu EPS</h3>
                 <p className="text-sm leading-relaxed text-white/65">
                   Si tu consulta está relacionada con autorizaciones de servicios, reclamos, entrega de medicamentos o peticiones directamente relacionadas con tu EPS, comunícate a sus canales oficiales:
@@ -503,4 +547,39 @@ function Revelar({ children, className = '', reducir, escalonar = false }: Revel
       {children}
     </motion.div>
   );
+}
+
+// ─── Palabra del titular: sube desde detrás de una máscara ───────────────────
+function Palabra({ children, className = '' }: { readonly children: ReactNode; readonly className?: string }) {
+  return (
+    <span className="block overflow-hidden pb-[0.04em] pr-[0.08em] -mr-[0.08em]">
+      <motion.span variants={linea} className={`block ${className}`}>{children}</motion.span>
+    </span>
+  );
+}
+
+// ─── Cifra que cuenta desde cero la primera vez que se ve ────────────────────
+// El valor real va en un sr-only aparte: el lector de pantalla no oye la cuenta.
+function Contador({ valor, reducir }: { readonly valor: number; readonly reducir: boolean }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const enVista = useInView(ref, { once: true });
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (reducir) {
+      el.textContent = String(valor);
+      return;
+    }
+    if (!enVista) return;
+    const controles = animate(0, valor, {
+      duration: 1.4,
+      delay: 0.6,
+      ease: EASE,
+      onUpdate: (v) => { el.textContent = String(Math.round(v)); },
+    });
+    return () => controles.stop();
+  }, [enVista, reducir, valor]);
+
+  return <span ref={ref} aria-hidden="true">{reducir ? valor : 0}</span>;
 }
