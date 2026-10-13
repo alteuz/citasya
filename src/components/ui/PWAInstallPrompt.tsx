@@ -3,6 +3,8 @@
  * Solo se muestra si el navegador emite el evento `beforeinstallprompt`.
  */
 import { useState, useEffect, useCallback } from 'react';
+import { Smartphone } from 'lucide-react';
+import { IconBadge } from './IconBadge';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -56,7 +58,7 @@ export function PWAInstallPrompt() {
   return (
     <div className="fixed top-4 left-4 right-4 z-50 animate-fade-in sm:top-auto sm:bottom-6 sm:left-6 sm:right-auto sm:max-w-sm">
       <div className="bg-surface-card text-text-primary border border-line-strong rounded-2xl p-4 shadow-elevated flex items-center gap-3">
-        <span className="text-3xl shrink-0" aria-hidden="true">📱</span>
+        <IconBadge icon={Smartphone} tone="brand" size="sm" />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold">Instalar CitasYA</p>
           <p className="text-sm text-text-secondary mt-0.5">
@@ -74,7 +76,7 @@ export function PWAInstallPrompt() {
           <button
             type="button"
             onClick={() => { void handleInstall(); }}
-            className="inline-flex items-center min-h-11 bg-accent text-text-inverse text-sm font-semibold px-4 rounded-xl hover:bg-accent-hover presionable cursor-pointer"
+            className="inline-flex items-center min-h-11 bg-brand text-white text-sm font-semibold px-4 rounded-xl hover:bg-brand-hover presionable cursor-pointer"
           >
             Instalar
           </button>

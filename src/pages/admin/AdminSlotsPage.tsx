@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { AdminService, type AdminDoctor, type AdminSlot, type GenerateSlotsInput } from '@/services/admin.service';
+import { ArrowLeft, Lock, X } from 'lucide-react';
 
 export function AdminSlotsPage() {
   const [doctors, setDoctors] = useState<readonly AdminDoctor[]>([]);
@@ -76,7 +77,7 @@ export function AdminSlotsPage() {
       return;
     }
 
-    setGenResult(`✅ Se generaron ${result.data} slots exitosamente.`);
+    setGenResult(`Se generaron ${result.data} slots exitosamente.`);
     void loadSlots(selectedDoctor);
   }, [selectedDoctor, startDate, endDate, startHour, endHour, duration, excludeWeekends, loadSlots]);
 
@@ -106,10 +107,10 @@ export function AdminSlotsPage() {
       <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <Link to="/admin" className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-3">
-            <span aria-hidden="true">←</span> Volver al panel
+            <ArrowLeft size={16} aria-hidden="true" /> Volver al panel
           </Link>
-          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
-            Gestión de Disponibilidad 📋
+          <h1 className="text-2xl md:text-3xl text-text-primary">
+            Gestión de Disponibilidad
           </h1>
         </div>
       </div>
@@ -141,7 +142,7 @@ export function AdminSlotsPage() {
           <>
             {/* Generate Form */}
             <div className="bg-surface-card border border-line rounded-2xl p-6 mb-8">
-              <h2 className="text-lg font-semibold text-text-primary mb-4">Generar slots en lote</h2>
+              <h2 className="font-sans text-lg font-semibold text-text-primary mb-4">Generar slots en lote</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
                   <label htmlFor="gen-start" className="text-sm font-medium text-text-secondary block mb-1.5">Fecha inicio</label>
@@ -203,14 +204,14 @@ export function AdminSlotsPage() {
               )}
 
               <div className="mt-4">
-                <Button variant="accent" size="md" isLoading={isGenerating} onClick={() => { void handleGenerate(); }}>
+                <Button variant="primary" size="md" isLoading={isGenerating} onClick={() => { void handleGenerate(); }}>
                   Generar slots
                 </Button>
               </div>
             </div>
 
             {/* Slots List */}
-            <h2 className="text-lg font-semibold text-text-primary mb-4">
+            <h2 className="font-sans text-lg font-semibold text-text-primary mb-4">
               Slots existentes ({slots.length})
             </h2>
 
@@ -227,7 +228,7 @@ export function AdminSlotsPage() {
                 {Array.from(slotsByDate.entries()).map(([date, dateSlots]) => (
                   <div key={date} className="bg-surface-card border border-line rounded-2xl p-4">
                     <h3 className="text-sm font-semibold text-text-primary mb-3">
-                      📅 {formatDateLong(date)} ({dateSlots.length} slots)
+                      {formatDateLong(date)} ({dateSlots.length} slots)
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {dateSlots.map((slot) => (
@@ -238,7 +239,7 @@ export function AdminSlotsPage() {
                         }`}>
                           <span>{formatTime(slot.startTime)} - {formatTime(slot.endTime)}</span>
                           {slot.isBooked ? (
-                            <span className="inline-flex items-center justify-center min-w-10 text-error">🔒</span>
+                            <span className="inline-flex items-center justify-center min-w-10 text-error"><Lock size={14} aria-label="Reservado" /></span>
                           ) : (
                             <button
                               type="button"
@@ -247,7 +248,7 @@ export function AdminSlotsPage() {
                               className="inline-flex items-center justify-center min-h-10 min-w-10 rounded-md text-error hover:bg-error/15 disabled:opacity-50 disabled:cursor-not-allowed presionable cursor-pointer"
                               aria-label="Eliminar slot"
                             >
-                              ✕
+                              <X size={16} aria-hidden="true" />
                             </button>
                           )}
                         </div>

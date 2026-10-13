@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Button } from './Button';
+import { Accessibility, X } from 'lucide-react';
 
 type TextScale = 'normal' | 'large' | 'extra-large';
 
@@ -165,8 +166,8 @@ export function AccessibilityWidget() {
         {isOpen && (
           <div className="mb-4 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-surface/95 backdrop-blur-xl border border-line rounded-3xl p-6 shadow-elevated animate-fade-in text-text-primary accessibility-widget-panel">
             <div className="flex items-center justify-between mb-5 border-b border-line pb-3">
-              <h2 className="font-sans text-lg font-bold flex items-center gap-2">
-                <span className="text-xl">⚙️</span> Ajustes de Accesibilidad
+              <h2 className="font-sans text-lg font-semibold flex items-center gap-2">
+                <Accessibility size={20} aria-hidden="true" className="text-accent" /> Ajustes de Accesibilidad
               </h2>
               <button
                 type="button"
@@ -174,7 +175,7 @@ export function AccessibilityWidget() {
                 className="inline-flex items-center justify-center min-h-11 min-w-11 -mr-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface-hover presionable cursor-pointer"
                 aria-label="Cerrar panel de accesibilidad"
               >
-                ✕
+                <X size={20} aria-hidden="true" />
               </button>
             </div>
 
@@ -284,9 +285,9 @@ export function AccessibilityWidget() {
           onClick={() => setIsOpen(!isOpen)}
           aria-expanded={isOpen}
           aria-label="Panel de opciones de accesibilidad para adultos mayores"
-          className="w-14 h-14 rounded-full bg-accent hover:bg-accent-hover text-text-inverse font-bold text-2xl flex items-center justify-center shadow-elevated transicion hover:scale-105 active:scale-95 cursor-pointer focus-visible:outline-3 focus-visible:outline-white focus-visible:outline-offset-2 accessibility-trigger-btn"
+          className="w-14 h-14 rounded-full bg-brand hover:bg-brand-hover text-white ring-1 ring-white/15 flex items-center justify-center shadow-button transicion active:scale-95 cursor-pointer focus-visible:outline-3 focus-visible:outline-white focus-visible:outline-offset-2 accessibility-trigger-btn"
         >
-          {isOpen ? '✕' : '♿'}
+          {isOpen ? <X size={24} aria-hidden="true" /> : <Accessibility size={26} aria-hidden="true" />}
         </button>
       </div>
     </>

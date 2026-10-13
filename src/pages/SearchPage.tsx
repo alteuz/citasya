@@ -5,6 +5,8 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { DoctorsService, type DoctorSearchResult, type SpecialtyOption, type EpsOption } from '@/services/doctors.service';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
 import type { ServiceResult } from '@/types/common';
+import { ArrowRight, ChevronDown, Search, SearchX, SlidersHorizontal, Stethoscope, TriangleAlert } from 'lucide-react';
+import { IconBadge } from '@/components/ui/IconBadge';
 
 interface SearchFiltersCatalog {
   readonly specialties: readonly SpecialtyOption[];
@@ -90,8 +92,8 @@ export function SearchPage() {
     return (
       <div className="py-12 px-4">
         <div className="mx-auto max-w-2xl bg-surface-card border border-line rounded-3xl p-6 sm:p-8 md:p-12 shadow-elevated text-center">
-          <span className="text-6xl mb-6 block" aria-hidden="true">🩺</span>
-          <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
+          <IconBadge icon={Stethoscope} tone="brand" size="lg" className="mb-6" />
+          <h1 className="text-3xl md:text-4xl text-text-primary mb-4">
             ¿Qué médico necesitas hoy?
           </h1>
           <p className="text-text-secondary text-base md:text-lg mb-10 max-w-md mx-auto leading-relaxed">
@@ -116,8 +118,8 @@ export function SearchPage() {
                     <option key={s.id} value={s.id}>{s.name}</option>
                   ))}
                 </select>
-                <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none text-accent font-bold" aria-hidden="true">
-                  ▼
+                <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none text-text-muted" aria-hidden="true">
+                  <ChevronDown size={20} />
                 </div>
               </div>
             </div>
@@ -139,21 +141,21 @@ export function SearchPage() {
                     <option key={e.id} value={e.id}>{e.name}</option>
                   ))}
                 </select>
-                <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none text-accent font-bold" aria-hidden="true">
-                  ▼
+                <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none text-text-muted" aria-hidden="true">
+                  <ChevronDown size={20} />
                 </div>
               </div>
             </div>
           </div>
 
           <Button
-            variant="accent"
+            variant="primary"
             size="lg"
             fullWidth
             onClick={handleSearchSubmit}
             className="min-h-14 text-lg font-bold rounded-2xl"
           >
-            🔍 Encontrar Médicos Disponibles
+            <Search size={18} aria-hidden="true" /> Encontrar Médicos Disponibles
           </Button>
         </div>
       </div>
@@ -166,7 +168,7 @@ export function SearchPage() {
       <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
+            <h1 className="text-2xl md:text-3xl text-text-primary">
               Médicos Disponibles
             </h1>
             <p className="text-text-secondary mt-1 flex flex-wrap gap-2 items-center">
@@ -188,7 +190,7 @@ export function SearchPage() {
               onClick={() => setHasSearched(false)}
               className="font-bold"
             >
-              ✏️ Modificar Búsqueda
+              <SlidersHorizontal size={16} aria-hidden="true" /> Modificar Búsqueda
             </Button>
             <Button
               variant="ghost"
@@ -222,7 +224,7 @@ export function SearchPage() {
         {/* Error state */}
         {error && !isLoading && (
           <div className="bg-error-soft border border-error/30 rounded-2xl p-8 text-center">
-            <span className="text-4xl mb-3 block" aria-hidden="true">⚠️</span>
+            <IconBadge icon={TriangleAlert} tone="error" size="md" className="mb-4" />
             <p className="text-error font-medium">{error}</p>
             <Button variant="secondary" size="sm" onClick={search.reload} className="mt-4">
               Reintentar
@@ -233,8 +235,8 @@ export function SearchPage() {
         {/* Empty state */}
         {!isLoading && !error && doctors.length === 0 && (
           <div className="bg-surface-card border border-line rounded-2xl p-10 text-center">
-            <span className="text-5xl mb-4 block" aria-hidden="true">🔍</span>
-            <h2 className="text-lg font-semibold text-text-primary mb-2">
+            <IconBadge icon={SearchX} size="lg" className="mb-5" />
+            <h2 className="font-sans text-lg font-semibold text-text-primary mb-2">
               No se encontraron médicos
             </h2>
             <p className="text-text-secondary mb-6 max-w-md mx-auto">
@@ -283,7 +285,7 @@ function DoctorCard({ doctor, modeParam }: DoctorCardProps) {
           {initials}
         </div>
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-text-primary truncate">
+          <h2 className="font-sans text-base font-semibold text-text-primary truncate">
             {doctor.fullName}
           </h2>
           <p className="text-sm text-accent font-medium">
@@ -308,9 +310,9 @@ function DoctorCard({ doctor, modeParam }: DoctorCardProps) {
       </div>
 
       <Link to={`/buscar/${doctor.id}${modeParam ? `?modo=${modeParam}` : ''}`}>
-        <Button variant="accent" size="sm" fullWidth>
+        <Button variant="primary" size="sm" fullWidth>
           Ver disponibilidad
-          <span aria-hidden="true">→</span>
+          <ArrowRight size={16} aria-hidden="true" />
         </Button>
       </Link>
     </div>

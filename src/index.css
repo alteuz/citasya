@@ -5,8 +5,10 @@
  *
  * Todos los colores salen de la paleta del logo (public/logo.png):
  *   azul #3B75FF (núcleo) · azul profundo #1833DB · cian #17EEFF / #1DA8FD.
- * De ahí se derivan tres escalas: `brand` (azul), `accent` (cian) y `night`
- * (neutros azulados del azul profundo, para superficies y texto). Los colores
+ * De ahí se derivan `brand` (azul, la única acción principal) y `accent` (cian,
+ * solo resaltes y foco). Las superficies son grafito neutro (`night`) para que
+ * el color de la marca sea lo único que destaque y la portada funda con el
+ * negro del video. Los colores
  * de estado (éxito, advertencia, error) son la única excepción: comunican
  * significado y no pueden salir del azul; se mantienen en tokens propios.
  *
@@ -78,19 +80,19 @@
   --color-accent-900: #0f4c5c;
   --color-accent-950: #062f3a;
 
-  /* ─── Escala night: neutros azulados (tono del azul profundo #1833DB) ─── */
-  --color-night-50: #f3f5fc;
-  --color-night-100: #e4e9f7;
-  --color-night-200: #c9d1ec;
-  --color-night-300: #a3aed4;
-  --color-night-400: #6473aa;
-  --color-night-500: #46578f;
-  --color-night-600: #2a3a72;
-  --color-night-700: #1c2a5a;
-  --color-night-800: #142048;
-  --color-night-850: #0f1733;
-  --color-night-900: #0b1129;
-  --color-night-950: #070b1c;
+  /* ─── Escala night: grafito neutro (superficies y texto; el color lo pone la marca) ─── */
+  --color-night-50: #f7f7f8;
+  --color-night-100: #ececef;
+  --color-night-200: #d4d4d8;
+  --color-night-300: #a1a1aa;
+  --color-night-400: #71717a;
+  --color-night-500: #52525b;
+  --color-night-600: #3f3f46;
+  --color-night-700: #27272a;
+  --color-night-800: #1c1c1f;
+  --color-night-850: #141416;
+  --color-night-900: #0e0e10;
+  --color-night-950: #09090b;
 
   /* ─── Tokens semánticos (los que usan los componentes) ─── */
   --color-surface: var(--color-night-950);          /* fondo de la página */
@@ -140,11 +142,10 @@
   --text-logo-lg--line-height: 1;
   --leading-display: 0.92;
   --text-superscript: 0.5em;
-  --text-stat: clamp(1.6rem, 5vw, 3.5rem);   /* cifras de la portada */
+  --text-stat: clamp(1.75rem, 3.2vw, 2.75rem); /* cifras de la portada */
   --text-stat--line-height: 1;
-  --text-hero: clamp(2.2rem, 10vw, 9rem);    /* titular de la portada */
+  --text-hero: clamp(2.75rem, 10vw, 9rem);   /* titular de la portada */
   --text-hero--line-height: 0.92;
-  --color-overlay: rgb(7 11 28);            /* night-950 para velos sobre el video */            /* signos "+" junto a cifras */
 
   /* ─── Radios (concéntricos: exterior = interior + relleno) ─── */
   --radius-sm: 0.375rem;
@@ -155,17 +156,17 @@
   --radius-3xl: 2rem;
   --radius-full: 9999px;
 
-  /* ─── Sombras (tintadas con el azul profundo del logo) ─── */
-  --shadow-card: 0 1px 2px rgb(7 11 28 / 0.4), 0 1px 3px rgb(7 11 28 / 0.3);
-  --shadow-elevated: 0 8px 24px rgb(7 11 28 / 0.45), 0 2px 6px rgb(7 11 28 / 0.35);
-  --shadow-button: 0 1px 2px rgb(7 11 28 / 0.4), 0 4px 12px rgb(24 51 219 / 0.25);
+  /* ─── Sombras: negras y en capas; el botón principal lleva un halo azul del logo ─── */
+  --shadow-card: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 1px 2px rgb(0 0 0 / 0.5), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  --shadow-elevated: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 16px 40px -12px rgb(0 0 0 / 0.75), 0 4px 12px rgb(0 0 0 / 0.4);
+  --shadow-button: 0 1px 0 rgb(255 255 255 / 0.18) inset, 0 1px 2px rgb(0 0 0 / 0.4), 0 6px 20px -6px rgb(59 117 255 / 0.55);
   --shadow-glow: 0 0 16px rgb(23 212 240 / 0.25);
   --drop-shadow-glow: 0 0 20px rgb(23 212 240 / 0.6);
   --drop-shadow-soft: 0 0 20px rgb(255 255 255 / 0.35);
 
   /* ─── Movimiento: microinteracciones de 150–250 ms, solo transform y opacity ─── */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --animate-fade-in: fade-in 220ms var(--ease-out);
+  --animate-fade-in: fade-in 320ms var(--ease-out);
   --animate-skeleton: skeleton-pulse 1.5s ease-in-out infinite;
   --animate-slide-in: slide-in-right 220ms var(--ease-out);
   --animate-slide-out: slide-out-right 180ms ease-in;
@@ -193,7 +194,14 @@
 
   h1, h2 {
     font-family: var(--font-serif);
+    font-weight: 400;
+    letter-spacing: -0.01em;
     text-wrap: balance;
+  }
+
+  /* DM Serif Display solo existe en peso 400: nunca sintetizar una negrita falsa. */
+  .font-serif, h1, h2 {
+    font-synthesis-weight: none;
   }
 
   h3, h4, figcaption, label, legend {
@@ -276,21 +284,40 @@
   &[aria-invalid="true"] { border-color: var(--color-error); }
 }
 
-/* ─── Microinteracciones (solo transform y opacity) ─── */
+/* ─── Microinteracciones: 150–250 ms; nunca `transition: all` ─── */
 
 @utility transicion {
-  transition-property: transform, opacity;
+  transition-property: transform, opacity, color, background-color, border-color, box-shadow;
   transition-duration: 200ms;
   transition-timing-function: var(--ease-out);
 }
 
 @utility presionable {
-  transition-property: transform, opacity;
+  transition-property: transform, opacity, color, background-color, border-color, box-shadow;
   transition-duration: 160ms;
   transition-timing-function: var(--ease-out);
   &:active:not(:disabled) {
     transform: scale(0.97);
   }
+}
+
+/* Tarjeta que se eleva al pasar el mouse (solo con puntero fino; nunca con movimiento reducido). */
+@utility levitar {
+  transition-property: transform, border-color, background-color, box-shadow;
+  transition-duration: 220ms;
+  transition-timing-function: var(--ease-out);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { transform: translateY(-4px); box-shadow: var(--shadow-elevated); }
+  }
+}
+
+/* Ícono de tarjeta que crece un poco cuando se pasa el mouse por la tarjeta. */
+.icono-realce {
+  transition: transform 220ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .group:hover .icono-realce { transform: scale(1.08) rotate(-4deg); }
 }
 
 /* ─── Animaciones ─── */
@@ -315,11 +342,33 @@
   to { transform: translateX(100%); }
 }
 
-/* ─── Velo sobre el video de la portada (night-950 con transparencia) ─── */
+/* ─── Portada: negro puro, el mismo del video, para que no se vea su recuadro ─── */
 
 .velo-portada {
-  background: linear-gradient(180deg,
-    rgb(7 11 28 / 0.55) 0%, rgb(7 11 28 / 0.2) 40%, rgb(7 11 28 / 0.7) 80%, rgb(7 11 28 / 0.92) 100%);
+  background:
+    linear-gradient(180deg, rgb(0 0 0 / 0.7) 0%, rgb(0 0 0 / 0) 22%, rgb(0 0 0 / 0) 48%, rgb(0 0 0 / 0.75) 78%, rgb(0 0 0 / 0.95) 100%),
+    linear-gradient(90deg, rgb(0 0 0 / 0.55) 0%, rgb(0 0 0 / 0) 55%);
+}
+
+/* En celular el logo queda arriba y el texto debajo: solo se oscurece la parte baja. */
+@media (width < 64rem) {
+  .velo-portada {
+    background: linear-gradient(180deg, rgb(0 0 0 / 0) 0%, rgb(0 0 0 / 0) 40%, rgb(0 0 0 / 0.6) 60%, rgb(0 0 0 / 0.9) 100%);
+  }
+}
+
+/* Fondo de las pantallas internas: grafito con un halo azul tenue del logo arriba. */
+.fondo-app {
+  background-color: var(--color-surface);
+  background-image:
+    radial-gradient(60rem 28rem at 50% -8rem, rgb(59 117 255 / 0.13), transparent 70%),
+    radial-gradient(40rem 20rem at 100% 0%, rgb(23 212 240 / 0.05), transparent 70%);
+  background-repeat: no-repeat;
+}
+
+/* Tarjeta con brillo superior sutil: da volumen sin colores nuevos. */
+.tarjeta-luz {
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.035), rgb(255 255 255 / 0) 40%);
 }
 
 /* ─── Gradientes de marca (del logo: azul → cian) ─── */
@@ -351,13 +400,13 @@
 .nav-link-underline::after {
   content: '';
   position: absolute;
-  bottom: -4px;
+  bottom: 8px;
   left: 0;
   width: 100%;
-  height: 2px;
-  background-color: var(--color-accent);
+  height: 1px;
+  background-color: currentColor;
   transform: scaleX(0);
-  transform-origin: center;
+  transform-origin: left;
   transition: transform 200ms var(--ease-out);
 }
 
@@ -397,6 +446,16 @@
     transition-duration: 0s !important;
     transition-delay: 0s !important;
   }
+}
+
+/* Sin desplazamientos al pasar el mouse con movimiento reducido (sistema o widget). */
+@media (prefers-reduced-motion: reduce) {
+  .levitar:hover, .group:hover .icono-realce { transform: none !important; }
+}
+
+html.reduce-motion .levitar:hover,
+html.reduce-motion .group:hover .icono-realce {
+  transform: none !important;
 }
 
 html.reduce-motion *,
@@ -451,6 +510,11 @@ html.high-contrast {
   --color-error-soft: #ffffff;
   --color-info: #0000ee;
   --color-info-soft: #ffffff;
+}
+
+html.high-contrast .fondo-app,
+html.high-contrast .tarjeta-luz {
+  background-image: none;
 }
 
 html.high-contrast .gradient-text-primary,

@@ -28,7 +28,7 @@ export function DirectorioEpsPage() {
       {/* Header */}
       <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 md:py-14 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-2">
+          <h1 className="text-3xl md:text-4xl text-text-primary mb-2">
             EPS habilitadas en Bogotá
           </h1>
           <p className="text-text-secondary max-w-2xl mx-auto">
@@ -63,7 +63,7 @@ export function DirectorioEpsPage() {
                 aria-labelledby={`eps-${eps.id}`}
                 className="bg-surface-card border border-line rounded-2xl p-6 h-full"
               >
-                <h2 id={`eps-${eps.id}`} className="text-lg font-bold text-text-primary leading-tight">
+                <h2 id={`eps-${eps.id}`} className="font-sans text-lg font-bold text-text-primary leading-tight">
                   {eps.nombre}
                 </h2>
                 <p className="text-sm text-text-secondary mt-1">

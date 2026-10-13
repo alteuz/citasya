@@ -7,6 +7,8 @@ import { useAuthContext } from '@/hooks/useAuthContext';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { Link } from 'react-router';
+import { Lock } from 'lucide-react';
+import { IconBadge } from '@/components/ui/IconBadge';
 
 export function AdminRoute() {
   const { isAuthenticated, isLoading, profile } = useAuthContext();
@@ -31,8 +33,8 @@ export function AdminRoute() {
   if (profile?.role !== 'admin') {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 p-8 animate-fade-in">
-        <span className="text-6xl" aria-hidden="true">🔒</span>
-        <h1 className="text-2xl font-bold text-text-primary">Acceso denegado</h1>
+        <IconBadge icon={Lock} tone="warning" size="lg" />
+        <h1 className="text-2xl text-text-primary">Acceso denegado</h1>
         <p className="text-text-secondary text-center max-w-md">
           No tienes permisos de administrador para acceder a esta sección.
         </p>

@@ -5,12 +5,13 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { AdminService, type AdminAppointment } from '@/services/admin.service';
 import type { AppointmentStatus } from '@/types/database';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
+import { ArrowLeft, Building2, CalendarClock, CircleCheck, CircleX, ClipboardList, Video, type LucideIcon } from 'lucide-react';
 
-const STATUS_TABS: Array<{ value: AppointmentStatus | 'all'; label: string; icon: string }> = [
-  { value: 'all', label: 'Todas', icon: '📋' },
-  { value: 'scheduled', label: 'Programadas', icon: '📅' },
-  { value: 'completed', label: 'Completadas', icon: '✅' },
-  { value: 'cancelled', label: 'Canceladas', icon: '❌' },
+const STATUS_TABS: Array<{ value: AppointmentStatus | 'all'; label: string; icon: LucideIcon }> = [
+  { value: 'all', label: 'Todas', icon: ClipboardList },
+  { value: 'scheduled', label: 'Programadas', icon: CalendarClock },
+  { value: 'completed', label: 'Completadas', icon: CircleCheck },
+  { value: 'cancelled', label: 'Canceladas', icon: CircleX },
 ];
 
 const STATUS_BADGE: Record<AppointmentStatus, { label: string; className: string }> = {
@@ -37,10 +38,10 @@ export function AdminAppointmentsPage() {
       <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <Link to="/admin" className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-3">
-            <span aria-hidden="true">←</span> Volver al panel
+            <ArrowLeft size={16} aria-hidden="true" /> Volver al panel
           </Link>
-          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
-            Todas las Citas 🗓️
+          <h1 className="text-2xl md:text-3xl text-text-primary">
+            Todas las Citas
           </h1>
         </div>
       </div>
@@ -60,7 +61,7 @@ export function AdminAppointmentsPage() {
                   : 'bg-surface-card border border-line-input text-text-secondary hover:border-text-muted hover:text-text-primary'
               }`}
             >
-              <span aria-hidden="true">{tab.icon}</span> {tab.label}
+              <tab.icon size={16} aria-hidden="true" /> {tab.label}
             </button>
           ))}
         </div>
@@ -111,7 +112,7 @@ export function AdminAppointmentsPage() {
                         <td className="py-3 px-4 text-sm text-text-secondary">{formatDateShort(apt.slotDate)}</td>
                         <td className="py-3 px-4 text-sm text-text-secondary">{formatTime(apt.slotStartTime)}</td>
                         <td className="py-3 px-4 text-xs text-text-muted">
-                          {apt.mode === 'presencial' ? '🏥' : '💻'}
+                          {apt.mode === 'presencial' ? <Building2 size={16} aria-label="Presencial" /> : <Video size={16} aria-label="Telemedicina" />}
                         </td>
                         <td className="py-3 px-4">
                           <span className={`inline-flex text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${badge.className}`}>

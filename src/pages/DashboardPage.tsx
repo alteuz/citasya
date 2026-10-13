@@ -6,6 +6,8 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { AppointmentsService, type AppointmentDetail } from '@/services/appointments.service';
 import { AuthService } from '@/services/auth.service';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
+import { ArrowRight, Building2, CalendarDays, CalendarPlus, ClipboardList, Pencil, Settings, Video, type LucideIcon } from 'lucide-react';
+import { IconBadge } from '@/components/ui/IconBadge';
 
 export function DashboardPage() {
   const { profile, isLoading: authLoading, refreshProfile, user } = useAuthContext();
@@ -106,8 +108,8 @@ export function DashboardPage() {
       {/* Header */}
       <div className="bg-surface-muted border-b border-line">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
-            ¡Hola, {firstName}! 👋
+          <h1 className="text-2xl md:text-3xl text-text-primary">
+            ¡Hola, {firstName}!
           </h1>
           <p className="text-text-secondary mt-1">
             Gestiona tus citas médicas desde aquí.
@@ -119,15 +121,15 @@ export function DashboardPage() {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
           <QuickActionCard
-            icon="📅"
+            icon={CalendarPlus}
             title="Agendar nueva cita"
             description="Busca médicos disponibles y agenda tu próxima cita."
             href="/buscar"
             ctaText="Agendar cita"
-            variant="accent"
+            variant="primary"
           />
           <QuickActionCard
-            icon="📋"
+            icon={ClipboardList}
             title="Mis citas"
             description="Revisa tus citas programadas y el historial."
             href="/dashboard/historial"
@@ -135,7 +137,7 @@ export function DashboardPage() {
             variant="primary"
           />
             <QuickActionCard
-              icon="🏥"
+              icon={Building2}
               title="Directorio EPS"
               description="Consulta las EPS vinculadas y sus especialidades."
               href="/directorio-eps"
@@ -144,12 +146,12 @@ export function DashboardPage() {
             />
             {profile?.role === 'admin' && (
               <QuickActionCard
-                icon="⚙️"
+                icon={Settings}
                 title="Panel de Admin"
                 description="Gestión del sistema, usuarios y estadísticas globales."
                 href="/admin"
                 ctaText="Ir al Panel"
-                variant="accent"
+                variant="primary"
               />
             )}
           </div>
@@ -157,11 +159,11 @@ export function DashboardPage() {
         {/* Upcoming Appointments */}
         <section aria-labelledby="upcoming-heading">
           <div className="flex items-center justify-between mb-6">
-            <h2 id="upcoming-heading" className="text-xl font-semibold text-text-primary">
+            <h2 id="upcoming-heading" className="font-sans text-xl font-semibold text-text-primary">
               Próximas citas
             </h2>
             <Link to="/dashboard/historial" className="inline-flex items-center min-h-11 px-1 rounded-lg text-sm text-accent hover:text-accent-hover hover:underline underline-offset-4 font-medium">
-              Ver todas →
+              Ver todas <ArrowRight size={14} aria-hidden="true" className="ml-1" />
             </Link>
           </div>
 
@@ -176,7 +178,7 @@ export function DashboardPage() {
           {/* Empty state */}
           {!isLoadingAppointments && upcomingAppointments.length === 0 && (
             <div className="bg-surface-card border border-line rounded-2xl p-10 text-center">
-              <span className="text-5xl mb-4 block" aria-hidden="true">🗓️</span>
+              <IconBadge icon={CalendarDays} size="lg" className="mb-5" />
               <h3 className="text-lg font-semibold text-text-primary mb-2">
                 No tienes citas próximas
               </h3>
@@ -184,9 +186,9 @@ export function DashboardPage() {
                 Agenda tu primera cita con uno de nuestros médicos afiliados.
               </p>
               <Link to="/buscar">
-                <Button variant="accent" size="md">
+                <Button variant="primary" size="md">
                   Buscar médico disponible
-                  <span aria-hidden="true">→</span>
+                  <ArrowRight size={16} aria-hidden="true" />
                 </Button>
               </Link>
             </div>
@@ -217,13 +219,13 @@ export function DashboardPage() {
                         {formatDateLong(apt.slotDate)} · {formatTime(apt.slotStartTime)} - {formatTime(apt.slotEndTime)}
                       </p>
                       <span className="text-xs text-text-muted">
-                        {apt.mode === 'presencial' ? '🏥 Presencial' : '💻 Telemedicina'}
+                        <span className="inline-flex items-center gap-1.5">{apt.mode === 'presencial' ? <Building2 size={14} aria-hidden="true" /> : <Video size={14} aria-hidden="true" />}{apt.mode === 'presencial' ? 'Presencial' : 'Telemedicina'}</span>
                       </span>
                     </div>
                   </div>
                   <div className="flex flex-col gap-2 items-stretch sm:items-end">
                     <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-info-soft text-info border border-info/30 self-start sm:self-end whitespace-nowrap text-center mb-1">
-                      📅 Programada
+                      Programada
                     </span>
                     <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                       <Link to={`/reprogramar/${apt.id}`} className="w-full sm:w-auto">
@@ -257,12 +259,12 @@ export function DashboardPage() {
         {profile && (
           <section className="mt-10" aria-labelledby="profile-heading">
             <div className="flex items-center justify-between mb-4">
-              <h2 id="profile-heading" className="text-xl font-semibold text-text-primary">
+              <h2 id="profile-heading" className="font-sans text-xl font-semibold text-text-primary">
                 Tu información
               </h2>
               {!isEditingProfile && (
                 <Button variant="ghost" size="sm" onClick={startEditing}>
-                  ✏️ Editar
+                  <Pencil size={16} aria-hidden="true" /> Editar
                 </Button>
               )}
             </div>
@@ -357,7 +359,7 @@ export function DashboardPage() {
 // ─── Subcomponentes internos ────────────────────────────────────────────────
 
 interface QuickActionCardProps {
-  readonly icon: string;
+  readonly icon: LucideIcon;
   readonly title: string;
   readonly description: string;
   readonly href: string;
@@ -367,14 +369,14 @@ interface QuickActionCardProps {
 
 function QuickActionCard({ icon, title, description, href, ctaText, variant }: QuickActionCardProps) {
   return (
-    <div className="bg-surface-card border border-line rounded-2xl p-6 hover:border-line-strong hover:shadow-elevated hover:-translate-y-0.5 transicion h-full">
-      <span className="text-3xl mb-3 block" aria-hidden="true">{icon}</span>
+    <div className="bg-surface-card border border-line rounded-2xl p-6 hover:border-line-strong hover:shadow-elevated hover:-translate-y-0.5 transicion h-full tarjeta-luz">
+      <IconBadge icon={icon} tone="brand" size="sm" className="mb-4" />
       <h3 className="text-lg font-semibold text-text-primary mb-1">{title}</h3>
       <p className="text-sm text-text-secondary mb-4">{description}</p>
       <Link to={href}>
         <Button variant={variant} size="sm">
           {ctaText}
-          <span aria-hidden="true">→</span>
+          <ArrowRight size={16} aria-hidden="true" />
         </Button>
       </Link>
     </div>
