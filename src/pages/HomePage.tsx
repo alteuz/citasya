@@ -20,9 +20,10 @@ import { POSTER_PORTADA } from '@/lib/portada';
 /** Retraso de una animación de entrada o de revelado (variable CSS --retraso). */
 const retraso = (ms: number) => ({ '--retraso': `${ms}ms` }) as CSSProperties;
 
-// Cifras reales de la base de datos (EPS, sedes IPS y especialidades cargadas).
+// Cifras reales de la base de datos: EPS activas (habilitadas en Bogotá), sedes
+// IPS del REPS y especialidades. Consulta del 15-oct-2026: 9, 32 y 12.
 const CIFRAS = [
-  { valor: 11, etiqueta: 'EPS vinculadas' },
+  { valor: 9, etiqueta: 'EPS habilitadas' },
   { valor: 32, etiqueta: 'Sedes en Bogotá' },
   { valor: 12, etiqueta: 'Especialidades' },
 ] as const;
