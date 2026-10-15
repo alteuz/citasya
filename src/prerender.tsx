@@ -15,12 +15,15 @@ import { renderToString } from 'react-dom/server';
 import { createStaticHandler, createStaticRouter, StaticRouterProvider } from 'react-router';
 import { rutas } from './rutas';
 
+// Ruta del póster de la portada: scripts/prerender.mjs lo precarga en el <head> de "/".
+export { POSTER_PORTADA } from './lib/portada';
+
 /**
- * Rutas públicas cuyo contenido inicial no depende del usuario. La página de
- * inicio queda fuera mientras conserve animaciones de entrada que parten de
- * opacidad 0 (se rediseña junto con el video del hero).
+ * Rutas públicas cuyo contenido inicial no depende del usuario. La portada
+ * ("/") se incorporó cuando su entrada pasó a animaciones CSS (visibles sin
+ * JavaScript) y su video a un póster precargado (ADR-0007).
  */
-export const RUTAS_PRERENDERIZADAS = ['/iniciar-sesion', '/registrarse', '/buscar', '/directorio-eps'] as const;
+export const RUTAS_PRERENDERIZADAS = ['/', '/iniciar-sesion', '/registrarse', '/buscar', '/directorio-eps'] as const;
 
 export async function prerenderizar(ruta: string): Promise<string> {
   const { query, dataRoutes } = createStaticHandler(rutas);

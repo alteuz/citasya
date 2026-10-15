@@ -8,7 +8,7 @@ import { AdminRoute } from '@/components/layout/AdminRoute';
 //
 // División de código por ruta: cada página se descarga solo cuando se visita.
 // Evita que las páginas internas carguen dependencias exclusivas de otras
-// (p. ej., framer-motion, que solo usa la página de inicio).
+// (p. ej., el video de la portada o el cliente de datos de la búsqueda).
 export const rutas: RouteObject[] = [
   {
     path: '/',

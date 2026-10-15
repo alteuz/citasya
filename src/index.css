@@ -342,6 +342,120 @@
   to { transform: translateX(100%); }
 }
 
+/* ─── Entrada de la portada (CSS, no JavaScript) ───
+ * Corre fuera del hilo principal y funciona aunque el JavaScript no haya
+ * cargado: el HTML prerenderizado la trae lista. `both` deja el elemento en su
+ * estado inicial durante el retraso (--retraso). Con movimiento reducido
+ * (sistema o widget) las reglas del final de este archivo la anulan. */
+
+@keyframes entrada-sube {
+  from { opacity: 0; transform: translateY(14px); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+@keyframes entrada-palabra {
+  from { transform: translateY(110%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes entrada-baja {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.entrada {
+  animation: entrada-sube 700ms var(--ease-out) both;
+  animation-delay: var(--retraso, 0ms);
+}
+
+.entrada-palabra {
+  animation: entrada-palabra 800ms var(--ease-out) both;
+  animation-delay: var(--retraso, 0ms);
+}
+
+.entrada-barra {
+  animation: entrada-baja 600ms var(--ease-out) both;
+}
+
+/* Revelado al desplazarse: el script solo oculta lo que aún no se ve; la
+ * transición vive en el estado "visible" para que ocultar sea instantáneo. */
+[data-revelar][data-estado='oculto'] {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(6px);
+}
+
+[data-revelar][data-estado='visible'] {
+  transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out), filter 700ms var(--ease-out);
+  transition-delay: var(--retraso, 0ms);
+}
+
+/* ─── Efectos ligados al desplazamiento (portada) ───
+ * Líneas de tiempo de scroll: la animación avanza con el desplazamiento y corre
+ * en el compositor, sin JavaScript. Donde el navegador no las soporta, la
+ * portada queda estática y la barra conserva su fondo (mejora progresiva). */
+
+@keyframes barra-fondo {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes portada-alejar {
+  to { transform: scale(0.88); opacity: 0.3; }
+}
+
+@keyframes portada-subir {
+  to { transform: translate3d(0, -90px, 0); opacity: 0; }
+}
+
+@supports (animation-timeline: scroll()) {
+  .barra-fondo {
+    animation: barra-fondo linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 48px;
+  }
+
+  .portada-alejar {
+    animation: portada-alejar linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 700px;
+  }
+
+  .portada-subir {
+    animation: portada-subir linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 500px;
+  }
+}
+
+/* ─── Menú móvil de la portada (diálogo) ───
+ * Cerrado: invisible e inerte (atributo inert). Al abrir aparece con un fundido
+ * y sus opciones entran escalonadas (--i); al cerrar se va más rápido. */
+.menu-movil {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 160ms ease-out, visibility 0s linear 160ms;
+}
+
+.menu-movil[data-abierto='true'] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 240ms var(--ease-out), visibility 0s;
+}
+
+.menu-movil [data-item] {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 160ms ease-out, transform 160ms ease-out, color 200ms ease;
+}
+
+.menu-movil[data-abierto='true'] [data-item] {
+  opacity: 1;
+  transform: none;
+  transition: opacity 420ms var(--ease-out), transform 420ms var(--ease-out), color 200ms ease;
+  transition-delay: calc(80ms + var(--i, 0) * 50ms), calc(80ms + var(--i, 0) * 50ms), 0ms;
+}
+
 /* ─── Portada: negro puro, el mismo del video, para que no se vea su recuadro ─── */
 
 .velo-portada {
@@ -448,14 +562,22 @@
   }
 }
 
-/* Sin desplazamientos al pasar el mouse con movimiento reducido (sistema o widget). */
+/* Sin desplazamientos al pasar el mouse ni efectos ligados al scroll con
+ * movimiento reducido (sistema o widget); la barra conserva su fondo. */
 @media (prefers-reduced-motion: reduce) {
   .levitar:hover, .group:hover .icono-realce { transform: none !important; }
+  .portada-alejar, .portada-subir, .barra-fondo { animation: none !important; }
 }
 
 html.reduce-motion .levitar:hover,
 html.reduce-motion .group:hover .icono-realce {
   transform: none !important;
+}
+
+html.reduce-motion .portada-alejar,
+html.reduce-motion .portada-subir,
+html.reduce-motion .barra-fondo {
+  animation: none !important;
 }
 
 html.reduce-motion *,

@@ -5,9 +5,13 @@
  * Proporciona experiencia offline básica mostrando una página de fallback.
  */
 
-const CACHE_NAME = 'citasya-v15';
+const CACHE_NAME = 'citasya-v16';
+// '/spa' es el shell vacío de la SPA (las rutas privadas sin conexión); '/'
+// ya es la portada prerenderizada.
 const STATIC_ASSETS = [
   '/',
+  '/spa',
+  '/portada-poster.webp',
   '/manifest.json',
   '/logo.png',
   '/icons/icon-192.png',
@@ -70,7 +74,7 @@ self.addEventListener('fetch', (event) => {
         })
         .catch(() => {
           return caches.match(request).then((cached) => {
-            return cached || caches.match('/');
+            return cached || caches.match('/spa');
           });
         })
     );

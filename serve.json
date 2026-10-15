@@ -1,9 +1,24 @@
 {
   "rewrites": [
-    { "source": "/iniciar-sesion", "destination": "/iniciar-sesion.html" },
-    { "source": "/registrarse", "destination": "/registrarse.html" },
-    { "source": "/buscar", "destination": "/buscar.html" },
-    { "source": "/directorio-eps", "destination": "/directorio-eps.html" },
-    { "source": "/:ruta([^.]+)", "destination": "/index.html" }
+    {
+      "source": "/iniciar-sesion",
+      "destination": "/iniciar-sesion.html"
+    },
+    {
+      "source": "/registrarse",
+      "destination": "/registrarse.html"
+    },
+    {
+      "source": "/buscar",
+      "destination": "/buscar.html"
+    },
+    {
+      "source": "/directorio-eps",
+      "destination": "/directorio-eps.html"
+    },
+    {
+      "source": "/:ruta([^.]+)",
+      "destination": "/spa.html"
+    }
   ]
 }
