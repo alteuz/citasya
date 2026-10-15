@@ -11,11 +11,12 @@
 -- que es el mecanismo que fuerza la reversión.
 --
 -- Resultado registrado el 26-sep-2026: 13 de 13 pruebas pasan.
+-- Resultado registrado el 15-oct-2026: 17 de 17 (se suman T14–T17: H-36 y H-37).
 -- ════════════════════════════════════════════════════════════════════════════
 do $$
 declare
-  p1 uuid; p2 uuid; v_eps uuid; v_otra_eps uuid; v_med uuid; v_med_otra uuid;
-  s_libre uuid; s_libre2 uuid; s_pasado uuid; s_cerca uuid; s_otra_eps uuid;
+  p1 uuid; p2 uuid; p3 uuid; v_eps uuid; v_otra_eps uuid; v_med uuid; v_med_otra uuid; v_esp uuid;
+  s_libre uuid; s_libre2 uuid; s_libre3 uuid; s_pasado uuid; s_cerca uuid; s_otra_eps uuid;
   v_cita uuid; v_cita_cerca uuid;
   v_ahora timestamp := (now() at time zone 'America/Bogota');
   v_cerca_inicio timestamp;
@@ -39,6 +40,14 @@ begin
   insert into public.availability_slots (doctor_id, date, start_time, end_time)
     values (v_med, v_cerca_inicio::date, v_cerca_inicio::time, (v_cerca_inicio + interval '20 minutes')::time) returning id into s_cerca;
   insert into public.availability_slots (doctor_id, date, start_time, end_time) values (v_med_otra, current_date + 10, '09:00', '09:20') returning id into s_otra_eps;
+  -- p3: perfil sin EPS (H-37) y con una cita «programada» ya vencida en la especialidad de v_med (H-36)
+  select id into p3 from public.profiles where role='patient' and id not in (p1, p2) order by created_at limit 1;
+  select specialty_id into v_esp from public.doctors where id = v_med;
+  delete from public.appointments where patient_id = p3 and status in ('scheduled','rescheduled');
+  update public.profiles set eps_id = null where id = p3;
+  insert into public.appointments (patient_id, doctor_id, slot_id, eps_id, specialty_id, mode, status)
+    values (p3, v_med, s_pasado, v_eps, v_esp, 'presencial', 'scheduled');
+  insert into public.availability_slots (doctor_id, date, start_time, end_time) values (v_med, current_date + 12, '08:00', '08:20') returning id into s_libre3;
 
   -- ── Pruebas (como pacientes autenticados) ──
   perform set_config('request.jwt.claims', json_build_object('sub',p1,'role','authenticated')::text, true);
@@ -90,6 +99,23 @@ begin
   begin perform public.reservar_cita(s_libre2, 'presencial', null); resultado := 'OK (reservó)';
   exception when insufficient_privilege then resultado := 'SIN PERMISO'; when others then resultado := sqlerrm; end;
   res := res || array['T13 visitante sin sesión intenta reservar', 'SIN PERMISO', resultado];
+  execute 'reset role';
+
+  -- ── EPS del perfil (H-37) ──
+  perform set_config('request.jwt.claims', json_build_object('sub',p1,'role','authenticated')::text, true);
+  execute 'set local role authenticated';
+  begin perform public.asignar_mi_eps(v_otra_eps); resultado := 'OK (cambió la EPS)'; exception when others then resultado := sqlerrm; end;
+  res := res || array['T14 cambiar una EPS ya registrada (H-37)', 'EPS_YA_REGISTRADA', resultado];
+
+  perform set_config('request.jwt.claims', json_build_object('sub',p3,'role','authenticated')::text, true);
+  begin perform public.asignar_mi_eps(gen_random_uuid()); resultado := 'OK'; exception when others then resultado := sqlerrm; end;
+  res := res || array['T15 registrar una EPS que no existe (H-37)', 'EPS_INVALIDA', resultado];
+  begin perform public.asignar_mi_eps(v_eps); resultado := 'OK'; exception when others then resultado := sqlerrm; end;
+  res := res || array['T16 registrar la EPS de un perfil que no la tiene (H-37)', 'OK', resultado];
+
+  -- ── Citas vencidas (H-36) ──
+  begin perform public.reservar_cita(s_libre3, 'presencial', null); resultado := 'OK'; exception when others then resultado := sqlerrm; end;
+  res := res || array['T17 una cita vencida no bloquea otra de la misma especialidad (H-36)', 'OK', resultado];
   execute 'reset role';
 
   -- ── Informe y reversión ──

@@ -29,6 +29,9 @@ export const CODIGOS_AGENDAMIENTO = [
   'CITA_NO_ACTIVA',
   'FUERA_DE_PLAZO',
   'MEDICO_DISTINTO',
+  // EPS del perfil (H-37)
+  'EPS_INVALIDA',
+  'EPS_YA_REGISTRADA',
 ] as const;
 
 export type CodigoAgendamiento = (typeof CODIGOS_AGENDAMIENTO)[number];

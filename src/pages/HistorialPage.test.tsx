@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { HistorialPage } from './HistorialPage';
@@ -54,5 +54,67 @@ describe('HistorialPage', () => {
 
     expect(await screen.findByText('Dra. Ana Pérez')).toBeInTheDocument();
     expect(screen.queryByText('No fue posible cargar tus citas.')).not.toBeInTheDocument();
+  });
+});
+
+// H-36: una cita programada cuya hora ya pasó no es «próxima» ni se puede cancelar.
+describe('HistorialPage: citas pasadas y plazo de 24 horas', () => {
+  beforeEach(() => {
+    vi.mocked(AppointmentsService.getMyAppointments).mockReset();
+    // Solo se fija el reloj (no los temporizadores): 15-oct-2026, 10:00 en Bogotá.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-15T15:00:00Z'));
+  });
+  afterEach(() => vi.useRealTimers());
+
+  const programada = (id: string, medico: string, fecha: string, inicio: string, fin: string): AppointmentDetail => ({
+    ...cita,
+    id,
+    status: 'scheduled',
+    doctorName: medico,
+    slotDate: fecha,
+    slotStartTime: inicio,
+    slotEndTime: fin,
+  });
+
+  it('una cita programada vencida pasa al historial como «Pasada» y sin acciones', async () => {
+    vi.mocked(AppointmentsService.getMyAppointments).mockResolvedValue({
+      success: true,
+      data: [programada('vencida', 'Dra. Alicia Díaz', '2026-06-04', '09:00:00', '09:30:00')],
+    });
+    renderPage();
+
+    const historial = await screen.findByRole('region', { name: /Historial/ });
+    expect(within(historial).getByText('Dra. Alicia Díaz')).toBeInTheDocument();
+    expect(within(historial).getByText('Pasada')).toBeInTheDocument();
+    expect(screen.getByText('No tienes citas próximas.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Cancelar' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Reprogramar' })).not.toBeInTheDocument();
+  });
+
+  it('una cita con más de 24 horas de anticipación es próxima y se puede reprogramar o cancelar', async () => {
+    vi.mocked(AppointmentsService.getMyAppointments).mockResolvedValue({
+      success: true,
+      data: [programada('futura', 'Dr. Pedro Hernández', '2026-10-20', '08:30:00', '09:00:00')],
+    });
+    renderPage();
+
+    const proximas = await screen.findByRole('region', { name: /Próximas citas/ });
+    expect(within(proximas).getByText('Dr. Pedro Hernández')).toBeInTheDocument();
+    expect(within(proximas).getByRole('button', { name: 'Cancelar' })).toBeInTheDocument();
+    expect(within(proximas).getByRole('button', { name: 'Reprogramar' })).toBeInTheDocument();
+  });
+
+  it('a menos de 24 horas la cita sigue siendo próxima, pero sin acciones y con el motivo', async () => {
+    vi.mocked(AppointmentsService.getMyAppointments).mockResolvedValue({
+      success: true,
+      data: [programada('manana', 'Dra. María Romero', '2026-10-16', '08:00:00', '08:30:00')],
+    });
+    renderPage();
+
+    const proximas = await screen.findByRole('region', { name: /Próximas citas/ });
+    expect(within(proximas).getByText('Dra. María Romero')).toBeInTheDocument();
+    expect(within(proximas).getByText(/Faltan menos de 24 horas/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Cancelar' })).not.toBeInTheDocument();
   });
 });

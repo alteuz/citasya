@@ -20,7 +20,9 @@ export interface Profile {
   readonly phone: string;
   readonly email: string;
   readonly role: UserRole;
+  /** Vacío si el perfil todavía no tiene EPS registrada (H-37). */
   readonly epsId: UUID;
+  readonly epsName: string;
   readonly createdAt: string;
 }
 
