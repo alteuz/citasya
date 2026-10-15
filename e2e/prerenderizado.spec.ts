@@ -10,6 +10,7 @@ import { expect, test } from '@playwright/test';
  *    los nodos (parpadeo) y registraría un error de hidratación.
  */
 const RUTAS = [
+  { ruta: '/', titulo: 'Agenda Sin Filas.' },
   { ruta: '/iniciar-sesion', titulo: 'Iniciar sesión' },
   { ruta: '/registrarse', titulo: 'Crear cuenta' },
   { ruta: '/buscar', titulo: '¿Qué médico necesitas hoy?' },

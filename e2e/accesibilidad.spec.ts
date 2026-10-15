@@ -20,12 +20,16 @@ const PUBLIC_PAGES = [
   { name: 'Búsqueda (filtros)', path: '/buscar' },
 ];
 
-/** Espera a que terminen las animaciones finitas de entrada (framer-motion, CSS). */
+/**
+ * Espera a que terminen las animaciones finitas de entrada (CSS). Se ignoran
+ * las infinitas y las ligadas al desplazamiento (línea de tiempo de scroll):
+ * esas no "terminan" mientras la página no se desplace.
+ */
 async function waitForEntryAnimations(page: Page): Promise<void> {
   await page.waitForFunction(() =>
     document
       .getAnimations()
-      .filter((a) => a.effect?.getTiming().iterations !== Infinity)
+      .filter((a) => a.timeline === document.timeline && a.effect?.getTiming().iterations !== Infinity)
       .every((a) => a.playState !== 'running'),
   );
 }

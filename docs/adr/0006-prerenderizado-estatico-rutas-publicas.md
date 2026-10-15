@@ -35,7 +35,7 @@ Se adopta la alternativa 3:
   - en el shell vacío monta de inmediato.
 - Se quitan las animaciones de entrada (`animate-fade-in`, que parte de opacidad 0) de esas cuatro vistas. Retrasaban el pintado del texto más de un fotograma, y para un adulto mayor el contenido inmediato es preferible a una transición decorativa.
 - Se agregan fuentes de respaldo con métricas ajustadas (`size-adjust`, `ascent-override`). Al pintarse el HTML antes que las fuentes web, el cambio de fuente desplazaba el formulario (CLS 0,024 a 0,037).
-- **Inicio (`/`) queda fuera** mientras conserve animaciones de framer-motion que parten de opacidad 0. Se incorporará cuando se rediseñe el hero (video accesible, H-16/H-18).
+- **Inicio (`/`) queda fuera** mientras conserve animaciones de framer-motion que parten de opacidad 0. Se incorporará cuando se rediseñe el hero (video accesible, H-16/H-18). _Actualización 2026-10-15: incorporada por ADR-0007._
 
 ## Evidencia
 
