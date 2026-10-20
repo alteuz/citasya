@@ -12,12 +12,14 @@
 --
 -- Resultado registrado el 26-sep-2026: 13 de 13 pruebas pasan.
 -- Resultado registrado el 15-oct-2026: 17 de 17 (se suman T14–T17: H-36 y H-37).
+-- Resultado registrado el 19-oct-2026: 31 de 31 (se suman T18–T31: modelo familiar, RF-13).
 -- ════════════════════════════════════════════════════════════════════════════
 do $$
 declare
   p1 uuid; p2 uuid; p3 uuid; v_eps uuid; v_otra_eps uuid; v_med uuid; v_med_otra uuid; v_esp uuid;
   s_libre uuid; s_libre2 uuid; s_libre3 uuid; s_pasado uuid; s_cerca uuid; s_otra_eps uuid;
   v_cita uuid; v_cita_cerca uuid;
+  v_eps_fam uuid; v_med_fam uuid; s_fam uuid; s_libre4 uuid; f1 uuid; f2 uuid; v_cita_f1 uuid; v_n int;
   v_ahora timestamp := (now() at time zone 'America/Bogota');
   v_cerca_inicio timestamp;
   res text[] := '{}'; pasan int := 0; total int := 0;
@@ -48,6 +50,14 @@ begin
   insert into public.appointments (patient_id, doctor_id, slot_id, eps_id, specialty_id, mode, status)
     values (p3, v_med, s_pasado, v_eps, v_esp, 'presencial', 'scheduled');
   insert into public.availability_slots (doctor_id, date, start_time, end_time) values (v_med, current_date + 12, '08:00', '08:20') returning id into s_libre3;
+  -- Modelo familiar (RF-13): otra EPS activa con un médico activo, y horarios futuros
+  -- (a horas que la agenda simulada no genera, para no chocar con horarios reales)
+  select d.eps_id, d.id into v_eps_fam, v_med_fam
+    from public.doctors d join public.eps e on e.id = d.eps_id
+   where d.active and e.active and d.eps_id <> v_eps order by d.id limit 1;
+  insert into public.availability_slots (doctor_id, date, start_time, end_time) values (v_med_fam, current_date + 13, '05:11', '05:31') returning id into s_fam;
+  insert into public.availability_slots (doctor_id, date, start_time, end_time) values (v_med, current_date + 14, '05:41', '06:01') returning id into s_libre4;
+  delete from public.familiares where titular_id in (p1, p2);
 
   -- ── Pruebas (como pacientes autenticados) ──
   perform set_config('request.jwt.claims', json_build_object('sub',p1,'role','authenticated')::text, true);
@@ -116,6 +126,50 @@ begin
   -- ── Citas vencidas (H-36) ──
   begin perform public.reservar_cita(s_libre3, 'presencial', null); resultado := 'OK'; exception when others then resultado := sqlerrm; end;
   res := res || array['T17 una cita vencida no bloquea otra de la misma especialidad (H-36)', 'OK', resultado];
+
+  -- ── Modelo familiar (RF-13) ──
+  perform set_config('request.jwt.claims', json_build_object('sub',p1,'role','authenticated')::text, true);
+  begin perform public.guardar_familiar('Samuel Prueba', 'TI', '1012345678', date '2015-05-10', 'hijo', v_eps, false); resultado := 'OK';
+  exception when others then resultado := sqlerrm; end;
+  res := res || array['T18 registrar familiar sin autorización (Ley 1581)', 'AUTORIZACION_REQUERIDA', resultado];
+  begin perform public.guardar_familiar('Samuel Prueba', 'TI', '1012345678', current_date + 1, 'hijo', v_eps, true); resultado := 'OK';
+  exception when others then resultado := sqlerrm; end;
+  res := res || array['T19 fecha de nacimiento futura', 'FECHA_NACIMIENTO_INVALIDA', resultado];
+  begin f1 := public.guardar_familiar('  Samuel   Prueba ', 'TI', '1012345678', date '2015-05-10', 'hijo', v_eps, true); resultado := 'OK';
+  exception when others then resultado := sqlerrm; end;
+  res := res || array['T20 registrar hijo con la misma EPS del titular', 'OK', resultado];
+  begin perform public.guardar_familiar('Otro Nombre', 'TI', '1012345678', date '2016-01-01', 'hijo', v_eps, true); resultado := 'OK';
+  exception when others then resultado := sqlerrm; end;
+  res := res || array['T21 documento repetido en la familia', 'FAMILIAR_DUPLICADO', resultado];
+  begin f2 := public.guardar_familiar('Gloria Prueba', 'CC', '41234567', date '1955-03-02', 'padre_madre', v_eps_fam, true); resultado := 'OK';
+  exception when others then resultado := sqlerrm; end;
+  res := res || array['T22 registrar madre con una EPS distinta a la del titular', 'OK', resultado];
+  begin perform public.reservar_cita(s_libre4, 'presencial', null, f2); resultado := 'OK'; exception when others then resultado := sqlerrm; end;
+  res := res || array['T23 reservar para la madre con un médico de la EPS del titular', 'EPS_NO_CORRESPONDE', resultado];
+  begin perform public.reservar_cita(s_fam, 'presencial', null, f2); resultado := 'OK'; exception when others then resultado := sqlerrm; end;
+  res := res || array['T24 reservar para la madre con un médico de su propia EPS', 'OK', resultado];
+  -- El titular ya tiene una cita activa en esta especialidad (s_cerca): la regla es por persona.
+  begin v_cita_f1 := public.reservar_cita(s_libre4, 'presencial', null, f1); resultado := 'OK'; exception when others then resultado := sqlerrm; end;
+  res := res || array['T25 una cita activa por especialidad y por persona (hijo y titular)', 'OK', resultado];
+
+  perform set_config('request.jwt.claims', json_build_object('sub',p2,'role','authenticated')::text, true);
+  begin perform public.reservar_cita(s_libre3, 'presencial', null, f1); resultado := 'OK (reservó para familiar ajeno)'; exception when others then resultado := sqlerrm; end;
+  res := res || array['T26 reservar para el familiar de otra cuenta', 'FAMILIAR_NO_EXISTE', resultado];
+  select count(*) into v_n from public.familiares where titular_id = p1;
+  res := res || array['T27 otra cuenta no ve los familiares ajenos (RLS)', '0', v_n::text];
+
+  perform set_config('request.jwt.claims', json_build_object('sub',p1,'role','authenticated')::text, true);
+  begin perform public.retirar_familiar(f1); resultado := 'OK'; exception when others then resultado := sqlerrm; end;
+  res := res || array['T28 retirar a un familiar con citas próximas', 'FAMILIAR_CON_CITAS', resultado];
+  begin perform public.cancelar_cita(v_cita_f1, null); resultado := 'OK'; exception when others then resultado := sqlerrm; end;
+  res := res || array['T29 el titular cancela la cita de su hijo', 'OK', resultado];
+  begin perform public.retirar_familiar(f1); resultado := 'OK'; exception when others then resultado := sqlerrm; end;
+  res := res || array['T30 retirar a un familiar sin citas próximas', 'OK', resultado];
+  begin insert into public.familiares (titular_id, nombre_completo, tipo_documento, numero_documento, fecha_nacimiento, parentesco, eps_id)
+        values (p1, 'Directo Prueba', 'CC', '99999999', date '1990-01-01', 'otro', v_eps);
+        resultado := 'INSERTÓ';
+  exception when others then resultado := 'BLOQUEADO'; end;
+  res := res || array['T31 escritura directa en la tabla de familiares', 'BLOQUEADO', resultado];
   execute 'reset role';
 
   -- ── Informe y reversión ──

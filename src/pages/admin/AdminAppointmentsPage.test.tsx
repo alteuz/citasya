@@ -15,6 +15,7 @@ const cita = (id: string, patientName: string, status: AppointmentStatus): Admin
   id,
   patientName,
   patientEmail: `${id}@ejemplo.test`,
+  familiarNombre: null,
   doctorName: 'Dr. Luis Gómez',
   specialtyName: 'Cardiología',
   epsName: 'EPS de prueba',

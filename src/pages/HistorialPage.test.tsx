@@ -24,6 +24,9 @@ const cita: AppointmentDetail = {
   slotStartTime: '08:00:00',
   slotEndTime: '08:30:00',
   doctorId: 'medico-1',
+  familiarId: null,
+  familiarNombre: null,
+  familiarParentesco: null,
 };
 
 const renderPage = () =>

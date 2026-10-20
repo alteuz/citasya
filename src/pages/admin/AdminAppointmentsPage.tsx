@@ -106,6 +106,9 @@ export function AdminAppointmentsPage() {
                         <td className="py-3 px-4">
                           <p className="text-sm font-medium text-text-primary">{apt.patientName}</p>
                           <p className="text-xs text-text-muted">{apt.patientEmail}</p>
+                          {apt.familiarNombre && (
+                            <p className="text-xs font-semibold text-accent mt-0.5">Para: {apt.familiarNombre}</p>
+                          )}
                         </td>
                         <td className="py-3 px-4 text-sm text-text-secondary">{apt.doctorName}</td>
                         <td className="py-3 px-4 text-sm text-accent font-medium">{apt.specialtyName}</td>

@@ -1,11 +1,19 @@
 /**
  * CitasYA — Edge Function: send-email
  *
- * Envía correos transaccionales (confirmación, cancelación, reprogramación)
- * usando la API de Resend y registra el resultado en la tabla `notifications`.
+ * Envía correos transaccionales (confirmación, cancelación y reprogramación)
+ * con la API de Resend y registra el resultado en la tabla `notifications`.
  *
  * Payload esperado:
  *   { appointmentId: string, type: 'confirmation' | 'cancellation' | 'rescheduled' }
+ *
+ * Seguridad (H-38): la función usa la clave service_role, así que verifica por
+ * sí misma quién la llama: exige un JWT de usuario válido y que la cita le
+ * pertenezca (antes cualquiera podía disparar correos sobre citas ajenas), y
+ * escapa todo dato que inserta en el HTML.
+ *
+ * Modelo familiar (RF-13): si la cita es para un familiar, el correo llega al
+ * titular de la cuenta e indica para quién es la cita.
  */
 
 import "@supabase/functions-js/edge-runtime.d.ts";
@@ -13,14 +21,19 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 // ─── Tipos ──────────────────────────────────────────────────────────────────
 
+const TIPOS = ["confirmation", "cancellation", "rescheduled"] as const;
+type TipoCorreo = (typeof TIPOS)[number];
+
 interface EmailPayload {
   readonly appointmentId: string;
-  readonly type: "confirmation" | "cancellation" | "rescheduled";
+  readonly type: TipoCorreo;
 }
 
 interface AppointmentData {
   readonly patientEmail: string;
   readonly patientName: string;
+  /** Nombre del familiar para quien es la cita; nulo si es del titular. */
+  readonly familiarName: string | null;
   readonly doctorName: string;
   readonly specialtyName: string;
   readonly epsName: string;
@@ -41,16 +54,37 @@ const CORS_HEADERS = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+const responder = (cuerpo: unknown, status: number) =>
+  new Response(JSON.stringify(cuerpo), {
+    status,
+    headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+  });
+
+/** Escapa texto para insertarlo en HTML (los nombres los escriben los usuarios). */
+function esc(texto: string): string {
+  return texto
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
 // ─── Templates de Email ─────────────────────────────────────────────────────
 
 function buildEmailContent(
-  type: EmailPayload["type"],
+  type: TipoCorreo,
   data: AppointmentData,
 ): { subject: string; html: string } {
   const dateFormatted = formatDateLong(data.slotDate);
   const timeFormatted = `${formatTime(data.slotStartTime)} - ${formatTime(data.slotEndTime)}`;
   const modeLabel =
     data.mode === "presencial" ? "🏥 Presencial" : "💻 Telemedicina";
+  const titular = esc(data.patientName);
+  const familiar = data.familiarName ? esc(data.familiarName) : null;
+  // «tu cita» o «la cita de <familiar>»
+  const laCita = familiar ? `la cita de ${familiar}` : "tu cita";
+  const asuntoPara = data.familiarName ? ` de ${data.familiarName.split(" ")[0]}` : "";
 
   const baseStyles = `
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -75,92 +109,80 @@ function buildEmailContent(
     border-bottom: 1px solid #f1f5f9;
   `;
 
+  const fila = (etiqueta: string, valor: string, ultima = false) => `
+      <div style="${infoRowStyle}${ultima ? " border-bottom: none;" : ""}">
+        <span style="color: #64748b; font-size: 14px;">${etiqueta}</span>
+        <span style="color: #1e293b; font-weight: 600; font-size: 14px;">${valor}</span>
+      </div>`;
+
   const detailsBlock = `
     <div style="background: #ffffff; border-radius: 12px; padding: 20px; margin: 16px 0; border: 1px solid #e2e8f0;">
-      <div style="${infoRowStyle}">
-        <span style="color: #64748b; font-size: 14px;">Médico</span>
-        <span style="color: #1e293b; font-weight: 600; font-size: 14px;">${data.doctorName}</span>
-      </div>
-      <div style="${infoRowStyle}">
-        <span style="color: #64748b; font-size: 14px;">Especialidad</span>
-        <span style="color: #1e293b; font-weight: 600; font-size: 14px;">${data.specialtyName}</span>
-      </div>
-      <div style="${infoRowStyle}">
-        <span style="color: #64748b; font-size: 14px;">EPS</span>
-        <span style="color: #1e293b; font-weight: 600; font-size: 14px;">${data.epsName}</span>
-      </div>
-      <div style="${infoRowStyle}">
-        <span style="color: #64748b; font-size: 14px;">Fecha</span>
-        <span style="color: #1e293b; font-weight: 600; font-size: 14px;">${dateFormatted}</span>
-      </div>
-      <div style="${infoRowStyle}">
-        <span style="color: #64748b; font-size: 14px;">Hora</span>
-        <span style="color: #1e293b; font-weight: 600; font-size: 14px;">${timeFormatted}</span>
-      </div>
-      <div style="${infoRowStyle} border-bottom: none;">
-        <span style="color: #64748b; font-size: 14px;">Modalidad</span>
-        <span style="color: #1e293b; font-weight: 600; font-size: 14px;">${modeLabel}</span>
-      </div>
+      ${familiar ? fila("Paciente", familiar) : ""}
+      ${fila("Médico", esc(data.doctorName))}
+      ${fila("Especialidad", esc(data.specialtyName))}
+      ${fila("EPS", esc(data.epsName))}
+      ${fila("Fecha", esc(dateFormatted))}
+      ${fila("Hora", esc(timeFormatted))}
+      ${fila("Modalidad", modeLabel, true)}
     </div>
   `;
+
+  const pie = `
+            <div style="text-align: center; margin-top: 16px;">
+              <p style="color: #94a3b8; font-size: 12px;">CitasYA — Tu salud. Donde estés. Cuando la necesites.</p>
+            </div>`;
 
   switch (type) {
     case "confirmation":
       return {
-        subject: "✅ Tu cita ha sido agendada — CitasYA",
+        subject: `✅ Cita${asuntoPara} agendada — CitasYA`,
         html: `
           <div style="${baseStyles}">
             <div style="${headerStyle}">
               <h1 style="color: #0f172a; font-size: 24px; margin: 0;">🎉 ¡Cita confirmada!</h1>
-              <p style="color: #64748b; margin: 8px 0 0;">Hola ${data.patientName}, tu cita ha sido agendada exitosamente.</p>
+              <p style="color: #64748b; margin: 8px 0 0;">Hola ${titular}, ${laCita} ha sido agendada exitosamente.</p>
             </div>
             ${detailsBlock}
             <p style="color: #64748b; font-size: 13px; text-align: center; margin-top: 24px;">
-              Recuerda que puedes cancelar o reprogramar tu cita con al menos 24 horas de anticipación desde tu panel en CitasYA.
+              Recuerda que puedes cancelar o reprogramar la cita con al menos 24 horas de anticipación desde tu panel en CitasYA.
             </p>
-            <div style="text-align: center; margin-top: 16px;">
-              <p style="color: #94a3b8; font-size: 12px;">CitasYA — Tu salud. Donde estés. Cuando la necesites.</p>
-            </div>
+            ${pie}
           </div>
         `,
       };
 
     case "cancellation":
       return {
-        subject: "❌ Tu cita ha sido cancelada — CitasYA",
+        subject: `❌ Cita${asuntoPara} cancelada — CitasYA`,
         html: `
           <div style="${baseStyles}">
             <div style="${headerStyle}">
               <h1 style="color: #0f172a; font-size: 24px; margin: 0;">Cita cancelada</h1>
-              <p style="color: #64748b; margin: 8px 0 0;">Hola ${data.patientName}, tu cita ha sido cancelada según tu solicitud.</p>
+              <p style="color: #64748b; margin: 8px 0 0;">Hola ${titular}, ${laCita} ha sido cancelada según tu solicitud.</p>
             </div>
             ${detailsBlock}
             <p style="color: #64748b; font-size: 13px; text-align: center; margin-top: 24px;">
               Si necesitas agendar una nueva cita, puedes hacerlo desde tu panel en CitasYA.
             </p>
-            <div style="text-align: center; margin-top: 16px;">
-              <p style="color: #94a3b8; font-size: 12px;">CitasYA — Tu salud. Donde estés. Cuando la necesites.</p>
-            </div>
+            ${pie}
           </div>
         `,
       };
 
     case "rescheduled":
       return {
-        subject: "🔄 Tu cita ha sido reprogramada — CitasYA",
+        subject: `🔄 Cita${asuntoPara} reprogramada — CitasYA`,
         html: `
           <div style="${baseStyles}">
             <div style="${headerStyle}">
               <h1 style="color: #0f172a; font-size: 24px; margin: 0;">Cita reprogramada</h1>
-              <p style="color: #64748b; margin: 8px 0 0;">Hola ${data.patientName}, tu cita ha sido reprogramada exitosamente.</p>
+              <p style="color: #64748b; margin: 8px 0 0;">Hola ${titular}, ${laCita} ha sido reprogramada exitosamente.</p>
             </div>
             ${detailsBlock}
             <p style="color: #64748b; font-size: 13px; text-align: center; margin-top: 24px;">
               Si necesitas hacer otro cambio, recuerda que debes hacerlo con al menos 24 horas de anticipación.
             </p>
-            <div style="text-align: center; margin-top: 16px;">
-              <p style="color: #94a3b8; font-size: 12px;">CitasYA — Tu salud. Donde estés. Cuando la necesites.</p>
-            </div>
+            ${pie}
           </div>
         `,
       };
@@ -181,20 +203,25 @@ Deno.serve(async (req) => {
       throw new Error("RESEND_API_KEY no está configurada.");
     }
 
-    const payload: EmailPayload = await req.json();
-
-    if (!payload.appointmentId || !payload.type) {
-      return new Response(
-        JSON.stringify({ error: "Faltan campos: appointmentId, type" }),
-        { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
-      );
+    const payload = (await req.json()) as Partial<EmailPayload>;
+    if (!payload.appointmentId || !payload.type || !TIPOS.includes(payload.type)) {
+      return responder({ error: "Faltan campos o el tipo no es válido: appointmentId, type" }, 400);
     }
 
-    // Crear cliente Supabase con service_role para acceso completo
+    // Cliente con service_role: por eso la función verifica por sí misma quién llama.
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
+
+    // H-38: solo un usuario autenticado, y solo sobre sus propias citas.
+    const jwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
+    const { data: { user } } = jwt
+      ? await supabaseAdmin.auth.getUser(jwt)
+      : { data: { user: null } };
+    if (!user) {
+      return responder({ error: "Debes iniciar sesión." }, 401);
+    }
 
     // Obtener datos completos de la cita
     const { data: appointment, error: fetchError } = await supabaseAdmin
@@ -202,6 +229,8 @@ Deno.serve(async (req) => {
       .select(`
         id,
         mode,
+        patient_id,
+        familiares(nombre_completo),
         doctors(full_name),
         specialties(name),
         eps(name),
@@ -211,17 +240,15 @@ Deno.serve(async (req) => {
       .eq("id", payload.appointmentId)
       .single();
 
-    if (fetchError || !appointment) {
-      console.error("Error fetching appointment:", fetchError);
-      return new Response(
-        JSON.stringify({ error: "Cita no encontrada." }),
-        { status: 404, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
-      );
+    // Una cita ajena se trata igual que una inexistente: no se revela que existe.
+    if (fetchError || !appointment || (appointment as any).patient_id !== user.id) {
+      return responder({ error: "Cita no encontrada." }, 404);
     }
 
     const appointmentData: AppointmentData = {
       patientEmail: (appointment as any).profiles?.email ?? "",
       patientName: (appointment as any).profiles?.full_name ?? "Paciente",
+      familiarName: (appointment as any).familiares?.nombre_completo ?? null,
       doctorName: (appointment as any).doctors?.full_name ?? "",
       specialtyName: (appointment as any).specialties?.name ?? "",
       epsName: (appointment as any).eps?.name ?? "",
@@ -233,10 +260,7 @@ Deno.serve(async (req) => {
 
     if (!appointmentData.patientEmail) {
       console.error("No se encontró email del paciente.");
-      return new Response(
-        JSON.stringify({ error: "Email del paciente no disponible." }),
-        { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
-      );
+      return responder({ error: "Email del paciente no disponible." }, 400);
     }
 
     // Construir contenido del email
@@ -260,7 +284,7 @@ Deno.serve(async (req) => {
     const emailResult = await emailResponse.json();
     const emailStatus = emailResponse.ok ? "sent" : "failed";
 
-    console.log(`Email ${emailStatus} to ${appointmentData.patientEmail}:`, emailResult);
+    console.log(`Email ${emailStatus} (${payload.type}) para la cita ${payload.appointmentId}`);
 
     // Registrar en tabla notifications
     const { error: notifError } = await supabaseAdmin
@@ -275,23 +299,13 @@ Deno.serve(async (req) => {
       console.error("Error registering notification:", notifError);
     }
 
-    return new Response(
-      JSON.stringify({
-        success: emailResponse.ok,
-        emailId: emailResult.id ?? null,
-        status: emailStatus,
-      }),
-      {
-        status: emailResponse.ok ? 200 : 502,
-        headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-      },
+    return responder(
+      { success: emailResponse.ok, emailId: emailResult.id ?? null, status: emailStatus },
+      emailResponse.ok ? 200 : 502,
     );
   } catch (err) {
     console.error("Edge Function error:", err);
-    return new Response(
-      JSON.stringify({ error: "Error interno del servidor." }),
-      { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
-    );
+    return responder({ error: "Error interno del servidor." }, 500);
   }
 });
 
