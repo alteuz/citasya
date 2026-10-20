@@ -20,6 +20,9 @@ import { POSTER_PORTADA } from '@/lib/portada';
 /** Retraso de una animación de entrada o de revelado (variable CSS --retraso). */
 const retraso = (ms: number) => ({ '--retraso': `${ms}ms` }) as CSSProperties;
 
+/** Margen entre el evento `load` y la descarga del video: lo deja fuera del camino del LCP (H-39). */
+const MARGEN_VIDEO_TRAS_CARGA_MS = 3000;
+
 // Cifras reales de la base de datos: EPS activas (habilitadas en Bogotá), sedes
 // IPS del REPS y especialidades. Consulta del 15-oct-2026: 9, 32 y 12.
 const CIFRAS = [
@@ -83,10 +86,16 @@ export function HomePage() {
   useRevelarAlDesplazar(reducir);
 
   // ─── Video: carga diferida, pausa visible (WCAG 2.2.2) y movimiento reducido ───
-  // El HTML trae solo el póster. El video (1,2 MB) se pide cuando la página
-  // terminó de cargar y el navegador está libre, para que no compita con el
-  // póster, el CSS y el JavaScript por el ancho de banda. Con "ahorro de datos"
-  // no se descarga.
+  // El HTML trae solo el póster, que es el primer fotograma del video. El video
+  // (1,2 MB) se pide 3 s después de que la página terminó de cargar, cuando el
+  // navegador está libre, para que nunca compita con el póster, el CSS ni el
+  // JavaScript por el ancho de banda. Con "ahorro de datos" no se descarga.
+  //
+  // Por qué el margen fijo (H-39): con un servidor rápido, `load` llega en unos
+  // 200 ms, y la petición del video podía empezar antes del LCP. La simulación
+  // de red lenta de Lighthouse cuenta esa descarga en el camino del LCP. En CI,
+  // la portada osciló entre 2,3 y 3,5 s en corridas del mismo código, mientras
+  // que las demás páginas se mantenían en 2,05 s.
   const [videoActivo, setVideoActivo] = useState(false);
   const [videoPausado, setVideoPausado] = useState(false);
 
@@ -94,15 +103,19 @@ export function HomePage() {
     const conexion = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
     if (conexion?.saveData) return;
     let cancelado = false;
+    let espera: number | undefined;
     const activar = () => { if (!cancelado) setVideoActivo(true); };
     const programar = () => {
-      if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(activar, { timeout: 2000 });
-      else window.setTimeout(activar, 800);
+      espera = window.setTimeout(() => {
+        if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(activar, { timeout: 2000 });
+        else activar();
+      }, MARGEN_VIDEO_TRAS_CARGA_MS);
     };
     if (document.readyState === 'complete') programar();
     else window.addEventListener('load', programar, { once: true });
     return () => {
       cancelado = true;
+      window.clearTimeout(espera);
       window.removeEventListener('load', programar);
     };
   }, []);
