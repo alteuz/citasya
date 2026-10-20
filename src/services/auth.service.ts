@@ -6,6 +6,7 @@
 import { obtenerSupabase } from '@/lib/supabase';
 import type { ServiceResult } from '@/types/common';
 import type { Profile } from '@/types/database';
+import { mensajeDeError } from './errores';
 
 // ─── Tipos de entrada ───────────────────────────────────────────────────────
 
@@ -178,6 +179,22 @@ export const AuthService = {
   },
 
   /**
+   * Registra la EPS del perfil cuando falta (perfiles anteriores a que el
+   * registro la exigiera, H-37). La base de datos rechaza el cambio si el
+   * perfil ya tiene una: la EPS no se cambia desde la aplicación.
+   */
+  async asignarEps(epsId: string): Promise<ServiceResult<null>> {
+    const supabase = await obtenerSupabase();
+    const { error } = await supabase.rpc('asignar_mi_eps', { p_eps_id: epsId });
+
+    if (error) {
+      return { success: false, error: mensajeDeError(error, 'No se pudo registrar tu EPS. Intenta de nuevo.') };
+    }
+
+    return { success: true, data: null };
+  },
+
+  /**
    * Suscribirse a cambios de estado de autenticación.
    */
   /** Se suscribe a cambios de sesión; devuelve la función para cancelar la suscripción. */
@@ -224,6 +241,7 @@ function mapProfileFromDb(row: any): Profile {
     email: row.email ?? '',
     role: row.role ?? 'patient',
     epsId: row.eps_id ?? '',
+    epsName: row.eps?.name ?? '',
     createdAt: row.created_at ?? '',
   };
 }

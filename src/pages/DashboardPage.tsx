@@ -5,8 +5,11 @@ import { useAuthContext } from '@/hooks/useAuthContext';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { AppointmentsService, type AppointmentDetail } from '@/services/appointments.service';
 import { AuthService } from '@/services/auth.service';
+import { DoctorsService } from '@/services/doctors.service';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
-import { ArrowRight, Building2, CalendarDays, CalendarPlus, ClipboardList, Pencil, Settings, Video, type LucideIcon } from 'lucide-react';
+import { useAhora } from '@/hooks/useAhora';
+import { puedeModificarse, separarCitas } from '@/lib/citas';
+import { ArrowRight, Building2, CalendarDays, CalendarPlus, ClipboardList, Info, Pencil, Settings, Video, type LucideIcon } from 'lucide-react';
 import { IconBadge } from '@/components/ui/IconBadge';
 
 export function DashboardPage() {
@@ -16,10 +19,33 @@ export function DashboardPage() {
     isLoading: isLoadingAppointments,
     reload: reloadAppointments,
   } = useServiceQuery(() => AppointmentsService.getMyAppointments(), []);
-  // Solo citas programadas (futuras)
-  const upcomingAppointments: readonly AppointmentDetail[] =
-    myAppointments?.filter((apt) => apt.status === 'scheduled') ?? [];
+  // Solo citas activas que aún no han terminado, de la más cercana a la más lejana (H-36).
+  const ahora = useAhora();
+  const upcomingAppointments: readonly AppointmentDetail[] = separarCitas(myAppointments ?? [], ahora).proximas;
   const [cancellingAppointmentId, setCancellingAppointmentId] = useState<string | null>(null);
+
+  // EPS del perfil: los perfiles anteriores a que el registro la exigiera pueden no tenerla (H-37).
+  const sinEps = Boolean(profile) && !profile?.epsId;
+  const { data: listaEps } = useServiceQuery(() => DoctorsService.getEpsList(), [], sinEps);
+  const [epsElegida, setEpsElegida] = useState('');
+  const [guardandoEps, setGuardandoEps] = useState(false);
+  const [errorEps, setErrorEps] = useState<string | null>(null);
+
+  const registrarEps = useCallback(async () => {
+    if (!epsElegida) {
+      setErrorEps('Selecciona tu EPS de la lista.');
+      return;
+    }
+    setGuardandoEps(true);
+    setErrorEps(null);
+    const result = await AuthService.asignarEps(epsElegida);
+    if (result.success) {
+      await refreshProfile();
+    } else {
+      setErrorEps(result.error);
+    }
+    setGuardandoEps(false);
+  }, [epsElegida, refreshProfile]);
 
   // Edit Profile State
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -227,27 +253,35 @@ export function DashboardPage() {
                     <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-info-soft text-info border border-info/30 self-start sm:self-end whitespace-nowrap text-center mb-1">
                       Programada
                     </span>
-                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                      <Link to={`/reprogramar/${apt.id}`} className="w-full sm:w-auto">
+                    {puedeModificarse(apt, ahora) ? (
+                      <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                        <Link to={`/reprogramar/${apt.id}`} className="w-full sm:w-auto">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            fullWidth
+                            disabled={cancellingAppointmentId === apt.id}
+                          >
+                            Reprogramar
+                          </Button>
+                        </Link>
                         <Button
-                          variant="secondary"
+                          variant="danger"
                           size="sm"
-                          fullWidth
-                          disabled={cancellingAppointmentId === apt.id}
+                          isLoading={cancellingAppointmentId === apt.id}
+                          onClick={() => { void cancelAppointment(apt.id); }}
+                          className="w-full sm:w-auto"
                         >
-                          Reprogramar
+                          Cancelar
                         </Button>
-                      </Link>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        isLoading={cancellingAppointmentId === apt.id}
-                        onClick={() => { void cancelAppointment(apt.id); }}
-                        className="w-full sm:w-auto"
-                      >
-                        Cancelar
-                      </Button>
-                    </div>
+                      </div>
+                    ) : (
+                      // Cancelar y reprogramar exigen 24 h de anticipación (regla de la base de datos).
+                      <p className="flex items-start gap-1.5 text-xs text-text-secondary max-w-56 sm:text-right">
+                        <Info size={14} aria-hidden="true" className="mt-0.5 shrink-0" />
+                        Faltan menos de 24 horas: ya no se puede cancelar ni reprogramar.
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}
@@ -305,6 +339,18 @@ export function DashboardPage() {
                     />
                   </div>
                   <div>
+                    <label htmlFor="perfil-eps" className="block text-xs font-medium text-text-secondary uppercase tracking-wider mb-1.5">
+                      EPS <span className="lowercase normal-case text-text-muted ml-1">(solo lectura)</span>
+                    </label>
+                    <input
+                      id="perfil-eps"
+                      type="text"
+                      value={profile.epsName || 'Sin EPS registrada'}
+                      readOnly
+                      className="control-campo bg-surface-muted text-text-muted cursor-not-allowed"
+                    />
+                  </div>
+                  <div>
                     <label htmlFor="perfil-correo" className="block text-xs font-medium text-text-secondary uppercase tracking-wider mb-1.5">
                       Correo Electrónico <span className="lowercase normal-case text-text-muted ml-1">(solo lectura)</span>
                     </label>
@@ -341,12 +387,48 @@ export function DashboardPage() {
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <InfoItem label="Nombre" value={profile.fullName} />
-                  <InfoItem label="Cédula" value={profile.cedula} />
-                  <InfoItem label="Correo" value={profile.email} />
-                  <InfoItem label="Teléfono" value={profile.phone || 'No registrado'} />
-                </div>
+                <>
+                  <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <InfoItem label="Nombre" value={profile.fullName} />
+                    <InfoItem label="Cédula" value={profile.cedula} />
+                    <InfoItem label="EPS" value={profile.epsName || 'Sin EPS registrada'} />
+                    <InfoItem label="Teléfono" value={profile.phone || 'No registrado'} />
+                    <InfoItem label="Correo" value={profile.email} />
+                  </dl>
+
+                  {sinEps && (
+                    <div className="mt-6 pt-6 border-t border-line">
+                      <p className="text-sm text-text-secondary mb-3">
+                        Tu perfil no tiene EPS registrada y la necesitas para agendar citas. Elígela una sola vez:
+                        después no se puede cambiar desde la aplicación.
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
+                        <div className="flex-1">
+                          <label htmlFor="perfil-eps-nueva" className="block text-xs font-medium text-text-secondary uppercase tracking-wider mb-1.5">
+                            Tu EPS
+                          </label>
+                          <select
+                            id="perfil-eps-nueva"
+                            value={epsElegida}
+                            onChange={(e) => setEpsElegida(e.target.value)}
+                            className="control-campo"
+                          >
+                            <option value="">Selecciona tu EPS...</option>
+                            {(listaEps ?? []).map((eps) => (
+                              <option key={eps.id} value={eps.id}>{eps.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <Button variant="primary" size="md" onClick={() => { void registrarEps(); }} isLoading={guardandoEps}>
+                          Registrar EPS
+                        </Button>
+                      </div>
+                      {errorEps && (
+                        <p role="alert" className="mt-2 text-sm font-medium text-error">{errorEps}</p>
+                      )}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </section>
