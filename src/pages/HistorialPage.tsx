@@ -8,6 +8,7 @@ import { useAhora } from '@/hooks/useAhora';
 import { estadoVisible, puedeModificarse, separarCitas, type EstadoVisible } from '@/lib/citas';
 import { ArrowLeft, ArrowRight, Building2, CalendarClock, CalendarDays, CircleCheck, CircleX, History, Info, RefreshCw, TriangleAlert, Video, type LucideIcon } from 'lucide-react';
 import { IconBadge } from '@/components/ui/IconBadge';
+import { EtiquetaPaciente } from '@/components/appointments/EtiquetaPaciente';
 
 const STATUS_CONFIG: Record<EstadoVisible, { label: string; color: string; icon: LucideIcon }> = {
   scheduled: { label: 'Programada', color: 'bg-info-soft text-info border border-info/30', icon: CalendarClock },
@@ -189,10 +190,11 @@ function TarjetaCita({ cita: apt, ahora, isCancelling, onCancel }: TarjetaCitaPr
     <div className="bg-surface-card border border-line rounded-2xl p-5 sm:p-6 hover:border-line-strong">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
             <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${config.color}`}>
               <config.icon size={13} aria-hidden="true" /> {config.label}
             </span>
+            <EtiquetaPaciente nombre={apt.familiarNombre} parentesco={apt.familiarParentesco} />
             <span className="text-xs text-text-muted">
               <span className="inline-flex items-center gap-1.5">{apt.mode === 'presencial' ? <Building2 size={14} aria-hidden="true" /> : <Video size={14} aria-hidden="true" />}{apt.mode === 'presencial' ? 'Presencial' : 'Telemedicina'}</span>
             </span>

@@ -3,10 +3,16 @@ import { Link, useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { DoctorsService, type DoctorSearchResult, type SpecialtyOption, type EpsOption } from '@/services/doctors.service';
+import { FamiliaService } from '@/services/familia.service';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
+import { useAuthContext } from '@/hooks/useAuthContext';
+import { etiquetaParentesco } from '@/lib/familia';
 import type { ServiceResult } from '@/types/common';
-import { ArrowRight, ChevronDown, Search, SearchX, SlidersHorizontal, Stethoscope, TriangleAlert } from 'lucide-react';
+import { ArrowRight, ChevronDown, Search, SearchX, SlidersHorizontal, Stethoscope, TriangleAlert, UserRound } from 'lucide-react';
 import { IconBadge } from '@/components/ui/IconBadge';
+
+/** Valor de `?para=` cuando la cita es para el titular de la cuenta (RF-13). */
+const PARA_TITULAR = 'yo';
 
 interface SearchFiltersCatalog {
   readonly specialties: readonly SpecialtyOption[];
@@ -40,14 +46,24 @@ export function SearchPage() {
     return !!(searchParams.get('specialty') || searchParams.get('eps'));
   });
 
+  // ¿Para quién es la cita? (RF-13). Solo aparece si el titular tiene familiares.
+  // Al elegir a una persona, la EPS por defecto es la suya.
+  const { isAuthenticated, profile } = useAuthContext();
+  const { data: familiares } = useServiceQuery(() => FamiliaService.listar(), [isAuthenticated], isAuthenticated);
+  const conFamilia = isAuthenticated && (familiares?.length ?? 0) > 0;
+  const [para, setPara] = useState(searchParams.get('para') || PARA_TITULAR);
+  const familiarElegido = familiares?.find((f) => f.id === para) ?? null;
+  const epsDePersona = familiarElegido ? familiarElegido.epsId : (profile?.epsId ?? '');
+  const epsEfectiva = selectedEps || epsDePersona;
+
   // Resultados: se buscan al confirmar y, después, cada vez que cambian los filtros.
   // Una respuesta que llega tarde tras cambiar los filtros se descarta.
   const search = useServiceQuery(
     () => DoctorsService.searchDoctors({
       specialtyId: selectedSpecialty || undefined,
-      epsId: selectedEps || undefined,
+      epsId: epsEfectiva || undefined,
     }),
-    [selectedSpecialty, selectedEps],
+    [selectedSpecialty, epsEfectiva],
     hasSearched,
   );
   const doctors: readonly DoctorSearchResult[] = search.data ?? [];
@@ -77,16 +93,30 @@ export function SearchPage() {
       } else {
         next.delete('specialty');
       }
-      if (selectedEps) {
-        next.set('eps', selectedEps);
+      if (epsEfectiva) {
+        next.set('eps', epsEfectiva);
       } else {
         next.delete('eps');
       }
+      if (conFamilia) {
+        next.set('para', para);
+      }
       return next;
     });
-  }, [selectedSpecialty, selectedEps, setSearchParams]);
+  }, [selectedSpecialty, epsEfectiva, conFamilia, para, setSearchParams]);
 
-  const hasActiveFilters = selectedSpecialty !== '' || selectedEps !== '';
+  const elegirPersona = useCallback((valor: string) => {
+    setPara(valor);
+    // La EPS vuelve a ser la de la persona elegida.
+    setSelectedEps('');
+  }, []);
+
+  const hasActiveFilters = selectedSpecialty !== '' || epsEfectiva !== '';
+  // Parámetros que se conservan al abrir la agenda de un médico.
+  const paramsAgenda = new URLSearchParams();
+  if (conFamilia) paramsAgenda.set('para', para);
+  if (searchParams.get('modo')) paramsAgenda.set('modo', searchParams.get('modo') ?? '');
+  const consultaAgenda = paramsAgenda.toString();
 
   if (!hasSearched) {
     return (
@@ -101,10 +131,37 @@ export function SearchPage() {
           </p>
 
           <div className="space-y-6 text-left mb-10">
+            {/* Persona (RF-13): solo si el titular tiene familiares registrados */}
+            {conFamilia && (
+              <div className="flex flex-col gap-2">
+                <label htmlFor="filter-para" className="text-base font-bold text-text-primary">
+                  1. ¿Para quién es la cita?
+                </label>
+                <div className="relative">
+                  <select
+                    id="filter-para"
+                    value={para}
+                    onChange={(e) => elegirPersona(e.target.value)}
+                    className="control-campo min-h-14 rounded-2xl border-2 px-5 py-4 text-base sm:text-lg appearance-none cursor-pointer pr-12 font-medium"
+                  >
+                    <option value={PARA_TITULAR}>Para mí</option>
+                    {(familiares ?? []).map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {f.nombreCompleto} ({etiquetaParentesco(f.parentesco)})
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none text-text-muted" aria-hidden="true">
+                    <ChevronDown size={20} />
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Especialidad */}
             <div className="flex flex-col gap-2">
               <label htmlFor="filter-specialty" className="text-base font-bold text-text-primary">
-                1. Especialidad Médica
+                {conFamilia ? '2' : '1'}. Especialidad Médica
               </label>
               <div className="relative">
                 <select
@@ -127,12 +184,12 @@ export function SearchPage() {
             {/* EPS */}
             <div className="flex flex-col gap-2">
               <label htmlFor="filter-eps" className="text-base font-bold text-text-primary">
-                2. Aseguradora (EPS)
+                {conFamilia ? '3' : '2'}. Aseguradora (EPS)
               </label>
               <div className="relative">
                 <select
                   id="filter-eps"
-                  value={selectedEps}
+                  value={epsEfectiva}
                   onChange={(e) => setSelectedEps(e.target.value)}
                   className="control-campo min-h-14 rounded-2xl border-2 px-5 py-4 text-base sm:text-lg appearance-none cursor-pointer pr-12 font-medium"
                 >
@@ -178,8 +235,16 @@ export function SearchPage() {
               </span>
               <span className="text-text-secondary">•</span>
               <span className="font-semibold px-2.5 py-1 bg-accent-soft text-accent border border-accent/30 rounded-full text-xs">
-                {epsList.find(e => e.id === selectedEps)?.name || 'Cualquier EPS'}
+                {epsList.find(e => e.id === epsEfectiva)?.name || 'Cualquier EPS'}
               </span>
+              {familiarElegido && (
+                <>
+                  <span className="text-text-secondary">•</span>
+                  <span className="inline-flex items-center gap-1 font-semibold px-2.5 py-1 bg-accent-soft text-accent border border-accent/30 rounded-full text-xs">
+                    <UserRound size={13} aria-hidden="true" /> Para: {familiarElegido.nombreCompleto}
+                  </span>
+                </>
+              )}
             </p>
           </div>
           
@@ -254,7 +319,7 @@ export function SearchPage() {
         {!isLoading && !error && doctors.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {doctors.map((doctor) => (
-              <DoctorCard key={doctor.id} doctor={doctor} modeParam={searchParams.get('modo')} />
+              <DoctorCard key={doctor.id} doctor={doctor} consulta={consultaAgenda} />
             ))}
           </div>
         )}
@@ -267,10 +332,11 @@ export function SearchPage() {
 
 interface DoctorCardProps {
   readonly doctor: DoctorSearchResult;
-  readonly modeParam: string | null;
+  /** Parámetros que se conservan en la agenda del médico (persona y modalidad). */
+  readonly consulta: string;
 }
 
-function DoctorCard({ doctor, modeParam }: DoctorCardProps) {
+function DoctorCard({ doctor, consulta }: DoctorCardProps) {
   const initials = doctor.fullName
     .split(' ')
     .filter((_, i) => i === 0 || i === 2)
@@ -309,7 +375,7 @@ function DoctorCard({ doctor, modeParam }: DoctorCardProps) {
         </div>
       </div>
 
-      <Link to={`/buscar/${doctor.id}${modeParam ? `?modo=${modeParam}` : ''}`}>
+      <Link to={`/buscar/${doctor.id}${consulta ? `?${consulta}` : ''}`}>
         <Button variant="primary" size="sm" fullWidth>
           Ver disponibilidad
           <ArrowRight size={16} aria-hidden="true" />

@@ -7,6 +7,7 @@ import { DoctorsService, type SlotResult } from '@/services/doctors.service';
 import { AppointmentsService, type AppointmentDetail } from '@/services/appointments.service';
 import type { AppointmentMode } from '@/types/database';
 import { AppointmentModeSelector } from '@/components/appointments/AppointmentModeSelector';
+import { EtiquetaPaciente } from '@/components/appointments/EtiquetaPaciente';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
 import type { ServiceResult } from '@/types/common';
 import { ArrowLeft, ArrowRight, CalendarCheck, CalendarX, TriangleAlert } from 'lucide-react';
@@ -255,6 +256,11 @@ export function ReschedulePage() {
                 Reprogramar cita con {appointment.doctorName}
               </h1>
               <p className="text-sm text-text-muted mt-1">Cita actual: {formatDateLong(appointment.slotDate)} a las {formatTime(appointment.slotStartTime)}</p>
+              {appointment.familiarNombre && (
+                <div className="mt-2">
+                  <EtiquetaPaciente nombre={appointment.familiarNombre} parentesco={appointment.familiarParentesco} />
+                </div>
+              )}
             </div>
           </div>
         </div>

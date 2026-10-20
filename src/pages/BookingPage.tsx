@@ -8,6 +8,8 @@ import { AppointmentsService, type AppointmentDetail } from '@/services/appointm
 import type { AppointmentMode } from '@/types/database';
 import { AppointmentModeSelector } from '@/components/appointments/AppointmentModeSelector';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
+import { FamiliaService } from '@/services/familia.service';
+import { PARA_MI, opcionesDePaciente, pacientePorDefecto } from '@/lib/familia';
 import type { ServiceResult } from '@/types/common';
 import { ArrowLeft, ArrowRight, CalendarCheck, CalendarX, SearchX } from 'lucide-react';
 import { IconBadge } from '@/components/ui/IconBadge';
@@ -40,7 +42,7 @@ type BookingStep = 'select' | 'confirm' | 'success';
 export function BookingPage() {
   const { doctorId } = useParams<{ doctorId: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthContext();
+  const { isAuthenticated, profile } = useAuthContext();
 
   // Data
   const { data: agenda, error, isLoading } = useServiceQuery(
@@ -64,6 +66,25 @@ export function BookingPage() {
   const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookedAppointment, setBookedAppointment] = useState<AppointmentDetail | null>(null);
+
+  // ¿Para quién es la cita? (RF-13). Solo pueden elegirse el titular o los
+  // familiares de la EPS del médico; la base de datos aplica la misma regla.
+  const { data: familiares } = useServiceQuery(() => FamiliaService.listar(), [isAuthenticated], isAuthenticated);
+  const conFamilia = (familiares?.length ?? 0) > 0;
+  const paraPedido = searchParams.get('para');
+  const opcionesPaciente = useMemo(
+    () => opcionesDePaciente(
+      { epsId: profile?.epsId ?? '', epsName: profile?.epsName ?? '' },
+      familiares ?? [],
+      doctor?.epsId ?? null,
+    ),
+    [profile, familiares, doctor],
+  );
+  const [pacienteElegido, setPacienteElegido] = useState<string | null>(null);
+  const clavePaciente = pacienteElegido
+    ?? pacientePorDefecto(opcionesPaciente, !paraPedido || paraPedido === 'yo' ? PARA_MI : paraPedido);
+  const paciente = opcionesPaciente.find((o) => o.clave === clavePaciente) ?? null;
+  const nombrePaciente = paciente?.familiarId ? paciente.nombre : (profile?.fullName || 'Tú');
 
   // Agrupar slots por fecha
   const slotsByDate = useMemo(() => {
@@ -104,7 +125,7 @@ export function BookingPage() {
   }, [isAuthenticated, selectedSlot, navigate, doctorId]);
 
   const handleBook = useCallback(async () => {
-    if (!selectedSlot || !doctor) return;
+    if (!selectedSlot || !doctor || !paciente) return;
 
     setIsBooking(true);
     setBookingError(null);
@@ -115,6 +136,7 @@ export function BookingPage() {
       slotId: selectedSlot.id,
       mode,
       notes: notes.trim() || undefined,
+      familiarId: paciente.familiarId,
     });
 
     setIsBooking(false);
@@ -126,7 +148,7 @@ export function BookingPage() {
 
     setBookedAppointment(result.data);
     setStep('success');
-  }, [selectedSlot, doctor, mode, notes]);
+  }, [selectedSlot, doctor, paciente, mode, notes]);
 
   // ─── Loading state ────────────────────────────────────────────────────────
   if (isLoading) {
@@ -167,10 +189,13 @@ export function BookingPage() {
             ¡Cita agendada!
           </h1>
           <p className="text-text-secondary mb-6">
-            Tu cita ha sido confirmada exitosamente.
+            {bookedAppointment.familiarNombre
+              ? `La cita de ${bookedAppointment.familiarNombre} ha sido confirmada exitosamente.`
+              : 'Tu cita ha sido confirmada exitosamente.'}
           </p>
 
           <div className="bg-surface-muted rounded-xl p-6 text-left space-y-3 mb-6">
+            <InfoRow label="Paciente" value={bookedAppointment.familiarNombre ?? (profile?.fullName || 'Tú')} />
             <InfoRow label="Médico" value={bookedAppointment.doctorName} />
             <InfoRow label="Especialidad" value={bookedAppointment.specialtyName} />
             <InfoRow label="EPS" value={bookedAppointment.epsName} />
@@ -215,12 +240,60 @@ export function BookingPage() {
         <div className="bg-surface-card border border-line rounded-2xl p-6 space-y-6">
           {/* Resumen */}
           <div className="bg-surface-muted rounded-xl p-5 space-y-3">
+            {paciente && <InfoRow label="Paciente" value={nombrePaciente} />}
             <InfoRow label="Médico" value={doctor.fullName} />
             <InfoRow label="Especialidad" value={doctor.specialtyName} />
             <InfoRow label="EPS" value={doctor.epsName} />
             <InfoRow label="Fecha" value={formatDateLong(selectedSlot.date)} />
             <InfoRow label="Hora" value={`${formatTime(selectedSlot.startTime)} - ${formatTime(selectedSlot.endTime)}`} />
           </div>
+
+          {/* ¿Para quién es la cita? (RF-13) */}
+          {conFamilia && (
+            <fieldset>
+              <legend className="text-sm font-medium text-text-secondary mb-2">¿Para quién es la cita?</legend>
+              <div className="space-y-2">
+                {opcionesPaciente.map((opcion) => {
+                  const elegida = opcion.clave === clavePaciente;
+                  return (
+                    <label
+                      key={opcion.clave}
+                      className={`flex items-start gap-3 rounded-xl border-2 p-3 ${
+                        opcion.habilitada ? 'cursor-pointer' : 'opacity-60 cursor-not-allowed'
+                      } ${elegida ? 'border-accent bg-accent-soft' : 'border-line-input'}`}
+                    >
+                      <input
+                        type="radio"
+                        name="paciente"
+                        value={opcion.clave}
+                        checked={elegida}
+                        disabled={!opcion.habilitada}
+                        onChange={() => setPacienteElegido(opcion.clave)}
+                        className="mt-1 h-5 w-5 shrink-0 accent-brand"
+                      />
+                      <span className="flex flex-col font-medium text-text-primary">
+                        {opcion.nombre}
+                        <span className="text-sm font-normal text-text-secondary">
+                          {opcion.detalle}
+                          {!opcion.habilitada && ' · no pertenece a la EPS de este médico'}
+                        </span>
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
+          )}
+
+          {!paciente && (
+            <p role="alert" className="bg-warning-soft border border-warning/30 text-text-primary text-sm px-4 py-3 rounded-xl">
+              Este médico atiende afiliados de {doctor.epsName}.{' '}
+              {conFamilia
+                ? 'Ni tú ni tus familiares registrados tienen esa EPS.'
+                : profile?.epsId ? 'Tu EPS es distinta.' : 'Tu perfil aún no tiene EPS: regístrala en «Tu información», en tu panel.'}{' '}
+              <Link to="/buscar" className="font-semibold text-accent underline underline-offset-4">Buscar otro médico</Link>
+            </p>
+          )}
 
           {/* Modo */}
           <AppointmentModeSelector value={mode} onChange={setMode} />
@@ -254,9 +327,10 @@ export function BookingPage() {
             size="lg"
             fullWidth
             isLoading={isBooking}
+            disabled={!paciente}
             onClick={() => { void handleBook(); }}
           >
-            Confirmar y agendar cita
+            {paciente?.familiarId ? `Confirmar y agendar la cita de ${paciente.nombre.split(' ')[0]}` : 'Confirmar y agendar cita'}
           </Button>
         </div>
       </div>

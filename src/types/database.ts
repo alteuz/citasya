@@ -26,6 +26,25 @@ export interface Profile {
   readonly createdAt: string;
 }
 
+// ─── Modelo familiar (RF-13) ────────────────────────────────────────────────
+
+export type Parentesco = 'hijo' | 'padre_madre' | 'conyuge' | 'hermano' | 'abuelo' | 'nieto' | 'otro';
+/** Registro civil, tarjeta de identidad, cédula de ciudadanía, cédula de extranjería, pasaporte. */
+export type TipoDocumento = 'RC' | 'TI' | 'CC' | 'CE' | 'PA';
+
+/** Persona a cargo del titular de la cuenta. No tiene cuenta propia. */
+export interface Familiar {
+  readonly id: string;
+  readonly nombreCompleto: string;
+  readonly tipoDocumento: TipoDocumento;
+  readonly numeroDocumento: string;
+  /** AAAA-MM-DD */
+  readonly fechaNacimiento: string;
+  readonly parentesco: Parentesco;
+  readonly epsId: string;
+  readonly epsName: string;
+}
+
 export interface EPS {
   readonly id: UUID;
   readonly name: string;

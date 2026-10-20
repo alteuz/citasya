@@ -9,8 +9,12 @@ import { DoctorsService } from '@/services/doctors.service';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
 import { useAhora } from '@/hooks/useAhora';
 import { puedeModificarse, separarCitas } from '@/lib/citas';
-import { ArrowRight, Building2, CalendarDays, CalendarPlus, ClipboardList, Info, Pencil, Settings, Video, type LucideIcon } from 'lucide-react';
+import { ArrowRight, Building2, CalendarDays, CalendarPlus, ClipboardList, Info, Pencil, Settings, Users, Video, type LucideIcon } from 'lucide-react';
 import { IconBadge } from '@/components/ui/IconBadge';
+import { estilosBoton } from '@/components/ui/estilosBoton';
+import { EtiquetaPaciente } from '@/components/appointments/EtiquetaPaciente';
+import { FamiliaService } from '@/services/familia.service';
+import { etiquetaParentesco } from '@/lib/familia';
 
 export function DashboardPage() {
   const { profile, isLoading: authLoading, refreshProfile, user } = useAuthContext();
@@ -30,6 +34,9 @@ export function DashboardPage() {
   const [epsElegida, setEpsElegida] = useState('');
   const [guardandoEps, setGuardandoEps] = useState(false);
   const [errorEps, setErrorEps] = useState<string | null>(null);
+
+  // Modelo familiar (RF-13): accesos directos para pedir cita a cada persona.
+  const { data: familiares } = useServiceQuery(() => FamiliaService.listar(), []);
 
   const registrarEps = useCallback(async () => {
     if (!epsElegida) {
@@ -162,6 +169,14 @@ export function DashboardPage() {
             ctaText="Ver historial"
             variant="primary"
           />
+          <QuickActionCard
+            icon={Users}
+            title="Mi familia"
+            description="Registra a tus hijos, a tus padres o a quien cuides y pide sus citas desde tu cuenta."
+            href="/dashboard/familia"
+            ctaText="Ver mi familia"
+            variant="primary"
+          />
             <QuickActionCard
               icon={Building2}
               title="Directorio EPS"
@@ -181,6 +196,39 @@ export function DashboardPage() {
               />
             )}
           </div>
+
+        {/* Pedir cita rápido para cada persona de la familia (RF-13) */}
+        {familiares && familiares.length > 0 && (
+          <section aria-labelledby="pedir-para-heading" className="mb-10">
+            <h2 id="pedir-para-heading" className="font-sans text-xl font-semibold text-text-primary mb-1">
+              Pedir una cita para…
+            </h2>
+            <p className="text-sm text-text-secondary mb-4">
+              Elige a la persona: el buscador se abre con su EPS ya seleccionada y solo falta la especialidad.
+            </p>
+            <ul className="flex flex-wrap gap-3">
+              <li>
+                <Link
+                  to="/buscar?para=yo"
+                  className={estilosBoton({ variant: 'secondary', size: 'md' })}
+                >
+                  Para mí
+                </Link>
+              </li>
+              {familiares.map((familiar) => (
+                <li key={familiar.id}>
+                  <Link
+                    to={`/buscar?para=${familiar.id}`}
+                    className={estilosBoton({ variant: 'secondary', size: 'md' })}
+                  >
+                    {familiar.nombreCompleto.split(' ')[0]}
+                    <span className="text-sm font-normal text-text-secondary">· {etiquetaParentesco(familiar.parentesco)}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {/* Upcoming Appointments */}
         <section aria-labelledby="upcoming-heading">
@@ -235,6 +283,11 @@ export function DashboardPage() {
                       </svg>
                     </div>
                     <div>
+                      {apt.familiarNombre && (
+                        <div className="mb-1.5">
+                          <EtiquetaPaciente nombre={apt.familiarNombre} parentesco={apt.familiarParentesco} />
+                        </div>
+                      )}
                       <h3 className="text-base font-semibold text-text-primary">
                         {apt.doctorName}
                       </h3>

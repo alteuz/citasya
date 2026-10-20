@@ -4,7 +4,7 @@
  */
 import { obtenerSupabase } from '@/lib/supabase';
 import type { ServiceResult } from '@/types/common';
-import type { AppointmentMode, AppointmentStatus } from '@/types/database';
+import type { AppointmentMode, AppointmentStatus, Parentesco } from '@/types/database';
 import { mensajeDeError } from './errores';
 
 type NotificationType = 'confirmation' | 'cancellation' | 'rescheduled';
@@ -15,6 +15,8 @@ export interface BookAppointmentInput {
   readonly slotId: string;
   readonly mode: AppointmentMode;
   readonly notes?: string;
+  /** Familiar para quien es la cita (RF-13); si no se indica, la cita es para el titular. */
+  readonly familiarId?: string | null;
 }
 
 export interface AppointmentDetail {
@@ -32,6 +34,10 @@ export interface AppointmentDetail {
   readonly slotStartTime: string;
   readonly slotEndTime: string;
   readonly doctorId: string;
+  /** Para quién es la cita (RF-13): null si es del titular de la cuenta. */
+  readonly familiarId: string | null;
+  readonly familiarNombre: string | null;
+  readonly familiarParentesco: Parentesco | null;
 }
 
 // ─── Servicio ───────────────────────────────────────────────────────────────
@@ -49,6 +55,8 @@ export const AppointmentsService = {
       p_slot_id: input.slotId,
       p_modo: input.mode,
       p_notas: input.notes ?? null,
+      // La base de datos verifica que el familiar sea del titular y que pertenezca a la EPS del médico.
+      p_familiar_id: input.familiarId ?? null,
     });
 
     if (error || typeof appointmentId !== 'string') {
@@ -84,6 +92,8 @@ export const AppointmentsService = {
         booked_at,
         cancelled_at,
         cancellation_reason,
+        familiar_id,
+        familiares(nombre_completo, parentesco),
         doctors(full_name),
         specialties(name),
         eps(name),
@@ -149,6 +159,8 @@ export const AppointmentsService = {
         cancelled_at,
         cancellation_reason,
         doctor_id,
+        familiar_id,
+        familiares(nombre_completo, parentesco),
         doctors(full_name),
         specialties(name),
         eps(name),
@@ -213,6 +225,9 @@ function mapAppointmentDetail(row: any): AppointmentDetail {
     slotStartTime: row.availability_slots?.start_time ?? '',
     slotEndTime: row.availability_slots?.end_time ?? '',
     doctorId: row.doctor_id ?? '',
+    familiarId: row.familiar_id ?? null,
+    familiarNombre: row.familiares?.nombre_completo ?? null,
+    familiarParentesco: row.familiares?.parentesco ?? null,
   };
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */

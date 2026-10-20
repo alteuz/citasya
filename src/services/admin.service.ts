@@ -62,6 +62,8 @@ export interface AdminAppointment {
   readonly id: string;
   readonly patientName: string;
   readonly patientEmail: string;
+  /** Familiar para quien es la cita (RF-13); null si es del titular. */
+  readonly familiarNombre: string | null;
   readonly doctorName: string;
   readonly specialtyName: string;
   readonly epsName: string;
@@ -355,6 +357,7 @@ export const AdminService = {
       .select(`
         id, status, mode, booked_at,
         profiles!appointments_patient_id_fkey(full_name, email),
+        familiares(nombre_completo),
         doctors(full_name),
         specialties(name),
         eps(name),
@@ -378,6 +381,7 @@ export const AdminService = {
       id: row.id,
       patientName: row.profiles?.full_name ?? 'N/A',
       patientEmail: row.profiles?.email ?? '',
+      familiarNombre: row.familiares?.nombre_completo ?? null,
       doctorName: row.doctors?.full_name ?? '',
       specialtyName: row.specialties?.name ?? '',
       epsName: row.eps?.name ?? '',

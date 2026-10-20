@@ -35,6 +35,7 @@ export const rutas: RouteObject[] = [
         children: [
           { path: 'dashboard', lazy: () => import('@/pages/DashboardPage').then((m) => ({ Component: m.DashboardPage })) },
           { path: 'dashboard/historial', lazy: () => import('@/pages/HistorialPage').then((m) => ({ Component: m.HistorialPage })) },
+          { path: 'dashboard/familia', lazy: () => import('@/pages/FamiliaPage').then((m) => ({ Component: m.FamiliaPage })) },
           { path: 'reprogramar/:appointmentId', lazy: () => import('@/pages/ReschedulePage').then((m) => ({ Component: m.ReschedulePage })) },
         ],
       },
