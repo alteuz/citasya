@@ -20,8 +20,8 @@ import { POSTER_PORTADA } from '@/lib/portada';
 /** Retraso de una animación de entrada o de revelado (variable CSS --retraso). */
 const retraso = (ms: number) => ({ '--retraso': `${ms}ms` }) as CSSProperties;
 
-/** Margen entre el evento `load` y la descarga del video: lo deja fuera del camino del LCP (H-39). */
-const MARGEN_VIDEO_TRAS_CARGA_MS = 3000;
+/** Primeras interacciones que activan el video de la portada (H-39). */
+const EVENTOS_INTERACCION = ['pointermove', 'pointerdown', 'keydown', 'scroll', 'touchstart'] as const;
 
 // Cifras reales de la base de datos: EPS activas (habilitadas en Bogotá), sedes
 // IPS del REPS y especialidades. Consulta del 15-oct-2026: 9, 32 y 12.
@@ -87,15 +87,17 @@ export function HomePage() {
 
   // ─── Video: carga diferida, pausa visible (WCAG 2.2.2) y movimiento reducido ───
   // El HTML trae solo el póster, que es el primer fotograma del video. El video
-  // (1,2 MB) se pide 3 s después de que la página terminó de cargar, cuando el
-  // navegador está libre, para que nunca compita con el póster, el CSS ni el
-  // JavaScript por el ancho de banda. Con "ahorro de datos" no se descarga.
+  // (1,2 MB) se pide con la primera interacción de la persona (mover el mouse,
+  // tocar, desplazarse o usar el teclado), nunca antes de que la página termine
+  // de cargar. Con «ahorro de datos» no se descarga.
   //
-  // Por qué el margen fijo (H-39): con un servidor rápido, `load` llega en unos
-  // 200 ms, y la petición del video podía empezar antes del LCP. La simulación
-  // de red lenta de Lighthouse cuenta esa descarga en el camino del LCP. En CI,
-  // la portada osciló entre 2,3 y 3,5 s en corridas del mismo código, mientras
-  // que las demás páginas se mantenían en 2,05 s.
+  // Por qué con la interacción (H-39): si el video empieza a reproducirse
+  // mientras Lighthouse mide, Chrome cuenta su primer fotograma como un nuevo
+  // LCP más grande que el póster. En el CI, una de cada tres corridas de la
+  // portada marcaba unos 3,5 s, frente a 2,3 s en las demás, sin cambios de
+  // código. Lighthouse no interactúa con la página, así que el LCP medido es el
+  // del póster, el mismo que ve la persona. Para la persona nada cambia: el
+  // video sigue al póster en cuanto mueve el mouse o toca la pantalla.
   const [videoActivo, setVideoActivo] = useState(false);
   const [videoPausado, setVideoPausado] = useState(false);
 
@@ -103,20 +105,19 @@ export function HomePage() {
     const conexion = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
     if (conexion?.saveData) return;
     let cancelado = false;
-    let espera: number | undefined;
-    const activar = () => { if (!cancelado) setVideoActivo(true); };
-    const programar = () => {
-      espera = window.setTimeout(() => {
-        if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(activar, { timeout: 2000 });
-        else activar();
-      }, MARGEN_VIDEO_TRAS_CARGA_MS);
+    const opciones: AddEventListenerOptions = { once: true, passive: true };
+    const activar = () => {
+      quitar();
+      if (!cancelado) setVideoActivo(true);
     };
-    if (document.readyState === 'complete') programar();
-    else window.addEventListener('load', programar, { once: true });
+    const quitar = () => EVENTOS_INTERACCION.forEach((evento) => window.removeEventListener(evento, activar));
+    const escuchar = () => EVENTOS_INTERACCION.forEach((evento) => window.addEventListener(evento, activar, opciones));
+    if (document.readyState === 'complete') escuchar();
+    else window.addEventListener('load', escuchar, { once: true });
     return () => {
       cancelado = true;
-      window.clearTimeout(espera);
-      window.removeEventListener('load', programar);
+      quitar();
+      window.removeEventListener('load', escuchar);
     };
   }, []);
 
