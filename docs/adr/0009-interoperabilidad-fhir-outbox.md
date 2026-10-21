@@ -37,7 +37,7 @@ El diseño del módulo de interoperabilidad (sección 4.4 del documento de grado
 
 ## Hallazgo durante la implementación
 
-Ante un `If-Match` desactualizado, HAPI responde **409 Conflict** (HAPI-0989), no el 412 Precondition Failed que menciona la especificación y que asumía el diseño. Medido en el servidor público el 20-oct-2026. El sincronizador y TC-07 aceptan cualquiera de los dos como conflicto de versión.
+Ante un `If-Match` desactualizado, HAPI responde **409 Conflict** (HAPI-0989), no el 412 Precondition Failed que menciona la especificación y que asumía el diseño. Medido en el servidor público el 19-oct-2026. El sincronizador y TC-07 aceptan cualquiera de los dos como conflicto de versión.
 
 ## Alternativas descartadas
 
@@ -54,7 +54,8 @@ Ante un `If-Match` desactualizado, HAPI responde **409 Conflict** (HAPI-0989), n
 - **Pruebas.**
   - 37 pruebas unitarias del núcleo, más 4 del panel de administración (incluye axe).
   - 38 reglas SQL: se suman T32 a T38, sobre la outbox, los permisos y la seudonimización.
-  - TC-01 a TC-10: 10/10 contra el HAPI público. Dos corridas tempranas fallaron por la red de ese servidor (`fetch failed`) y no por la lógica; por eso la medición oficial de IND-10 se hace en CI contra HAPI en Docker, como prevé la tabla de riesgos.
+  - TC-01 a TC-10, medición oficial de IND-10: **10/10 en CI** contra HAPI `v8.12.0-2` en Docker (run 39519824583, 20-oct-2026).
+  - Contra el HAPI público también dieron 10/10. De 9 corridas, 2 fallaron por la red de ese servidor (`fetch failed`) y no por la lógica; por eso la medición oficial se hace en CI, como prevé la tabla de riesgos.
 - **Producción (20-oct-2026).**
   - Carga inicial: 458 recursos en 5 Bundles.
   - La cita futura que ya existía se publicó sola por pg_cron: Appointment `booked`, Slot `busy` y Patient seudonimizado.
