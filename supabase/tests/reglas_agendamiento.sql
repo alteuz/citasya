@@ -13,6 +13,7 @@
 -- Resultado registrado el 26-sep-2026: 13 de 13 pruebas pasan.
 -- Resultado registrado el 15-oct-2026: 17 de 17 (se suman T14–T17: H-36 y H-37).
 -- Resultado registrado el 19-oct-2026: 31 de 31 (se suman T18–T31: modelo familiar, RF-13).
+-- Resultado registrado el 20-oct-2026: 38 de 38 (se suman T32–T38: outbox FHIR, ADR-0009).
 -- ════════════════════════════════════════════════════════════════════════════
 do $$
 declare
@@ -20,6 +21,7 @@ declare
   s_libre uuid; s_libre2 uuid; s_libre3 uuid; s_pasado uuid; s_cerca uuid; s_otra_eps uuid;
   v_cita uuid; v_cita_cerca uuid;
   v_eps_fam uuid; v_med_fam uuid; s_fam uuid; s_libre4 uuid; f1 uuid; f2 uuid; v_cita_f1 uuid; v_n int;
+  v_evento jsonb; v_cedula text; v_nombre text;
   v_ahora timestamp := (now() at time zone 'America/Bogota');
   v_cerca_inicio timestamp;
   res text[] := '{}'; pasan int := 0; total int := 0;
@@ -171,6 +173,44 @@ begin
   exception when others then resultado := 'BLOQUEADO'; end;
   res := res || array['T31 escritura directa en la tabla de familiares', 'BLOQUEADO', resultado];
   execute 'reset role';
+
+  -- ── Interoperabilidad FHIR (ADR-0009): outbox transaccional ──
+  -- v_cita se reservó (T1), se reprogramó de s_libre a s_libre2 (T9) y se canceló (T11).
+  select count(*) into v_n from private.fhir_outbox where id_local = v_cita;
+  res := res || array['T32 reservar, reprogramar y cancelar dejan un evento cada uno en la outbox', '3', v_n::text];
+  select coalesce(string_agg(franja_anterior::text, ','), 'ninguna') into resultado
+    from private.fhir_outbox where id_local = v_cita and franja_anterior is not null;
+  res := res || array['T33 la reprogramación registra la franja que se libera', s_libre::text, resultado];
+  update public.appointments set notes = 'Solo cambia la nota' where id = v_cita;
+  select count(*) into v_n from private.fhir_outbox where id_local = v_cita;
+  res := res || array['T34 cambiar solo las notas no genera evento (no viajan a FHIR)', '3', v_n::text];
+
+  perform set_config('request.jwt.claims', json_build_object('sub',p1,'role','authenticated')::text, true);
+  execute 'set local role authenticated';
+  begin perform count(*) from private.fhir_outbox; resultado := 'LEYÓ';
+  exception when insufficient_privilege then resultado := 'SIN PERMISO'; when others then resultado := sqlerrm; end;
+  res := res || array['T35 un paciente no puede leer la outbox', 'SIN PERMISO', resultado];
+  begin perform public.fhir_tomar_eventos('https://prueba.invalid/fhir', 5); resultado := 'EJECUTÓ';
+  exception when insufficient_privilege then resultado := 'SIN PERMISO'; when others then resultado := sqlerrm; end;
+  res := res || array['T36 un paciente no puede tomar eventos de la outbox', 'SIN PERMISO', resultado];
+  begin perform public.admin_fhir_resumen(); resultado := 'OK'; exception when others then resultado := sqlerrm; end;
+  res := res || array['T37 un paciente no ve el panel de interoperabilidad', 'NO_AUTORIZADO', resultado];
+  execute 'reset role';
+
+  -- Lo que recibe la Edge Function: la cita seudonimizada, con la franja liberada y sin datos personales.
+  select e into v_evento
+    from jsonb_array_elements(public.fhir_tomar_eventos('https://prueba.invalid/fhir', 100)) as e
+   where e->'cita'->>'id' = v_cita::text;
+  select p.cedula, p.full_name into v_cedula, v_nombre from public.profiles p where p.id = p1;
+  resultado := case
+    when v_evento is null then 'SIN EVENTO'
+    when (v_evento->'cita'->'paciente'->>'seudonimo') !~ '^[0-9a-f]{64}$' then 'SIN SEUDÓNIMO'
+    when position(v_nombre in v_evento::text) > 0
+      or (length(v_cedula) >= 6 and position(v_cedula in v_evento::text) > 0) then 'CON DATOS PERSONALES'
+    when jsonb_array_length(v_evento->'cita'->'franjasAnteriores') <> 1
+      or v_evento->'cita'->'franjasAnteriores'->0->>'id' <> s_libre::text then 'SIN FRANJA LIBERADA'
+    else 'OK' end;
+  res := res || array['T38 la outbox entrega la cita seudonimizada, sin cédula ni nombre y con la franja liberada', 'OK', resultado];
 
   -- ── Informe y reversión ──
   resultado := '';

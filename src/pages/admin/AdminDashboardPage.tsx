@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
-import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { estilosBoton } from '@/components/ui/estilosBoton';
 import { AdminService, type AdminStats } from '@/services/admin.service';
-import { ArrowRight, CalendarCheck, CalendarDays, CircleX, ClipboardList, Stethoscope, type LucideIcon } from 'lucide-react';
+import { ArrowRight, CalendarCheck, CalendarDays, CircleX, ClipboardList, Network, Stethoscope, type LucideIcon } from 'lucide-react';
 import { IconBadge } from '@/components/ui/IconBadge';
 
 export function AdminDashboardPage() {
@@ -74,6 +74,13 @@ export function AdminDashboardPage() {
             href="/admin/citas"
             ctaText="Ver citas"
           />
+          <AdminCard
+            icon={Network}
+            title="Interoperabilidad FHIR"
+            description="Ver cómo se publican las citas en el servidor HL7 FHIR y sincronizar."
+            href="/admin/fhir"
+            ctaText="Ver interoperabilidad"
+          />
         </div>
       </div>
     </div>
@@ -112,11 +119,10 @@ function AdminCard({ icon, title, description, href, ctaText }: AdminCardProps) 
       <IconBadge icon={icon} tone="brand" size="sm" className="mb-4" />
       <h3 className="text-lg font-semibold text-text-primary mb-1">{title}</h3>
       <p className="text-sm text-text-secondary mb-4">{description}</p>
-      <Link to={href}>
-        <Button variant="primary" size="sm">
-          {ctaText}
-          <ArrowRight size={16} aria-hidden="true" />
-        </Button>
+      {/* Enlace con apariencia de botón: un <button> dentro de un <a> no es HTML válido. */}
+      <Link to={href} className={estilosBoton({ variant: 'primary', size: 'sm' })}>
+        {ctaText}
+        <ArrowRight size={16} aria-hidden="true" />
       </Link>
     </div>
   );
