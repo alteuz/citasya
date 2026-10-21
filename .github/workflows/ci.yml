@@ -9,6 +9,8 @@
 #   seguridad      → npm audit de dependencias de producción (alta/crítica)
 #   accesibilidad  → axe-core en navegador real, perfiles móvil y escritorio
 #   lighthouse     → Lighthouse CI (mediana de 3 corridas), móvil y escritorio
+#   interoperabilidad → casos TC-01 a TC-10 (IND-10) contra HAPI FHIR R4 en un
+#                    contenedor de servicio con versión fijada (ADR-0009)
 #
 # Los gates son independientes: cada uno reporta su propio resultado aunque
 # otro falle, para que cada ejecución sea una medición completa.
@@ -156,4 +158,45 @@ jobs:
           name: lighthouse-${{ matrix.perfil }}
           path: .lighthouseci
           include-hidden-files: true # .lighthouseci es un directorio oculto
+          retention-days: 30
+
+  interoperabilidad:
+    name: Interoperabilidad FHIR (HAPI)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # HAPI FHIR R4 con versión fijada y base en memoria: cada ejecución parte de
+    # cero y no depende de la disponibilidad del servidor público de pruebas.
+    services:
+      hapi:
+        image: hapiproject/hapi:v8.12.0-2
+        ports:
+          - 8080:8080
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      # La imagen no trae shell para un healthcheck: se espera a que responda /metadata.
+      - name: Esperar a que HAPI FHIR responda
+        run: |
+          for intento in $(seq 1 60); do
+            if curl -sf -H 'Accept: application/fhir+json' http://localhost:8080/fhir/metadata > /dev/null; then
+              echo "HAPI FHIR listo tras ${intento} intento(s)"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "HAPI FHIR no respondió en 5 minutos" >&2
+          exit 1
+      - name: Casos TC-01 a TC-10 (IND-10)
+        run: npm run test:fhir
+        env:
+          FHIR_BASE_URL: http://localhost:8080/fhir
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: interoperabilidad-fhir
+          path: fhir/reportes
           retention-days: 30
