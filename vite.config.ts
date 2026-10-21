@@ -17,7 +17,9 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.test.{ts,tsx}'],
+    // El núcleo FHIR compartido con la Edge Function también tiene pruebas unitarias
+    // (sin red). Las de interoperabilidad contra HAPI van aparte: vitest.fhir.config.ts.
+    include: ['src/**/*.test.{ts,tsx}', 'supabase/functions/_shared/**/*.test.ts'],
     // Valores ficticios: ninguna prueba unitaria debe hablar con Supabase real.
     env: {
       VITE_SUPABASE_URL: 'http://localhost:54321',
@@ -25,8 +27,8 @@ export default defineConfig({
     },
     coverage: {
       provider: 'v8',
-      include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/**/*.test.{ts,tsx}', 'src/test/**', 'src/main.tsx', 'src/vite-env.d.ts'],
+      include: ['src/**/*.{ts,tsx}', 'supabase/functions/_shared/**/*.ts'],
+      exclude: ['src/**/*.test.{ts,tsx}', 'supabase/functions/_shared/**/*.test.ts', 'src/test/**', 'src/main.tsx', 'src/vite-env.d.ts'],
       reporter: ['text-summary', 'lcov'],
     },
   },
