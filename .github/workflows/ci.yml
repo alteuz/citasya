@@ -50,7 +50,7 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist
@@ -78,7 +78,7 @@ jobs:
       - name: Pruebas unitarias con cobertura
         if: ${{ !cancelled() }}
         run: npm run test:coverage
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: cobertura
@@ -121,7 +121,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: axe-core en móvil y escritorio
         run: npm run test:e2e
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: reporte-accesibilidad
@@ -152,7 +152,7 @@ jobs:
         run: npm run lhci
         env:
           LHCI_PROFILE: ${{ matrix.perfil }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: lighthouse-${{ matrix.perfil }}
@@ -194,7 +194,7 @@ jobs:
         run: npm run test:fhir
         env:
           FHIR_BASE_URL: http://localhost:8080/fhir
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: interoperabilidad-fhir
