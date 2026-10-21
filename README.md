@@ -38,8 +38,8 @@ En Colombia, pedir una cita médica suele implicar líneas telefónicas saturada
       Las páginas públicas llegan ya renderizadas desde la CDN (SSG): el texto se ve sin esperar al JavaScript, incluso con 4G lenta.
     </td>
     <td width="33%" valign="top">
-      <h3>🔗 Lista para interoperar</h3>
-      Contrato de datos HL7 FHIR R4 (Patient, Schedule, Appointment) contra HAPI FHIR, en desarrollo en el Sprint 3.
+      <h3>🔗 Interoperable</h3>
+      Cada cita se publica en un servidor HL7 FHIR R4 (Patient, Slot, Appointment…) sin perderse ni duplicarse, y el paciente viaja con un seudónimo.
     </td>
   </tr>
 </table>
@@ -109,12 +109,13 @@ Cada optimización se validó con un experimento A/B, incluido un resultado nega
 |---|---|
 | **Frontend** | React 19 + React Router 7 con carga diferida por ruta. Las rutas públicas se **prerenderizan durante el build** y se **hidratan** en el navegador. Los componentes nunca tocan la base de datos: todo pasa por `src/services`. |
 | **Datos** | PostgreSQL 17 en Supabase con **RLS por tabla y por acción**. `reservar_cita`, `cancelar_cita` y `reprogramar_cita` son funciones transaccionales con `SELECT … FOR UPDATE` y errores tipados. La agenda se mantiene en una ventana móvil de 60 días con `pg_cron`. |
+| **Interoperabilidad** | HL7 FHIR R4. Un outbox transaccional en PostgreSQL y la Edge Function `fhir-sync` publican cada cita en un Bundle de transacción con `If-Match` sobre la franja. El paciente viaja seudonimizado (HMAC). Ver [ADR-0009](docs/adr/0009-interoperabilidad-fhir-outbox.md). |
 | **Entrega** | Archivos estáticos en la CDN de Vercel. |
 
 ## 🛡️ Calidad como gates de CI
 
 <p align="center">
-  <img src="docs/img/pipeline.png" alt="Pipeline: cada pull request pasa por build, calidad, seguridad, axe-core y Lighthouse; la protección de rama bloquea la integración si falla un check obligatorio" width="92%">
+  <img src="docs/img/pipeline.png" alt="Pipeline: cada pull request pasa por build, calidad, seguridad, axe-core, Lighthouse e interoperabilidad FHIR; la protección de rama exige los 7 checks y bloquea la integración si alguno falla" width="92%">
 </p>
 
 | Gate | Verifica | Bloquea |
@@ -124,9 +125,10 @@ Cada optimización se validó con un experimento A/B, incluido un resultado nega
 | **Seguridad** | `npm audit`: sin vulnerabilidades altas ni críticas en producción | ✅ |
 | **Accesibilidad** | axe-core en Chromium, móvil y escritorio, más pruebas de hidratación | ✅ |
 | **Lighthouse (escritorio)** | Accesibilidad ≥ 98 · rendimiento ≥ 95 · LCP ≤ 2,5 s | ✅ |
-| **Lighthouse (móvil)** | Accesibilidad ≥ 98 · rendimiento ≥ 85 · LCP ≤ 2,5 s | ⏳ |
+| **Lighthouse (móvil)** | Accesibilidad ≥ 98 · rendimiento ≥ 85 · LCP ≤ 2,5 s | ✅ |
+| **Interoperabilidad FHIR** | Casos TC-01 a TC-10 (IND-10) contra HAPI FHIR R4 en Docker | ✅ |
 
-`main` está protegida: exige los checks obligatorios, la rama al día y conversaciones resueltas. La regla también aplica a los administradores.
+`main` está protegida: exige los 7 checks de la tabla, la rama al día y conversaciones resueltas. La regla también aplica a los administradores.
 
 ## 📍 Datos reales, personas sintéticas
 
@@ -231,12 +233,15 @@ La base de datos se crea con las migraciones de [`supabase/migrations`](supabase
 | [0004](docs/adr/0004-tokens-de-color-semanticos.md) | Tokens de color semánticos |
 | [0005](docs/adr/0005-simulacion-realista-y-agendamiento-robusto.md) | Simulación con datos reales y agendamiento transaccional |
 | [0006](docs/adr/0006-prerenderizado-estatico-rutas-publicas.md) | Prerenderizado estático de las rutas públicas |
+| [0007](docs/adr/0007-portada-prerenderizada-poster-y-animaciones-css.md) | Portada prerenderizada con póster LCP, video diferido y animaciones CSS |
+| [0008](docs/adr/0008-modelo-familiar.md) | Modelo familiar (cuenta de cuidador) |
+| [0009](docs/adr/0009-interoperabilidad-fhir-outbox.md) | Interoperabilidad HL7 FHIR R4 con outbox transaccional |
 
 ## 🗺️ Hoja de ruta
 
 - [x] **Sprint 1 — Optimizar.** Accesibilidad, rendimiento, seguridad, gates de CI y simulación con datos reales.
 - [ ] **Sprint 2 — Validar.** Pruebas de usabilidad (SUS) con personas de 60 años o más.
-- [ ] **Sprint 3 — Integrar.** Interoperabilidad HL7 FHIR R4 con HAPI FHIR.
+- [x] **Sprint 3 — Integrar.** Interoperabilidad HL7 FHIR R4 con HAPI FHIR: outbox transaccional, paciente seudonimizado e IND-10 en 10 de 10.
 - [ ] **Sprint 4 — Evaluar.** Comparativo final frente a la hipótesis del proyecto.
 
 ## 🎓 Proyecto académico
