@@ -17,6 +17,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
+    "test:fhir": "vitest run --config vitest.fhir.config.ts",
     "lhci": "lhci autorun",
     "audit:deps": "npm audit --omit=dev --audit-level=high",
     "verify": "npm run typecheck && npm run lint && npm run test && npm run build"

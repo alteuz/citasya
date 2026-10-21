@@ -49,6 +49,7 @@ export const rutas: RouteObject[] = [
           { path: 'medicos', lazy: () => import('@/pages/admin/AdminDoctorsPage').then((m) => ({ Component: m.AdminDoctorsPage })) },
           { path: 'disponibilidad', lazy: () => import('@/pages/admin/AdminSlotsPage').then((m) => ({ Component: m.AdminSlotsPage })) },
           { path: 'citas', lazy: () => import('@/pages/admin/AdminAppointmentsPage').then((m) => ({ Component: m.AdminAppointmentsPage })) },
+          { path: 'fhir', lazy: () => import('@/pages/admin/AdminFhirPage').then((m) => ({ Component: m.AdminFhirPage })) },
         ],
       },
 
