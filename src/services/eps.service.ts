@@ -20,9 +20,6 @@ export interface EpsDirectorio {
   readonly nit: string;
   readonly codigoHabilitacion: string | null;
   readonly regimen: 'contributivo' | 'subsidiado' | 'ambos' | null;
-  readonly telefono: string;
-  readonly correo: string;
-  readonly direccion: string;
   readonly fuente: string;
   readonly fechaCorte: string | null;
   readonly sedes: readonly SedeDeRed[];
@@ -34,9 +31,6 @@ interface FilaEps {
   nit: string;
   codigo_habilitacion: string | null;
   regimen: EpsDirectorio['regimen'];
-  phone: string;
-  email: string;
-  address: string;
   fuente: string;
   fecha_corte: string | null;
   eps_red_sedes: {
@@ -46,12 +40,16 @@ interface FilaEps {
 }
 
 export const EpsService = {
-  /** EPS activas con su red de sedes (REPS), ordenadas por nombre. */
+  /**
+   * EPS activas con su red de sedes (REPS), ordenadas por nombre. No se piden el
+   * teléfono, el correo ni la dirección de la EPS: vienen del MVP y no tienen
+   * fuente verificable (H-50). Los datos de las sedes sí vienen del REPS.
+   */
   async getDirectorio(): Promise<ServiceResult<readonly EpsDirectorio[]>> {
     const supabase = await obtenerSupabase();
     const { data, error } = await supabase
       .from('eps')
-      .select('id, name, nit, codigo_habilitacion, regimen, phone, email, address, fuente, fecha_corte, eps_red_sedes(tipo_relacion, ips_sedes(nombre_sede, direccion, codigo_habilitacion_sede))')
+      .select('id, name, nit, codigo_habilitacion, regimen, fuente, fecha_corte, eps_red_sedes(tipo_relacion, ips_sedes(nombre_sede, direccion, codigo_habilitacion_sede))')
       .eq('active', true)
       .order('name')
       .returns<FilaEps[]>();
@@ -68,9 +66,6 @@ export const EpsService = {
         nit: e.nit,
         codigoHabilitacion: e.codigo_habilitacion,
         regimen: e.regimen,
-        telefono: e.phone,
-        correo: e.email,
-        direccion: e.address,
         fuente: e.fuente,
         fechaCorte: e.fecha_corte,
         sedes: e.eps_red_sedes.flatMap((r) =>

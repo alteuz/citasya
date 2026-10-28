@@ -71,14 +71,7 @@ export function DirectorioEpsPage() {
                   {eps.codigoHabilitacion && <> · Código {eps.codigoHabilitacion}</>}
                 </p>
                 {eps.regimen && <p className="text-sm text-text-secondary">{REGIMEN[eps.regimen]}</p>}
-
-                {(eps.telefono || eps.correo || eps.direccion) && (
-                  <div className="space-y-1 mt-3 text-sm text-text-secondary">
-                    {eps.telefono && <p><a href={`tel:${eps.telefono}`} className="inline-flex items-center min-h-11 text-link hover:text-accent underline underline-offset-4">{eps.telefono}</a></p>}
-                    {eps.correo && <p className="break-all"><a href={`mailto:${eps.correo}`} className="inline-flex items-center min-h-11 text-link hover:text-accent underline underline-offset-4">{eps.correo}</a></p>}
-                    {eps.direccion && <p>{eps.direccion}</p>}
-                  </div>
-                )}
+                {/* H-50: sin teléfono, correo ni dirección de la EPS (datos del MVP sin fuente verificable). */}
 
                 {eps.sedes.length > 0 && (
                   <>
