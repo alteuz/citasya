@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { EnlaceBoton } from '@/components/ui/EnlaceBoton';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -104,12 +105,10 @@ export function HistorialPage() {
             <p className="text-text-secondary mb-6">
               Agenda tu primera cita con uno de nuestros médicos.
             </p>
-            <Link to="/buscar">
-              <Button variant="primary" size="md">
-                Buscar médico
-                <ArrowRight size={16} aria-hidden="true" />
-              </Button>
-            </Link>
+            <EnlaceBoton to="/buscar" variant="primary" size="md">
+              Buscar médico
+              <ArrowRight size={16} aria-hidden="true" />
+            </EnlaceBoton>
           </div>
         )}
 
@@ -123,12 +122,10 @@ export function HistorialPage() {
               {proximas.length === 0 ? (
                 <div className="bg-surface-card border border-line rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <p className="text-text-secondary">No tienes citas próximas.</p>
-                  <Link to="/buscar">
-                    <Button variant="primary" size="sm">
-                      Agendar una cita
-                      <ArrowRight size={16} aria-hidden="true" />
-                    </Button>
-                  </Link>
+                  <EnlaceBoton to="/buscar" variant="primary" size="sm">
+                    Agendar una cita
+                    <ArrowRight size={16} aria-hidden="true" />
+                  </EnlaceBoton>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -238,15 +235,9 @@ function TarjetaCita({ cita: apt, ahora, isCancelling, onCancel }: TarjetaCitaPr
 
         {admiteCambios && (
           <div className="flex gap-2">
-            <Link to={`/reprogramar/${apt.id}`}>
-              <Button
-                variant="secondary"
-                size="sm"
-                disabled={isCancelling}
-              >
-                Reprogramar
-              </Button>
-            </Link>
+            <EnlaceBoton to={`/reprogramar/${apt.id}`} variant="secondary" size="sm" deshabilitado={isCancelling}>
+              Reprogramar
+            </EnlaceBoton>
             <Button
               variant="danger"
               size="sm"

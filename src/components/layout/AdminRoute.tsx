@@ -5,8 +5,7 @@
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { useAuthContext } from '@/hooks/useAuthContext';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { Button } from '@/components/ui/Button';
-import { Link } from 'react-router';
+import { EnlaceBoton } from '@/components/ui/EnlaceBoton';
 import { Lock } from 'lucide-react';
 import { IconBadge } from '@/components/ui/IconBadge';
 
@@ -38,9 +37,7 @@ export function AdminRoute() {
         <p className="text-text-secondary text-center max-w-md">
           No tienes permisos de administrador para acceder a esta sección.
         </p>
-        <Link to="/dashboard">
-          <Button variant="primary" size="md">Ir a mi panel</Button>
-        </Link>
+        <EnlaceBoton to="/dashboard" variant="primary" size="md">Ir a mi panel</EnlaceBoton>
       </div>
     );
   }

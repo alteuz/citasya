@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { Link, useSearchParams } from 'react-router';
+import { EnlaceBoton } from '@/components/ui/EnlaceBoton';
+import { useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { DoctorsService, type DoctorSearchResult, type SpecialtyOption, type EpsOption } from '@/services/doctors.service';
@@ -375,12 +376,10 @@ function DoctorCard({ doctor, consulta }: DoctorCardProps) {
         </div>
       </div>
 
-      <Link to={`/buscar/${doctor.id}${consulta ? `?${consulta}` : ''}`}>
-        <Button variant="primary" size="sm" fullWidth>
-          Ver disponibilidad
-          <ArrowRight size={16} aria-hidden="true" />
-        </Button>
-      </Link>
+      <EnlaceBoton to={`/buscar/${doctor.id}${consulta ? `?${consulta}` : ''}`} variant="primary" size="sm" fullWidth>
+        Ver disponibilidad
+        <ArrowRight size={16} aria-hidden="true" />
+      </EnlaceBoton>
     </div>
   );
 }

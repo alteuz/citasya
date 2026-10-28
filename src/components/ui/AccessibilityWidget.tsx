@@ -164,7 +164,9 @@ export function AccessibilityWidget() {
       {/* Botón Flotante del Widget */}
       <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end">
         {isOpen && (
-          <div className="mb-4 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-surface/95 backdrop-blur-xl border border-line rounded-3xl p-6 shadow-elevated animate-fade-in text-text-primary accessibility-widget-panel">
+          // H-43: con el texto «Muy grande» el panel no cabía en pantallas de 768 px de alto y su
+          // título quedaba fuera de la vista. Ahora nunca supera la altura visible y se desplaza.
+          <div className="mb-4 w-[calc(100vw-2rem)] sm:w-80 max-w-sm max-h-[calc(100dvh-7.5rem)] overflow-y-auto overscroll-contain bg-surface/95 backdrop-blur-xl border border-line rounded-3xl p-6 shadow-elevated animate-fade-in text-text-primary accessibility-widget-panel">
             <div className="flex items-center justify-between mb-5 border-b border-line pb-3">
               <h2 className="font-sans text-lg font-semibold flex items-center gap-2">
                 <Accessibility size={20} aria-hidden="true" className="text-accent" /> Ajustes de Accesibilidad

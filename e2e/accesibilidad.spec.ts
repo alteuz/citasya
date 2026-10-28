@@ -80,7 +80,8 @@ test('Flujo de búsqueda y reserva cumple WCAG 2.1 AA', async ({ page }) => {
   await page.locator('#filter-eps').selectOption({ index: 1 });
   await page.getByRole('button', { name: /encontrar médicos/i }).click();
 
-  const availability = page.getByRole('button', { name: /ver disponibilidad/i }).first();
+  // «Ver disponibilidad» lleva a otra página: es un enlace (H-44).
+  const availability = page.getByRole('link', { name: /ver disponibilidad/i }).first();
   await expect(availability).toBeVisible();
   await auditPage(page, 'Búsqueda (resultados)');
 

@@ -1,4 +1,5 @@
 import { useState, useCallback, type FormEvent } from 'react';
+import { EnlaceBoton } from '@/components/ui/EnlaceBoton';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -110,11 +111,9 @@ export function RegisterPage() {
           <p className="text-sm text-text-muted mb-8">
             Si no ves el correo, revisa la carpeta de spam.
           </p>
-          <Link to="/iniciar-sesion">
-            <Button variant="primary" size="lg">
-              Ir a iniciar sesión
-            </Button>
-          </Link>
+          <EnlaceBoton to="/iniciar-sesion" variant="primary" size="lg">
+            Ir a iniciar sesión
+          </EnlaceBoton>
         </div>
       </div>
     );

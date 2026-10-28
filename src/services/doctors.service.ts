@@ -3,6 +3,7 @@
  * Los componentes NUNCA importan supabase directamente.
  */
 import { obtenerSupabase } from '@/lib/supabase';
+import { hoyEnBogota, horariosFuturos } from '@/lib/citas';
 import type { ServiceResult } from '@/types/common';
 
 // ─── Tipos de resultado ─────────────────────────────────────────────────────
@@ -148,9 +149,8 @@ export const DoctorsService = {
     if (date) {
       query = query.eq('date', date);
     } else {
-      // Por defecto, solo slots futuros (próximos 14 días)
-      const today = new Date().toISOString().split('T')[0];
-      query = query.gte('date', today);
+      // Desde hoy en Bogotá (no en UTC: después de las 7 p. m. UTC ya es mañana).
+      query = query.gte('date', hoyEnBogota());
     }
 
     const { data, error } = await query;
@@ -169,7 +169,8 @@ export const DoctorsService = {
     }));
     /* eslint-enable @typescript-eslint/no-explicit-any */
 
-    return { success: true, data: slots };
+    // H-42: las horas de hoy que ya pasaron no se ofrecen.
+    return { success: true, data: horariosFuturos(slots) };
   },
 
   /**

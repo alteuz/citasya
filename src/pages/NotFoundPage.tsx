@@ -1,5 +1,4 @@
-import { Link } from 'react-router';
-import { Button } from '@/components/ui/Button';
+import { EnlaceBoton } from '@/components/ui/EnlaceBoton';
 import { ArrowLeft, Compass } from 'lucide-react';
 import { IconBadge } from '@/components/ui/IconBadge';
 
@@ -12,12 +11,10 @@ export function NotFoundPage() {
         <p className="text-lg text-text-secondary mb-8">
           La página que buscas no existe o fue movida.
         </p>
-        <Link to="/">
-          <Button variant="primary" size="lg">
-            <ArrowLeft size={16} aria-hidden="true" />
-            Volver al inicio
-          </Button>
-        </Link>
+        <EnlaceBoton to="/" variant="primary" size="lg">
+          <ArrowLeft size={16} aria-hidden="true" />
+          Volver al inicio
+        </EnlaceBoton>
       </div>
     </div>
   );
