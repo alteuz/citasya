@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
-import { useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { ArrowRight, Building2, CalendarClock, ChevronDown, CircleCheck, Monitor, Pause, Play, Search, X } from 'lucide-react';
 import videoPortada from '@/assets/portada-720.mp4';
 import { useAuthContext } from '@/hooks/useAuthContext';
@@ -49,15 +49,6 @@ const PASOS = [
   },
 ] as const;
 
-const CONTACTOS_EPS = [
-  { nombre: 'Sanitas', correo: 'contacto@epssanitas.com' },
-  { nombre: 'Sura', correo: 'afiliados@epssura.com.co' },
-  { nombre: 'Compensar', correo: 'servicioalcliente@compensarsalud.com' },
-  { nombre: 'Salud Total', correo: 'defensoria@saludtotal.com.co' },
-  { nombre: 'Famisanar', correo: 'servicioalcliente@famisanar.com.co' },
-  { nombre: 'Coosalud', correo: 'defensordelusuario@coosalud.com' },
-] as const;
-
 const NAV_LINKS = [
   { label: 'Inicio', path: '/' },
   { label: 'Agendar cita', path: '/buscar' },
@@ -76,7 +67,6 @@ const Logo = () => (
 );
 
 export function HomePage() {
-  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuthenticated, logout, isLoading } = useAuthContext();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -165,13 +155,33 @@ export function HomePage() {
     return () => window.removeEventListener('keydown', onKey);
   }, [isMenuOpen]);
 
-  const irA = (path: string) => {
-    if (path.startsWith('#')) {
-      document.querySelector(path)?.scrollIntoView({ behavior: reducir ? 'auto' : 'smooth' });
-    } else {
-      navigate(path);
-    }
+  const irASeccion = (ancla: string) => {
+    document.querySelector(ancla)?.scrollIntoView({ behavior: reducir ? 'auto' : 'smooth' });
   };
+
+  // H-46: navegar es un enlace (<a>), no un botón. Funciona antes de que cargue el
+  // JavaScript (la portada es HTML prerenderizado) y se puede abrir en otra pestaña.
+  const enlace = (
+    link: { readonly label: string; readonly path: string },
+    className: string,
+    extra: Record<string, unknown> = {},
+    alPulsar?: () => void,
+  ) =>
+    link.path.startsWith('#') ? (
+      <a
+        key={link.label}
+        href={link.path}
+        onClick={(evento) => { evento.preventDefault(); alPulsar?.(); irASeccion(link.path); }}
+        className={className}
+        {...extra}
+      >
+        {link.label}
+      </a>
+    ) : (
+      <Link key={link.label} to={link.path} onClick={alPulsar} className={className} {...extra}>
+        {link.label}
+      </Link>
+    );
 
   const enlacesMenu = [
     ...NAV_LINKS,
@@ -210,21 +220,12 @@ export function HomePage() {
           aria-label="Navegación principal"
           className="entrada-barra relative w-full max-w-7xl mx-auto flex items-center justify-between gap-6 px-5 sm:px-8 py-4"
         >
-          <button type="button" onClick={() => navigate('/')} className="rounded-xl cursor-pointer" aria-label="CitasYA, ir al inicio">
+          <Link to="/" className="rounded-xl" aria-label="CitasYA, ir al inicio">
             <Logo />
-          </button>
+          </Link>
 
           <div className="hidden lg:flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-md p-1">
-            {NAV_LINKS.map((link) => (
-              <button
-                key={link.label}
-                type="button"
-                onClick={() => irA(link.path)}
-                className="inline-flex items-center min-h-10 px-4 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-white/[0.08] transicion cursor-pointer whitespace-nowrap"
-              >
-                {link.label}
-              </button>
-            ))}
+            {NAV_LINKS.map((link) => enlace(link, "inline-flex items-center min-h-10 px-4 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-white/[0.08] transicion cursor-pointer whitespace-nowrap"))}
           </div>
 
           <div className="flex items-center gap-2">
@@ -232,13 +233,12 @@ export function HomePage() {
               <div className="hidden lg:flex items-center gap-2">
                 {isAuthenticated ? (
                   <>
-                    <button
-                      type="button"
-                      onClick={() => navigate('/dashboard')}
-                      className="inline-flex items-center min-h-11 px-4 rounded-full text-sm font-medium text-white/80 hover:text-white transicion cursor-pointer"
+                    <Link
+                      to="/dashboard"
+                      className="inline-flex items-center min-h-11 px-4 rounded-full text-sm font-medium text-white/80 hover:text-white transicion"
                     >
                       Mi Panel
-                    </button>
+                    </Link>
                     <button
                       type="button"
                       onClick={() => void logout()}
@@ -249,20 +249,18 @@ export function HomePage() {
                   </>
                 ) : (
                   <>
-                    <button
-                      type="button"
-                      onClick={() => navigate('/iniciar-sesion')}
-                      className="inline-flex items-center min-h-11 px-4 rounded-full text-sm font-medium text-white/80 hover:text-white transicion cursor-pointer"
+                    <Link
+                      to="/iniciar-sesion"
+                      className="inline-flex items-center min-h-11 px-4 rounded-full text-sm font-medium text-white/80 hover:text-white transicion"
                     >
                       Iniciar Sesión
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => navigate('/registrarse')}
-                      className="inline-flex items-center min-h-11 px-5 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/85 presionable cursor-pointer"
+                    </Link>
+                    <Link
+                      to="/registrarse"
+                      className="inline-flex items-center min-h-11 px-5 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/85 presionable"
                     >
                       Registrarse
-                    </button>
+                    </Link>
                   </>
                 )}
               </div>
@@ -334,22 +332,21 @@ export function HomePage() {
               </p>
 
               <div className="entrada mt-7 w-full flex flex-col sm:flex-row sm:items-center gap-3" style={retraso(450)}>
-                <button
-                  type="button"
-                  onClick={() => navigate('/buscar')}
-                  className="group inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-full bg-brand text-white text-base font-semibold shadow-button hover:bg-brand-hover presionable cursor-pointer"
+                <Link
+                  to="/buscar"
+                  className="group inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-full bg-brand text-white text-base font-semibold shadow-button hover:bg-brand-hover presionable"
                 >
                   Agendar cita
                   <ArrowRight size={18} aria-hidden="true" className="transition-transform duration-200 ease-out group-hover:translate-x-0.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => irA('#como-funciona')}
-                  className="group inline-flex items-center justify-center gap-1.5 min-h-12 px-5 rounded-full text-base font-medium text-white/80 hover:text-white hover:bg-white/[0.06] transicion cursor-pointer"
+                </Link>
+                <a
+                  href="#como-funciona"
+                  onClick={(evento) => { evento.preventDefault(); irASeccion('#como-funciona'); }}
+                  className="group inline-flex items-center justify-center gap-1.5 min-h-12 px-5 rounded-full text-base font-medium text-white/80 hover:text-white hover:bg-white/[0.06] transicion"
                 >
                   Cómo funciona
                   <ChevronDown size={18} aria-hidden="true" className="transition-transform duration-200 ease-out group-hover:translate-y-0.5" />
-                </button>
+                </a>
               </div>
 
               {/* Cifras reales: cuentan desde cero al aparecer */}
@@ -397,18 +394,7 @@ export function HomePage() {
         </div>
 
         <div className="flex flex-col mt-12">
-          {enlacesMenu.map((link, i) => (
-            <button
-              key={link.label}
-              type="button"
-              data-item
-              style={{ '--i': i } as CSSProperties}
-              onClick={() => { setIsMenuOpen(false); irA(link.path); }}
-              className="text-left font-serif text-4xl py-2.5 text-white/90 hover:text-white cursor-pointer"
-            >
-              {link.label}
-            </button>
-          ))}
+          {enlacesMenu.map((link, i) => enlace(link, "text-left font-serif text-4xl py-2.5 text-white/90 hover:text-white cursor-pointer", { 'data-item': true, style: { '--i': i } as CSSProperties }, () => setIsMenuOpen(false)))}
           {isAuthenticated && (
             <button
               type="button"
@@ -422,13 +408,13 @@ export function HomePage() {
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={() => { setIsMenuOpen(false); navigate('/buscar'); }}
-          className="mt-auto inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-full bg-brand text-white text-base font-semibold shadow-button hover:bg-brand-hover presionable cursor-pointer"
+        <Link
+          to="/buscar"
+          onClick={() => setIsMenuOpen(false)}
+          className="mt-auto inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-full bg-brand text-white text-base font-semibold shadow-button hover:bg-brand-hover presionable"
         >
           Agendar cita <ArrowRight size={18} aria-hidden="true" />
-        </button>
+        </Link>
       </div>
 
       {/* ─── ¿Cómo funciona? ─── */}
@@ -474,12 +460,13 @@ export function HomePage() {
               <IconBadge icon={Monitor} tone="brand" size="sm" className="icono-realce" />
               <h3 className="text-xl font-semibold text-white">Soporte técnico de la página</h3>
               <p className="text-sm leading-relaxed text-white/65">
-                Si experimentas problemas técnicos con el funcionamiento de CitasYA, como errores al iniciar sesión, problemas al agendar o fallas en el visualizador, por favor contacta a nuestro equipo de desarrollo:
+                Si experimentas problemas técnicos con el funcionamiento de CitasYA, como errores al iniciar sesión, problemas al agendar o fallas en el visualizador, repórtalos al equipo del proyecto:
               </p>
               <div className="mt-auto rounded-2xl border border-white/10 bg-black/40 p-4">
-                <p className="text-xs text-white/60">Correo de soporte</p>
-                <a href="mailto:soporte@citasya.com" className="inline-flex items-center min-h-11 text-base font-semibold text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
-                  soporte@citasya.com
+                <p className="text-xs text-white/60">Reportes del proyecto (repositorio público)</p>
+                <a href="https://github.com/alteuz/citasya/issues" target="_blank" rel="noopener noreferrer" className="inline-flex items-center min-h-11 text-base font-semibold text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
+                  github.com/alteuz/citasya/issues
+                  <span className="sr-only"> (se abre en una pestaña nueva)</span>
                 </a>
               </div>
             </article>
@@ -488,20 +475,15 @@ export function HomePage() {
               <IconBadge icon={Building2} tone="brand" size="sm" className="icono-realce" />
               <h3 className="text-xl font-semibold text-white">Asuntos de tu EPS</h3>
               <p className="text-sm leading-relaxed text-white/65">
-                Si tu consulta está relacionada con autorizaciones de servicios, reclamos, entrega de medicamentos o peticiones directamente relacionadas con tu EPS, comunícate a sus canales oficiales:
+                Si tu consulta está relacionada con autorizaciones de servicios, reclamos, entrega de medicamentos o peticiones directamente relacionadas con tu EPS, comunícate con sus canales oficiales. En el directorio están los datos de las 9 EPS habilitadas en Bogotá y sus sedes de atención.
               </p>
-              {/* role="list": Safari/VoiceOver quita la semántica de lista cuando list-style es none. */}
-              {/* eslint-disable-next-line jsx-a11y/no-redundant-roles */}
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2" role="list">
-                {CONTACTOS_EPS.map((eps) => (
-                  <li key={eps.nombre} className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3">
-                    <p className="text-sm font-semibold text-white">{eps.nombre}</p>
-                    <a href={`mailto:${eps.correo}`} className="inline-flex items-center min-h-11 text-xs text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
-                      {eps.correo}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              <Link
+                to="/directorio-eps"
+                className="mt-auto inline-flex items-center gap-2 min-h-11 self-start rounded-full border border-white/15 px-5 text-sm font-semibold text-accent hover:text-accent-hover hover:border-white/30 transicion"
+              >
+                Ver el directorio de EPS
+                <ArrowRight size={16} aria-hidden="true" />
+              </Link>
             </article>
           </div>
         </div>

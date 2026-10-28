@@ -55,6 +55,23 @@ export function estadoVisible(cita: HorarioDeCita, ahora: Date = new Date()): Es
   return esActiva(cita.status) && !esProxima(cita, ahora) ? 'pasada' : cita.status;
 }
 
+/** Fecha de hoy en Bogotá (AAAA-MM-DD), sin depender de la zona horaria del dispositivo. */
+export function hoyEnBogota(ahora: Date = new Date()): string {
+  return new Date(ahora.getTime() - 5 * 60 * 60 * 1000).toISOString().slice(0, 10);
+}
+
+/**
+ * Solo los horarios que todavía no empiezan (H-42): la disponibilidad de hoy
+ * no debe ofrecer horas que ya pasaron. La base de datos también lo rechaza
+ * (HORARIO_PASADO), pero ofrecerlas confunde a la persona.
+ */
+export function horariosFuturos<T extends { readonly date: string; readonly startTime: string }>(
+  horarios: readonly T[],
+  ahora: Date = new Date(),
+): T[] {
+  return horarios.filter((h) => instanteBogota(h.date, h.startTime).getTime() > ahora.getTime());
+}
+
 /**
  * Separa las citas en próximas (de la más cercana a la más lejana) e historial
  * (de la más reciente a la más antigua). Una cita sin horario válido va al historial.

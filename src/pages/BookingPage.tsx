@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { EnlaceBoton } from '@/components/ui/EnlaceBoton';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -172,9 +173,7 @@ export function BookingPage() {
         <IconBadge icon={SearchX} size="lg" className="mb-5" />
         <h1 className="text-2xl text-text-primary mb-2">Médico no encontrado</h1>
         <p className="text-text-secondary mb-6">{error ?? 'El médico solicitado no existe.'}</p>
-        <Link to="/buscar">
-          <Button variant="primary" size="md">Volver al buscador</Button>
-        </Link>
+        <EnlaceBoton to="/buscar" variant="primary" size="md">Volver al buscador</EnlaceBoton>
       </div>
     );
   }
@@ -205,16 +204,12 @@ export function BookingPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
-            <Link to="/dashboard" className="flex-1">
-              <Button variant="primary" size="md" fullWidth>
-                Ir a mi panel
-              </Button>
-            </Link>
-            <Link to="/buscar" className="flex-1">
-              <Button variant="secondary" size="md" fullWidth>
-                Agendar otra cita
-              </Button>
-            </Link>
+            <EnlaceBoton to="/dashboard" variant="primary" size="md" fullWidth className="flex-1">
+              Ir a mi panel
+            </EnlaceBoton>
+            <EnlaceBoton to="/buscar" variant="secondary" size="md" fullWidth className="flex-1">
+              Agendar otra cita
+            </EnlaceBoton>
           </div>
         </div>
       </div>

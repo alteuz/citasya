@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   esProxima,
   estadoVisible,
+  horariosFuturos,
+  hoyEnBogota,
   instanteBogota,
   puedeModificarse,
   separarCitas,
@@ -10,6 +12,24 @@ import {
 
 // «Ahora» fijo: 15 de octubre de 2026, 10:00 en Bogotá (15:00 UTC).
 const AHORA = new Date('2026-10-15T15:00:00Z');
+
+describe('disponibilidad de hoy (H-42)', () => {
+  it('no ofrece los horarios de hoy que ya empezaron', () => {
+    const horarios = [
+      { id: 'a', date: '2026-10-15', startTime: '07:20:00' },
+      { id: 'b', date: '2026-10-15', startTime: '10:00:00' },
+      { id: 'c', date: '2026-10-15', startTime: '10:20:00' },
+      { id: 'd', date: '2026-10-16', startTime: '07:00:00' },
+    ];
+    expect(horariosFuturos(horarios, AHORA).map((h) => h.id)).toEqual(['c', 'd']);
+  });
+
+  it('calcula «hoy» en Bogotá aunque en UTC ya sea mañana', () => {
+    // 20:00 en Bogotá del 15-oct = 01:00 UTC del 16-oct.
+    expect(hoyEnBogota(new Date('2026-10-16T01:00:00Z'))).toBe('2026-10-15');
+    expect(hoyEnBogota(AHORA)).toBe('2026-10-15');
+  });
+});
 
 const cita = (fecha: string, inicio: string, fin: string, status: HorarioDeCita['status'] = 'scheduled'): HorarioDeCita => ({
   status,

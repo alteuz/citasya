@@ -92,7 +92,7 @@ describe('HistorialPage: citas pasadas y plazo de 24 horas', () => {
     expect(within(historial).getByText('Pasada')).toBeInTheDocument();
     expect(screen.getByText('No tienes citas próximas.')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Cancelar' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Reprogramar' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Reprogramar' })).not.toBeInTheDocument();
   });
 
   it('una cita con más de 24 horas de anticipación es próxima y se puede reprogramar o cancelar', async () => {
@@ -105,7 +105,8 @@ describe('HistorialPage: citas pasadas y plazo de 24 horas', () => {
     const proximas = await screen.findByRole('region', { name: /Próximas citas/ });
     expect(within(proximas).getByText('Dr. Pedro Hernández')).toBeInTheDocument();
     expect(within(proximas).getByRole('button', { name: 'Cancelar' })).toBeInTheDocument();
-    expect(within(proximas).getByRole('button', { name: 'Reprogramar' })).toBeInTheDocument();
+    // Reprogramar lleva a otra página: es un enlace, no un botón dentro de un enlace (H-44).
+    expect(within(proximas).getByRole('link', { name: 'Reprogramar' })).toHaveAttribute('href', expect.stringMatching(/^\/reprogramar\//));
   });
 
   it('a menos de 24 horas la cita sigue siendo próxima, pero sin acciones y con el motivo', async () => {

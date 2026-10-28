@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { EnlaceBoton } from '@/components/ui/EnlaceBoton';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { useAuthContext } from '@/hooks/useAuthContext';
@@ -116,11 +117,9 @@ export function Navbar() {
                 >
                   Iniciar sesión
                 </Link>
-                <Link to="/registrarse">
-                  <Button variant="primary" size="sm" className="rounded-full px-5">
-                    Registrarse
-                  </Button>
-                </Link>
+                <EnlaceBoton to="/registrarse" variant="primary" size="sm" className="rounded-full px-5">
+                  Registrarse
+                </EnlaceBoton>
               </>
             )}
           </div>
@@ -239,11 +238,9 @@ export function Navbar() {
                     >
                       Iniciar sesión
                     </Link>
-                    <Link to="/registrarse" onClick={closeMobileMenu} className="mt-2">
-                      <Button variant="primary" size="md" fullWidth>
-                        Registrarse
-                      </Button>
-                    </Link>
+                    <EnlaceBoton to="/registrarse" onClick={closeMobileMenu} variant="primary" size="md" fullWidth className="mt-2">
+                      Registrarse
+                    </EnlaceBoton>
                   </>
                 )}
               </div>

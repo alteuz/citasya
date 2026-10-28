@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { EnlaceBoton } from '@/components/ui/EnlaceBoton';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { useAuthContext } from '@/hooks/useAuthContext';
@@ -259,12 +260,10 @@ export function DashboardPage() {
               <p className="text-text-secondary mb-6 max-w-md mx-auto">
                 Agenda tu primera cita con uno de nuestros médicos afiliados.
               </p>
-              <Link to="/buscar">
-                <Button variant="primary" size="md">
-                  Buscar médico disponible
-                  <ArrowRight size={16} aria-hidden="true" />
-                </Button>
-              </Link>
+              <EnlaceBoton to="/buscar" variant="primary" size="md">
+                Buscar médico disponible
+                <ArrowRight size={16} aria-hidden="true" />
+              </EnlaceBoton>
             </div>
           )}
 
@@ -308,16 +307,16 @@ export function DashboardPage() {
                     </span>
                     {puedeModificarse(apt, ahora) ? (
                       <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                        <Link to={`/reprogramar/${apt.id}`} className="w-full sm:w-auto">
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            fullWidth
-                            disabled={cancellingAppointmentId === apt.id}
-                          >
-                            Reprogramar
-                          </Button>
-                        </Link>
+                        <EnlaceBoton
+                          to={`/reprogramar/${apt.id}`}
+                          variant="secondary"
+                          size="sm"
+                          fullWidth
+                          deshabilitado={cancellingAppointmentId === apt.id}
+                          className="sm:w-auto"
+                        >
+                          Reprogramar
+                        </EnlaceBoton>
                         <Button
                           variant="danger"
                           size="sm"
@@ -508,12 +507,10 @@ function QuickActionCard({ icon, title, description, href, ctaText, variant }: Q
       <IconBadge icon={icon} tone="brand" size="sm" className="mb-4" />
       <h3 className="text-lg font-semibold text-text-primary mb-1">{title}</h3>
       <p className="text-sm text-text-secondary mb-4">{description}</p>
-      <Link to={href}>
-        <Button variant={variant} size="sm">
-          {ctaText}
-          <ArrowRight size={16} aria-hidden="true" />
-        </Button>
-      </Link>
+      <EnlaceBoton to={href} variant={variant} size="sm">
+        {ctaText}
+        <ArrowRight size={16} aria-hidden="true" />
+      </EnlaceBoton>
     </div>
   );
 }

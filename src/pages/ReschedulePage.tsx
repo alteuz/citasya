@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { EnlaceBoton } from '@/components/ui/EnlaceBoton';
 import { useParams, Link, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -136,9 +137,7 @@ export function ReschedulePage() {
         <IconBadge icon={TriangleAlert} tone="error" size="lg" className="mb-5" />
         <h1 className="text-2xl text-text-primary mb-2">Error al cargar</h1>
         <p className="text-text-secondary mb-6">{error ?? 'La cita solicitada no existe o no tienes permisos.'}</p>
-        <Link to="/dashboard">
-          <Button variant="primary" size="md">Volver a mi panel</Button>
-        </Link>
+        <EnlaceBoton to="/dashboard" variant="primary" size="md">Volver a mi panel</EnlaceBoton>
       </div>
     );
   }
@@ -163,11 +162,9 @@ export function ReschedulePage() {
             <InfoRow label="Modalidad" value={mode === 'presencial' ? 'Presencial' : 'Telemedicina'} />
           </div>
 
-          <Link to="/dashboard/historial" className="block w-full">
-            <Button variant="primary" size="md" fullWidth>
-              Ver mi historial
-            </Button>
-          </Link>
+          <EnlaceBoton to="/dashboard/historial" variant="primary" size="md" fullWidth>
+            Ver mi historial
+          </EnlaceBoton>
         </div>
       </div>
     );
