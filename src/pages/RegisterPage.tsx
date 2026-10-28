@@ -7,7 +7,7 @@ import { useAuthContext } from '@/hooks/useAuthContext';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
 import { DoctorsService } from '@/services/doctors.service';
 import { problemaDeContrasena, vecesFiltrada } from '@/lib/contrasena';
-import { ArrowLeft, ArrowRight, MailCheck } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CircleCheck, MailCheck } from 'lucide-react';
 import { IconBadge } from '@/components/ui/IconBadge';
 
 interface EpsOption {
@@ -16,7 +16,7 @@ interface EpsOption {
 }
 
 export function RegisterPage() {
-  const { register, isLoading: authLoading } = useAuthContext();
+  const { register, isLoading: authLoading, isAuthenticated } = useAuthContext();
 
   const [step, setStep] = useState<1 | 2>(1);
   const { data: epsData } = useServiceQuery(() => DoctorsService.getEpsList(), []);
@@ -96,24 +96,44 @@ export function RegisterPage() {
     setSuccess(true);
   }, [email, password, confirmPassword, cedula, fullName, phone, epsId, register]);
 
-  // Pantalla de éxito post-registro
+  // Pantalla de éxito post-registro. Si el proyecto no exige confirmar el correo,
+  // la persona ya tiene sesión: pedirle que revise su correo la dejaría esperando
+  // un mensaje que no llega (H-51).
   if (success) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 animate-fade-in">
         <div className="w-full max-w-md text-center">
-          <IconBadge icon={MailCheck} tone="success" size="lg" className="mb-6" />
+          <IconBadge icon={isAuthenticated ? CircleCheck : MailCheck} tone="success" size="lg" className="mb-6" />
           <h1 className="text-3xl text-text-primary mb-4">
             ¡Registro exitoso!
           </h1>
-          <p className="text-text-secondary mb-2">
-            Revisa tu correo electrónico para confirmar tu cuenta.
-          </p>
-          <p className="text-sm text-text-muted mb-8">
-            Si no ves el correo, revisa la carpeta de spam.
-          </p>
-          <EnlaceBoton to="/iniciar-sesion" variant="primary" size="lg">
-            Ir a iniciar sesión
-          </EnlaceBoton>
+          {isAuthenticated ? (
+            <>
+              <p className="text-text-secondary mb-8">
+                Tu cuenta está lista y ya iniciaste sesión.
+              </p>
+              <div className="flex flex-col gap-3">
+                <EnlaceBoton to="/buscar" variant="primary" size="lg">
+                  Agendar mi primera cita
+                </EnlaceBoton>
+                <EnlaceBoton to="/dashboard" variant="secondary" size="lg">
+                  Ir a mi panel
+                </EnlaceBoton>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-text-secondary mb-2">
+                Revisa tu correo electrónico para confirmar tu cuenta.
+              </p>
+              <p className="text-sm text-text-muted mb-8">
+                Si no ves el correo, revisa la carpeta de spam.
+              </p>
+              <EnlaceBoton to="/iniciar-sesion" variant="primary" size="lg">
+                Ir a iniciar sesión
+              </EnlaceBoton>
+            </>
+          )}
         </div>
       </div>
     );

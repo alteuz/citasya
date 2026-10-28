@@ -71,7 +71,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const register = useCallback(async (input: RegisterInput): Promise<string | null> => {
     const result = await AuthService.register(input);
     if (!result.success) return result.error;
-    setUser(result.data);
+    // Solo hay sesión si el proyecto no exige confirmar el correo (H-51); sin
+    // sesión, marcar a la persona como autenticada haría fallar sus consultas.
+    if (result.data.sesionIniciada) setUser({ id: result.data.id, email: result.data.email });
     // Perfil se carga automáticamente vía onAuthStateChange
     return null;
   }, []);

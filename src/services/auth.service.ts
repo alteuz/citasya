@@ -36,6 +36,15 @@ export interface AuthUser {
   readonly email: string;
 }
 
+/**
+ * Resultado del registro. Si el proyecto exige confirmar el correo, Supabase no
+ * abre sesión hasta la confirmación; si no lo exige, la persona queda con la
+ * sesión iniciada (H-51).
+ */
+export interface RegistroResult extends AuthUser {
+  readonly sesionIniciada: boolean;
+}
+
 // ─── Servicio ───────────────────────────────────────────────────────────────
 
 export const AuthService = {
@@ -43,7 +52,7 @@ export const AuthService = {
    * Registra un nuevo usuario con Supabase Auth.
    * El trigger en BD crea automáticamente el perfil con la cédula y nombre.
    */
-  async register(input: RegisterInput): Promise<ServiceResult<AuthUser>> {
+  async register(input: RegisterInput): Promise<ServiceResult<RegistroResult>> {
     const supabase = await obtenerSupabase();
     // El perfil completo (cédula, nombre, teléfono, EPS) lo crea el trigger
     // handle_new_user en la misma transacción del registro. La base de datos
@@ -73,7 +82,7 @@ export const AuthService = {
 
     return {
       success: true,
-      data: { id: data.user.id, email: data.user.email ?? '' },
+      data: { id: data.user.id, email: data.user.email ?? '', sesionIniciada: data.session !== null },
     };
   },
 
