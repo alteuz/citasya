@@ -34,7 +34,20 @@ async function waitForEntryAnimations(page: Page): Promise<void> {
   );
 }
 
+/**
+ * H-47: mientras se verifica la sesión, el botón «Iniciar sesión» está ocupado
+ * (deshabilitado, al 50 % de opacidad). Al habilitarse, su opacidad sube en 160 ms;
+ * si axe mide en ese instante, informa un contraste insuficiente que no existe.
+ * Se audita cuando ya no hay nada ocupado y, dos cuadros después, cuando terminó
+ * la transición que ese cambio dispara.
+ */
+async function waitForIdleControls(page: Page): Promise<void> {
+  await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
+  await page.evaluate(() => new Promise((listo) => requestAnimationFrame(() => requestAnimationFrame(listo))));
+}
+
 async function auditPage(page: Page, name: string): Promise<void> {
+  await waitForIdleControls(page);
   await waitForEntryAnimations(page);
   const { violations } = await new AxeBuilder({ page }).analyze();
 
