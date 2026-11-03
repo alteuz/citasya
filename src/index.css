@@ -26,11 +26,13 @@
  * Medido en Chromium sobre texto en español (canvas.measureText):
  *   regular: ancho 1,047 × Arial; negrita: 1,008 × Arial Bold.
  * ascent/descent: métricas de la fuente (1,04 / 0,22 em) divididas por size-adjust.
- * Android no incluye Arial: allí se usa system-ui sin ajuste.
+ * En Linux (también en CI) no hay Arial, pero sí Liberation Sans, que tiene las
+ * mismas métricas: sin ella el texto se reacomodaba al llegar la fuente (CLS).
+ * Android no incluye ninguna de las dos: allí se usa system-ui sin ajuste.
  */
 @font-face {
   font-family: 'Plus Jakarta Sans Fallback';
-  src: local('Arial');
+  src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('LiberationSans');
   font-weight: 200 500;
   size-adjust: 104.7%;
   ascent-override: 99.4%;
@@ -40,7 +42,7 @@
 
 @font-face {
   font-family: 'Plus Jakarta Sans Fallback';
-  src: local('Arial Bold'), local('Arial-BoldMT');
+  src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('LiberationSans-Bold');
   font-weight: 600 800;
   size-adjust: 100.8%;
   ascent-override: 103.2%;
