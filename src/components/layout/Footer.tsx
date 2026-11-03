@@ -1,5 +1,7 @@
 import { Link } from 'react-router';
 import { APP_NAME, APP_TAGLINE } from '@/lib/constants';
+import { Logo } from '@/components/marca/Logo';
+import { Ondas } from '@/components/marca/Ondas';
 
 interface FooterSection {
   readonly title: string;
@@ -29,21 +31,22 @@ export function Footer() {
 
   return (
     <footer
-      className="bg-surface-muted/80 text-text-secondary border-t border-line"
+      className="relative overflow-hidden bg-surface-muted/70 text-text-secondary border-t border-white/[0.06]"
       aria-label="Pie de página"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+      {/* Ondas de luz y halo de la marca: decorativos */}
+      <Ondas className="absolute inset-x-0 top-0 h-20 md:h-28 opacity-70" />
+      <div aria-hidden="true" className="pointer-events-none absolute -bottom-48 left-1/2 h-96 w-[56rem] max-w-[140%] -translate-x-1/2 rounded-full bg-brand/10 blur-3xl" />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-24 pb-10 md:pt-32 md:pb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr] gap-10">
           {/* Brand */}
-          <div className="flex flex-col gap-4">
-            <Link to="/" className="flex items-center gap-3 self-start rounded-xl">
-              <img src="/logo.png" alt="" className="h-10 w-10 object-contain shrink-0" />
-              <span className="font-serif text-2xl tracking-tight text-text-primary">
-                Citas<span className="text-accent">YA</span>
-              </span>
+          <div className="flex flex-col gap-5">
+            <Link to="/" className="flex items-center self-start rounded-xl">
+              <Logo tamano="md" />
               <span className="sr-only">, ir al inicio</span>
             </Link>
-            <p className="text-sm text-text-secondary leading-relaxed max-w-xs">
+            <p className="text-base text-text-secondary leading-relaxed max-w-xs">
               {APP_TAGLINE}
             </p>
           </div>
@@ -51,7 +54,7 @@ export function Footer() {
           {/* Sections */}
           {FOOTER_SECTIONS.map((section) => (
             <div key={section.title} className="flex flex-col gap-4">
-              <h2 className="font-sans text-sm font-semibold text-text-primary">
+              <h2 className="rotulo text-text-muted">
                 {section.title}
               </h2>
               {/* role="list" es intencional: Safari/VoiceOver elimina la semántica de lista cuando list-style es none (reset de Tailwind). */}
@@ -61,7 +64,7 @@ export function Footer() {
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="inline-flex items-center min-h-11 text-sm text-text-muted hover:text-text-primary transition-colors duration-150"
+                      className="inline-flex items-center min-h-11 text-sm text-text-secondary hover:text-accent transition-colors duration-150"
                     >
                       {link.label}
                     </Link>
@@ -73,7 +76,8 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 pt-8 border-t border-line flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div aria-hidden="true" className="linea-luz mt-12 opacity-60" />
+        <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-text-secondary">
             © {currentYear} {APP_NAME} — Bogotá, Colombia. Todos los derechos reservados.
           </p>

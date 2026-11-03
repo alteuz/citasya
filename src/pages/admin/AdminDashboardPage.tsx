@@ -22,7 +22,7 @@ export function AdminDashboardPage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="bg-surface-muted border-b border-line">
+      <div className="banda-cabecera">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-2xl md:text-3xl text-text-primary">
             Panel de Administración
@@ -97,7 +97,7 @@ interface StatItemProps {
 
 function StatItem({ icon, label, value }: StatItemProps) {
   return (
-    <div className="bg-surface-card border border-line rounded-2xl p-5">
+    <div className="tarjeta rounded-2xl p-5">
       <IconBadge icon={icon} size="sm" />
       <p className="text-3xl font-bold text-text-primary mt-2 tabular-nums">{value}</p>
       <p className="text-sm text-text-muted">{label}</p>
@@ -115,7 +115,7 @@ interface AdminCardProps {
 
 function AdminCard({ icon, title, description, href, ctaText }: AdminCardProps) {
   return (
-    <div className="bg-surface-card border border-line rounded-2xl p-6 hover:border-line-strong hover:shadow-elevated hover:-translate-y-0.5 transicion h-full">
+    <div className="tarjeta rounded-2xl p-6 hover:border-line-strong hover:shadow-elevated hover:-translate-y-0.5 transicion h-full">
       <IconBadge icon={icon} tone="brand" size="sm" className="mb-4" />
       <h3 className="text-lg font-semibold text-text-primary mb-1">{title}</h3>
       <p className="text-sm text-text-secondary mb-4">{description}</p>

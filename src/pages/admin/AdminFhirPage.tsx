@@ -60,7 +60,7 @@ export function AdminFhirPage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="bg-surface-muted border-b border-line">
+      <div className="banda-cabecera">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <Link to="/admin" className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-3">
             <ArrowLeft size={16} aria-hidden="true" /> Volver al panel
@@ -92,7 +92,7 @@ export function AdminFhirPage() {
 
         {data && (
           <>
-            <section aria-labelledby="titulo-servidor" className="bg-surface-card border border-line rounded-2xl p-6">
+            <section aria-labelledby="titulo-servidor" className="tarjeta rounded-2xl p-6">
               <div className="flex items-start gap-4">
                 <IconBadge icon={Server} tone="brand" size="sm" />
                 <div className="min-w-0">
@@ -163,11 +163,11 @@ export function AdminFhirPage() {
           <section aria-labelledby="titulo-eventos">
             <h2 id="titulo-eventos" className="font-sans text-xl font-semibold text-text-primary mb-4">Últimos eventos</h2>
             {data.eventos.length === 0 ? (
-              <p className="text-center py-12 px-6 text-text-muted bg-surface-card border border-line rounded-2xl text-pretty">
+              <p className="text-center py-12 px-6 text-text-muted tarjeta rounded-2xl text-pretty">
                 Todavía no hay eventos. Cada cita que se reserve, cancele o reprograme aparecerá aquí.
               </p>
             ) : (
-              <div className="overflow-x-auto bg-surface-card border border-line rounded-2xl">
+              <div className="overflow-x-auto tarjeta rounded-2xl">
                 <table className="w-full text-left">
                   <caption className="sr-only">Últimos 30 eventos de la outbox FHIR, del más reciente al más antiguo</caption>
                   <thead>
@@ -203,7 +203,7 @@ interface IndicadorProps {
 
 function Indicador({ icon, tono, label, valor }: IndicadorProps) {
   return (
-    <div className="bg-surface-card border border-line rounded-2xl p-5">
+    <div className="tarjeta rounded-2xl p-5">
       <dt className="text-sm text-text-muted">
         <IconBadge icon={icon} tone={tono} size="sm" className="mb-2" />
         <span className="block">{label}</span>

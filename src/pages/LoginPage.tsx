@@ -3,6 +3,8 @@ import { Link, useNavigate, useLocation } from 'react-router';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAuthContext } from '@/hooks/useAuthContext';
+import { Logo } from '@/components/marca/Logo';
+import { PanelMarca } from '@/components/marca/PanelMarca';
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -36,17 +38,15 @@ export function LoginPage() {
   }, [email, password, login, navigate, from]);
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10 lg:py-14 grid gap-10 lg:grid-cols-2 lg:min-h-[calc(100svh-4.5rem)]">
+      <div className="flex items-center justify-center">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-3 mb-6 rounded-xl">
-            <img src="/logo.png" alt="" className="h-20 w-20 object-contain shrink-0" />
-            <span className="font-serif text-logo-lg tracking-tight font-normal text-text-primary">
-              Citas<span className="text-accent">YA</span>
-            </span>
+          <Link to="/" className="inline-flex items-center mb-6 rounded-xl">
+            <Logo tamano="lg" />
           </Link>
-          <h1 className="text-3xl text-text-primary mb-2">
+          <h1 className="text-3xl sm:text-4xl text-text-primary mb-2">
             Iniciar sesión
           </h1>
           <p className="text-text-secondary">
@@ -57,7 +57,7 @@ export function LoginPage() {
         {/* Form */}
         <form
           onSubmit={(e) => { void handleSubmit(e); }}
-          className="bg-surface-card border border-line rounded-2xl shadow-elevated p-6 sm:p-8 space-y-5"
+          className="vidrio rounded-3xl p-6 sm:p-8 space-y-5"
           noValidate
         >
           {/* Error global */}
@@ -123,6 +123,8 @@ export function LoginPage() {
           </p>
         </form>
       </div>
+      </div>
+      <PanelMarca />
     </div>
   );
 }

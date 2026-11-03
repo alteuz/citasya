@@ -5,7 +5,7 @@
  * Proporciona experiencia offline básica mostrando una página de fallback.
  */
 
-const CACHE_NAME = 'citasya-v16';
+const CACHE_NAME = 'citasya-v17';
 // '/spa' es el shell vacío de la SPA (las rutas privadas sin conexión); '/'
 // ya es la portada prerenderizada.
 const STATIC_ASSETS = [
@@ -13,7 +13,7 @@ const STATIC_ASSETS = [
   '/spa',
   '/portada-poster.webp',
   '/manifest.json',
-  '/logo.png',
+  '/marca/logo-marca-128.webp',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
 ];

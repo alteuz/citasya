@@ -236,6 +236,7 @@ La base de datos se crea con las migraciones de [`supabase/migrations`](supabase
 | [0007](docs/adr/0007-portada-prerenderizada-poster-y-animaciones-css.md) | Portada prerenderizada con póster LCP, video diferido y animaciones CSS |
 | [0008](docs/adr/0008-modelo-familiar.md) | Modelo familiar (cuenta de cuidador) |
 | [0009](docs/adr/0009-interoperabilidad-fhir-outbox.md) | Interoperabilidad HL7 FHIR R4 con outbox transaccional |
+| [0010](docs/adr/0010-renovacion-visual-noche-clinica.md) | Renovación visual «noche clínica» (identidad de marca, sin cambios de funcionalidad) |
 
 ## 🗺️ Hoja de ruta
 

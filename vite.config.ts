@@ -14,6 +14,16 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Todos los íconos en un solo archivo. Sin esto, cada ícono que comparten dos
+        // páginas queda en un archivo propio de pocos bytes, y la portada pedía ocho
+        // de ellos antes de su primer pintado (más solicitudes en el camino del LCP).
+        manualChunks: (id) => (id.includes('node_modules/lucide-react') ? 'iconos' : undefined),
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],

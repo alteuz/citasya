@@ -29,9 +29,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           {label}
         </label>
       )}
-      <div className="relative">
+      <div className="relative group">
         {leftIcon && (
-          <span aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">
+          <span aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent transition-colors duration-150 pointer-events-none">
             {leftIcon}
           </span>
         )}
@@ -41,19 +41,21 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           aria-invalid={error ? 'true' : undefined}
           aria-describedby={describedBy}
           className={`
-            w-full min-h-12 rounded-xl border bg-surface-card px-4 py-3
+            w-full min-h-12 rounded-xl border bg-surface-card/80 px-4 py-3
+            bg-[linear-gradient(180deg,rgb(255_255_255/0.03),rgb(255_255_255/0))]
             text-base text-text-primary placeholder:text-text-muted
-            focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent
+            transition-[border-color,box-shadow,background-color] duration-200 ease-out
+            focus:outline-none focus-visible:outline-none focus:border-accent focus:ring-4 focus:ring-accent/15 focus:shadow-[0_0_24px_-6px_rgb(0_233_252/0.5)]
             disabled:opacity-60 disabled:cursor-not-allowed
-            ${leftIcon ? 'pl-10' : ''}
-            ${rightIcon ? 'pr-10' : ''}
+            ${leftIcon ? 'pl-11' : ''}
+            ${rightIcon ? 'pr-11' : ''}
             ${error ? 'border-error ring-1 ring-error/30' : 'border-line-input hover:border-text-muted'}
             ${className}
           `}
           {...rest}
         />
         {rightIcon && (
-          <span aria-hidden="true" className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">
+          <span aria-hidden="true" className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">
             {rightIcon}
           </span>
         )}

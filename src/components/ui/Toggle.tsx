@@ -20,7 +20,7 @@ export function Toggle({ value, onChange }: ToggleProps) {
     <div
       role="radiogroup"
       aria-label="Modalidad de atención"
-      className="inline-flex items-center bg-surface-muted border border-line rounded-full p-1 gap-1"
+      className="vidrio inline-flex items-center rounded-full p-1 gap-1"
     >
       {MODES.map((mode) => {
         const isSelected = value === mode;
@@ -38,8 +38,8 @@ export function Toggle({ value, onChange }: ToggleProps) {
               presionable cursor-pointer
               ${
                 isSelected
-                  ? 'bg-brand text-white shadow-button'
-                  : 'text-text-muted hover:text-text-primary hover:bg-surface-hover'
+                  ? 'boton-primario text-white'
+                  : 'text-text-muted hover:text-text-primary hover:bg-white/[0.06]'
               }
             `}
           >

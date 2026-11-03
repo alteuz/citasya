@@ -103,7 +103,7 @@ export function AdminDoctorsPage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="bg-surface-muted border-b border-line">
+      <div className="banda-cabecera">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <Link to="/admin" className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-3">
             <ArrowLeft size={16} aria-hidden="true" /> Volver al panel
@@ -122,7 +122,7 @@ export function AdminDoctorsPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Create Form */}
         {showForm && (
-          <div className="bg-surface-card border border-line rounded-2xl p-6 mb-8 animate-fade-in">
+          <div className="tarjeta rounded-2xl p-6 mb-8 animate-fade-in">
             <h2 className="font-sans text-lg font-semibold text-text-primary mb-4">Registrar nuevo médico</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -198,7 +198,7 @@ export function AdminDoctorsPage() {
 
         {/* Table */}
         {!isLoading && !error && (
-          <div className="overflow-x-auto bg-surface-card border border-line rounded-2xl">
+          <div className="overflow-x-auto tarjeta rounded-2xl">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-line bg-surface-muted">
@@ -238,7 +238,7 @@ export function AdminDoctorsPage() {
             </table>
 
             {doctors.length === 0 && (
-              <div className="text-center py-12 px-6 text-text-muted bg-surface-card border border-line rounded-2xl">
+              <div className="text-center py-12 px-6 text-text-muted tarjeta rounded-2xl">
                 No hay médicos registrados aún.
               </div>
             )}
