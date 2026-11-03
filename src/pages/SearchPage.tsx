@@ -123,7 +123,7 @@ export function SearchPage() {
     return (
       <div className="relative py-12 md:py-16 px-4 overflow-hidden">
         {/* Halo de la marca detrás del buscador (decorativo) */}
-        <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-0 h-[36rem] w-[56rem] max-w-[160%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(29_105_252/0.22),transparent)]" />
+        <div aria-hidden="true" className="decorativo pointer-events-none absolute left-1/2 top-0 h-[36rem] w-[56rem] max-w-[160%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(29_105_252/0.22),transparent)]" />
         <div className="vidrio relative mx-auto max-w-2xl rounded-[2rem] p-6 sm:p-8 md:p-12 text-center">
           <IconBadge icon={Stethoscope} tone="brand" size="lg" className="mb-6" />
           <h1 className="text-3xl md:text-4xl text-text-primary mb-4">

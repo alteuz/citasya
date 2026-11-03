@@ -253,10 +253,10 @@ export function HomePage() {
                   </>
                 ) : (
                   <>
-                    <EnlaceBoton to="/iniciar-sesion" variant="accent" size="sm" className="px-5">
+                    <EnlaceBoton to="/iniciar-sesion" variant="accent" size="sm" className="px-5 whitespace-nowrap">
                       Iniciar Sesión
                     </EnlaceBoton>
-                    <EnlaceBoton to="/registrarse" variant="primary" size="sm" className="px-5">
+                    <EnlaceBoton to="/registrarse" variant="primary" size="sm" className="px-5 whitespace-nowrap">
                       Registrarse
                     </EnlaceBoton>
                   </>
@@ -292,7 +292,7 @@ export function HomePage() {
             Se ubican desde arriba y en rem: si la altura de la portada cambia al llegar
             la fuente web, no se mueven (un `top` en % o un `bottom` sí contarían como
             desplazamiento de diseño, CLS). */}
-        <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div aria-hidden="true" className="decorativo absolute inset-0 -z-10 overflow-hidden pointer-events-none">
           <div className="aurora aurora-a -left-[18rem] -top-[20rem] h-[48rem] w-[48rem] [--aurora:rgb(88_67_252/0.34)]" />
           <div className="aurora aurora-b -right-[14rem] top-[11rem] h-[40rem] w-[40rem] [--aurora:rgb(0_233_252/0.16)]" />
           <div className="aurora aurora-a left-[16%] top-[30rem] h-[42rem] w-[66rem] [--aurora:rgb(29_105_252/0.3)]" />
@@ -325,7 +325,7 @@ export function HomePage() {
             className="portada-alejar video-luz relative order-1 lg:order-2 justify-self-center w-[min(70vw,33svh)] lg:w-[min(122%,70svh)] aspect-square"
           >
             <div className="aro-vidrio absolute inset-[9%]" />
-            <div className="absolute inset-[16%] rounded-full bg-[radial-gradient(closest-side,rgb(29_105_252/0.55),rgb(88_67_252/0.18)_60%,transparent)]" />
+            <div className="decorativo absolute inset-[16%] rounded-full bg-[radial-gradient(closest-side,rgb(29_105_252/0.55),rgb(88_67_252/0.18)_60%,transparent)]" />
             <video
               ref={videoRef}
               poster={POSTER_PORTADA}
@@ -341,7 +341,9 @@ export function HomePage() {
             />
           </div>
 
-          <div className="order-2 lg:order-1 flex flex-col items-start">
+          {/* Texto y cifras por encima de la escena (z-10): la escena es más ancha que su
+              columna y, en alto contraste (sin mezcla), su fondo negro taparía el texto. */}
+          <div className="relative z-10 order-2 lg:order-1 flex flex-col items-start">
             <div
               className="entrada inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.05] backdrop-blur-md pl-3 pr-3.5 py-1.5 text-xs font-semibold tracking-wide text-text-secondary"
               style={retraso(250)}
@@ -385,7 +387,7 @@ export function HomePage() {
           {/* Cifras reales en tarjetas de vidrio: suben una tras otra y cuentan desde cero */}
           <dl
             data-cifras
-            className="entrada order-3 grid grid-cols-3 gap-2.5 sm:gap-4 lg:grid-cols-1 lg:justify-self-end lg:w-full lg:max-w-[15rem]"
+            className="entrada relative z-10 order-3 grid grid-cols-3 gap-2.5 sm:gap-4 lg:grid-cols-1 lg:justify-self-end lg:w-full lg:max-w-[15rem]"
             style={retraso(620)}
           >
             {CIFRAS.map((cifra, i) => (
@@ -418,7 +420,7 @@ export function HomePage() {
         inert={!isMenuOpen}
         className="menu-movil fixed inset-0 z-50 bg-surface/95 backdrop-blur-xl flex flex-col px-5 pt-5 pb-8 sm:px-8 overflow-y-auto"
       >
-        <div aria-hidden="true" className="pointer-events-none absolute -top-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-[radial-gradient(closest-side,rgb(88_67_252/0.3),transparent)]" />
+        <div aria-hidden="true" className="decorativo pointer-events-none absolute -top-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-[radial-gradient(closest-side,rgb(88_67_252/0.3),transparent)]" />
         <div className="relative w-full flex items-center justify-between">
           <Logo />
           <button

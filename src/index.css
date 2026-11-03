@@ -879,8 +879,21 @@ html.high-contrast .banda-cabecera::after,
 html.high-contrast .borde-luz::before,
 html.high-contrast .aro-vidrio::before,
 html.high-contrast .aurora,
-html.high-contrast .linea-luz {
+html.high-contrast .linea-luz,
+html.high-contrast .decorativo {
   display: none;
+}
+
+/* Placas con borde de luz (íconos, avatares, marcos de fotos): blanco y borde negro. */
+html.high-contrast .borde-luz {
+  background: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: none;
+}
+
+/* La ilustración del panel de acceso se funde con `lighten`, que sobre blanco la borraría. */
+html.high-contrast .mix-blend-lighten {
+  mix-blend-mode: normal;
 }
 
 html.high-contrast .fondo-app,
@@ -919,9 +932,15 @@ html.high-contrast svg.icono-degradado {
   stroke: currentColor;
 }
 
-/* En alto contraste la escena del logo se muestra tal cual, sin fundirla con el fondo. */
+/* En alto contraste la escena del logo se muestra tal cual, sin fundirla con el
+ * fondo; por eso se ajusta a su columna: más ancha, su fondo negro taparía el texto. */
 html.high-contrast .video-luz {
   mix-blend-mode: normal;
+}
+
+html.high-contrast .portada-alejar {
+  width: 100%;
+  max-width: 100%;
 }
 
 html.high-contrast input,

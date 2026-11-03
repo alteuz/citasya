@@ -11,8 +11,8 @@ import { VALORES_MARCA } from '@/lib/marca';
 export function PanelMarca() {
   return (
     <div className="vidrio relative hidden lg:flex lg:order-first flex-col justify-between overflow-hidden rounded-[2rem] p-10 xl:p-12">
-      <div aria-hidden="true" className="pointer-events-none absolute -top-40 -left-32 h-[28rem] w-[28rem] rounded-full bg-[radial-gradient(closest-side,rgb(88_67_252/0.35),transparent)]" />
-      <div aria-hidden="true" className="pointer-events-none absolute -bottom-40 -right-24 h-[26rem] w-[26rem] rounded-full bg-[radial-gradient(closest-side,rgb(0_233_252/0.16),transparent)]" />
+      <div aria-hidden="true" className="decorativo pointer-events-none absolute -top-40 -left-32 h-[28rem] w-[28rem] rounded-full bg-[radial-gradient(closest-side,rgb(88_67_252/0.35),transparent)]" />
+      <div aria-hidden="true" className="decorativo pointer-events-none absolute -bottom-40 -right-24 h-[26rem] w-[26rem] rounded-full bg-[radial-gradient(closest-side,rgb(0_233_252/0.16),transparent)]" />
 
       <div className="relative">
         <p className="rotulo text-xs text-accent">Disponible 24/7 · Bogotá</p>

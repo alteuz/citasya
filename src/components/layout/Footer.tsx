@@ -35,8 +35,8 @@ export function Footer() {
       aria-label="Pie de página"
     >
       {/* Ondas de luz y halo de la marca: decorativos */}
-      <Ondas className="absolute inset-x-0 top-0 h-20 md:h-28 opacity-70" />
-      <div aria-hidden="true" className="pointer-events-none absolute -bottom-48 left-1/2 h-96 w-[56rem] max-w-[140%] -translate-x-1/2 rounded-full bg-brand/10 blur-3xl" />
+      <Ondas className="decorativo absolute inset-x-0 top-0 h-20 md:h-28 opacity-70" />
+      <div aria-hidden="true" className="decorativo pointer-events-none absolute -bottom-48 left-1/2 h-96 w-[56rem] max-w-[140%] -translate-x-1/2 rounded-full bg-brand/10 blur-3xl" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-24 pb-10 md:pt-32 md:pb-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr] gap-10">

@@ -107,10 +107,10 @@ export function Navbar() {
               </>
             ) : (
               <>
-                <EnlaceBoton to="/iniciar-sesion" variant="accent" size="sm" className="px-5">
+                <EnlaceBoton to="/iniciar-sesion" variant="accent" size="sm" className="px-5 whitespace-nowrap">
                   Iniciar sesión
                 </EnlaceBoton>
-                <EnlaceBoton to="/registrarse" variant="primary" size="sm" className="px-5">
+                <EnlaceBoton to="/registrarse" variant="primary" size="sm" className="px-5 whitespace-nowrap">
                   Registrarse
                 </EnlaceBoton>
               </>
