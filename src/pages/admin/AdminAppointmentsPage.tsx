@@ -55,7 +55,7 @@ export function AdminAppointmentsPage() {
               type="button"
               aria-pressed={activeTab === tab.value}
               onClick={() => setActiveTab(tab.value)}
-              className={`inline-flex items-center min-h-11 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap presionable cursor-pointer ${
+              className={`inline-flex items-center gap-2 min-h-11 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap presionable cursor-pointer ${
                 activeTab === tab.value
                   ? 'boton-primario text-white border border-transparent'
                   : 'bg-surface-card border border-line-input text-text-secondary hover:border-text-muted hover:text-text-primary'

@@ -57,7 +57,9 @@ export function PWAInstallPrompt() {
 
   return (
     <div className="fixed top-4 left-4 right-4 z-50 animate-fade-in sm:top-auto sm:bottom-6 sm:left-6 sm:right-auto sm:max-w-sm">
-      <div className="bg-surface-muted/95 backdrop-blur-xl text-text-primary border border-line-strong rounded-3xl p-4 shadow-elevated flex items-center gap-3">
+      {/* En el celular los botones bajan a su propia fila: en la misma fila dejaban
+          al texto una columna de pocas palabras por línea. */}
+      <div className="bg-surface-muted/95 backdrop-blur-xl text-text-primary border border-line-strong rounded-3xl p-4 shadow-elevated flex flex-wrap items-center gap-3">
         <IconBadge icon={Smartphone} tone="brand" size="sm" />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold">Instalar CitasYA</p>
@@ -65,7 +67,7 @@ export function PWAInstallPrompt() {
             Agrega la app a tu pantalla de inicio para acceso rápido.
           </p>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex w-full sm:w-auto justify-end gap-2 shrink-0">
           <button
             type="button"
             onClick={handleDismiss}
