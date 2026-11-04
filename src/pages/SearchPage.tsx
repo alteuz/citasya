@@ -121,8 +121,10 @@ export function SearchPage() {
 
   if (!hasSearched) {
     return (
-      <div className="py-12 px-4">
-        <div className="mx-auto max-w-2xl bg-surface-card border border-line rounded-3xl p-6 sm:p-8 md:p-12 shadow-elevated text-center">
+      <div className="relative py-12 md:py-16 px-4 overflow-hidden">
+        {/* Halo de la marca detrás del buscador (decorativo) */}
+        <div aria-hidden="true" className="decorativo pointer-events-none absolute left-1/2 top-0 h-[36rem] w-[56rem] max-w-[160%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(29_105_252/0.22),transparent)]" />
+        <div className="vidrio relative mx-auto max-w-2xl rounded-[2rem] p-6 sm:p-8 md:p-12 text-center">
           <IconBadge icon={Stethoscope} tone="brand" size="lg" className="mb-6" />
           <h1 className="text-3xl md:text-4xl text-text-primary mb-4">
             ¿Qué médico necesitas hoy?
@@ -211,7 +213,7 @@ export function SearchPage() {
             size="lg"
             fullWidth
             onClick={handleSearchSubmit}
-            className="min-h-14 text-lg font-bold rounded-2xl"
+            className="min-h-14 text-lg font-bold"
           >
             <Search size={18} aria-hidden="true" /> Encontrar Médicos Disponibles
           </Button>
@@ -223,7 +225,7 @@ export function SearchPage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="bg-surface-muted border-b border-line">
+      <div className="banda-cabecera">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl text-text-primary">
@@ -300,7 +302,7 @@ export function SearchPage() {
 
         {/* Empty state */}
         {!isLoading && !error && doctors.length === 0 && (
-          <div className="bg-surface-card border border-line rounded-2xl p-10 text-center">
+          <div className="tarjeta rounded-2xl p-10 text-center">
             <IconBadge icon={SearchX} size="lg" className="mb-5" />
             <h2 className="font-sans text-lg font-semibold text-text-primary mb-2">
               No se encontraron médicos
@@ -345,10 +347,10 @@ function DoctorCard({ doctor, consulta }: DoctorCardProps) {
     .join('');
 
   return (
-    <div className="bg-surface-card border border-line rounded-2xl p-6 hover:border-line-strong hover:shadow-elevated hover:-translate-y-0.5 transicion flex flex-col">
+    <div className="tarjeta levitar rounded-3xl p-6 hover:border-accent/30 flex flex-col">
       <div className="flex items-start gap-4 mb-4">
-        {/* Avatar */}
-        <div className="w-14 h-14 rounded-full bg-brand-soft text-accent border border-accent/20 font-bold text-lg flex items-center justify-center shrink-0">
+        {/* Avatar: placa con el borde de luz de la marca */}
+        <div className="borde-luz w-14 h-14 rounded-2xl bg-[linear-gradient(160deg,#0f2463,#071232)] text-accent font-bold text-lg flex items-center justify-center shrink-0 shadow-[inset_0_0_14px_rgb(29_105_252/0.3)]">
           {initials}
         </div>
         <div className="min-w-0">

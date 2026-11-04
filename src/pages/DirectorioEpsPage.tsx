@@ -26,7 +26,7 @@ export function DirectorioEpsPage() {
   return (
     <div>
       {/* Header */}
-      <div className="bg-surface-muted border-b border-line">
+      <div className="banda-cabecera">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 md:py-14 text-center">
           <h1 className="text-3xl md:text-4xl text-text-primary mb-2">
             EPS habilitadas en Bogotá
@@ -61,7 +61,7 @@ export function DirectorioEpsPage() {
               <article
                 key={eps.id}
                 aria-labelledby={`eps-${eps.id}`}
-                className="bg-surface-card border border-line rounded-2xl p-6 h-full"
+                className="tarjeta rounded-2xl p-6 h-full"
               >
                 <h2 id={`eps-${eps.id}`} className="font-sans text-lg font-bold text-text-primary leading-tight">
                   {eps.nombre}
@@ -97,7 +97,7 @@ export function DirectorioEpsPage() {
         )}
 
         {!isLoading && !error && epsList.length === 0 && (
-          <div className="text-center py-16 px-6 text-text-muted bg-surface-card border border-line rounded-2xl">
+          <div className="text-center py-16 px-6 text-text-muted tarjeta rounded-2xl">
             <p className="text-lg font-medium">No se encontraron EPS activas.</p>
           </div>
         )}

@@ -119,7 +119,7 @@ export function FormularioFamiliar({ familiar, epsTitular, listaEps, onGuardado,
       ref={formRef}
       noValidate
       onSubmit={(e) => { void enviar(e); }}
-      className="bg-surface-card border border-line rounded-2xl p-5 sm:p-6"
+      className="tarjeta rounded-2xl p-5 sm:p-6"
       aria-labelledby={`${prefijo}-titulo`}
     >
       <h2 id={`${prefijo}-titulo`} className="font-sans text-lg font-semibold text-text-primary mb-1">

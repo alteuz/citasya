@@ -166,7 +166,7 @@ export function AccessibilityWidget() {
         {isOpen && (
           // H-43: con el texto «Muy grande» el panel no cabía en pantallas de 768 px de alto y su
           // título quedaba fuera de la vista. Ahora nunca supera la altura visible y se desplaza.
-          <div className="mb-4 w-[calc(100vw-2rem)] sm:w-80 max-w-sm max-h-[calc(100dvh-7.5rem)] overflow-y-auto overscroll-contain bg-surface/95 backdrop-blur-xl border border-line rounded-3xl p-6 shadow-elevated animate-fade-in text-text-primary accessibility-widget-panel">
+          <div className="mb-4 w-[calc(100vw-2rem)] sm:w-80 max-w-sm max-h-[calc(100dvh-7.5rem)] overflow-y-auto overscroll-contain bg-surface-muted/95 backdrop-blur-xl border border-line-strong rounded-3xl p-6 shadow-elevated animate-fade-in text-text-primary accessibility-widget-panel">
             <div className="flex items-center justify-between mb-5 border-b border-line pb-3">
               <h2 className="font-sans text-lg font-semibold flex items-center gap-2">
                 <Accessibility size={20} aria-hidden="true" className="text-accent" /> Ajustes de Accesibilidad
@@ -210,7 +210,7 @@ export function AccessibilityWidget() {
               {/* Toggles Rápidos */}
               <div className="space-y-3 pt-2">
                 {/* Alto Contraste */}
-                <label className="flex items-center justify-between gap-3 min-h-14 px-3 py-2.5 bg-surface-card border border-line rounded-xl cursor-pointer hover:bg-surface-hover hover:border-line-strong">
+                <label className="flex items-center justify-between gap-3 min-h-14 px-3 py-2.5 tarjeta rounded-xl cursor-pointer hover:bg-surface-hover hover:border-line-strong">
                   <span className="flex flex-col text-sm font-bold text-text-primary">
                     Alto Contraste
                     <span className="text-xs font-normal text-text-muted">Colores de alta visibilidad</span>
@@ -224,7 +224,7 @@ export function AccessibilityWidget() {
                 </label>
 
                 {/* Guía de Lectura */}
-                <label className="flex items-center justify-between gap-3 min-h-14 px-3 py-2.5 bg-surface-card border border-line rounded-xl cursor-pointer hover:bg-surface-hover hover:border-line-strong">
+                <label className="flex items-center justify-between gap-3 min-h-14 px-3 py-2.5 tarjeta rounded-xl cursor-pointer hover:bg-surface-hover hover:border-line-strong">
                   <span className="flex flex-col text-sm font-bold text-text-primary">
                     Guía de Lectura
                     <span className="text-xs font-normal text-text-muted">Regla visual para seguir el texto</span>
@@ -238,7 +238,7 @@ export function AccessibilityWidget() {
                 </label>
 
                 {/* Asistente de Voz */}
-                <label className="flex items-center justify-between gap-3 min-h-14 px-3 py-2.5 bg-surface-card border border-line rounded-xl cursor-pointer hover:bg-surface-hover hover:border-line-strong">
+                <label className="flex items-center justify-between gap-3 min-h-14 px-3 py-2.5 tarjeta rounded-xl cursor-pointer hover:bg-surface-hover hover:border-line-strong">
                   <span className="flex flex-col text-sm font-bold text-text-primary">
                     Lector de Voz
                     <span className="text-xs font-normal text-text-muted">Escuchar texto al pasar el cursor</span>
@@ -252,7 +252,7 @@ export function AccessibilityWidget() {
                 </label>
 
                 {/* Animaciones */}
-                <label className="flex items-center justify-between gap-3 min-h-14 px-3 py-2.5 bg-surface-card border border-line rounded-xl cursor-pointer hover:bg-surface-hover hover:border-line-strong">
+                <label className="flex items-center justify-between gap-3 min-h-14 px-3 py-2.5 tarjeta rounded-xl cursor-pointer hover:bg-surface-hover hover:border-line-strong">
                   <span className="flex flex-col text-sm font-bold text-text-primary">
                     Reducir Movimiento
                     <span className="text-xs font-normal text-text-muted">Desactiva efectos visuales rápidos</span>
@@ -287,7 +287,7 @@ export function AccessibilityWidget() {
           onClick={() => setIsOpen(!isOpen)}
           aria-expanded={isOpen}
           aria-label="Panel de opciones de accesibilidad para adultos mayores"
-          className="w-14 h-14 rounded-full bg-brand hover:bg-brand-hover text-white ring-1 ring-white/15 flex items-center justify-center shadow-button transicion active:scale-95 cursor-pointer focus-visible:outline-3 focus-visible:outline-white focus-visible:outline-offset-2 accessibility-trigger-btn"
+          className="boton-primario w-14 h-14 rounded-full text-white flex items-center justify-center transicion active:scale-95 cursor-pointer focus-visible:outline-3 focus-visible:outline-white focus-visible:outline-offset-2 accessibility-trigger-btn"
         >
           {isOpen ? <X size={24} aria-hidden="true" /> : <Accessibility size={26} aria-hidden="true" />}
         </button>

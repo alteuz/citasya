@@ -15,6 +15,10 @@
 # Los gates son independientes: cada uno reporta su propio resultado aunque
 # otro falle, para que cada ejecución sea una medición completa.
 # Los umbrales viven en lighthouserc.cjs y e2e/accesibilidad.spec.ts.
+#
+# Runner fijado en ubuntu-24.04: desde nov-2026 `ubuntu-latest` es Ubuntu 26.04,
+# donde Playwright 1.60 no instala Chromium, y fijarlo mantiene las mediciones de
+# Lighthouse comparables con las de la línea base (mismo entorno de CI).
 name: CI
 
 on:
@@ -37,7 +41,7 @@ env:
 jobs:
   build:
     name: Build de producción
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -58,7 +62,7 @@ jobs:
 
   calidad:
     name: Calidad (tipos, lint, pruebas)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -87,7 +91,7 @@ jobs:
 
   seguridad:
     name: Seguridad (dependencias)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -105,7 +109,7 @@ jobs:
   accesibilidad:
     name: Accesibilidad WCAG 2.1 AA (axe-core)
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -131,7 +135,7 @@ jobs:
   lighthouse:
     name: Lighthouse CI
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     strategy:
       fail-fast: false
@@ -162,7 +166,7 @@ jobs:
 
   interoperabilidad:
     name: Interoperabilidad FHIR (HAPI)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     # HAPI FHIR R4 con versión fijada y base en memoria: cada ejecución parte de
     # cero y no depende de la disponibilidad del servidor público de pruebas.

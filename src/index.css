@@ -1,47 +1,52 @@
 @import "tailwindcss";
 
 /*
- * Sistema de diseño — CitasYA
+ * Sistema de diseño — CitasYA («noche clínica», renovación visual de nov-2026)
  *
- * Todos los colores salen de la paleta del logo (public/logo.png):
- *   azul #3B75FF (núcleo) · azul profundo #1833DB · cian #17EEFF / #1DA8FD.
- * De ahí se derivan `brand` (azul, la única acción principal) y `accent` (cian,
- * solo resaltes y foco). Las superficies son grafito neutro (`night`) para que
- * el color de la marca sea lo único que destaque y la portada funda con el
- * negro del video. Los colores
- * de estado (éxito, advertencia, error) son la única excepción: comunican
- * significado y no pueden salir del azul; se mantienen en tokens propios.
+ * Paleta del tablero de marca (logo calendario + estetoscopio):
+ *   azul marino #0B388F · azul #1D69FC · cian #00E9FC · violeta #5843FC · hielo #DAE6FE.
+ * Las superficies son azul marino profundo (`navy`); la marca pone la luz:
+ *   · `brand` (azul) es la acción principal. El botón principal es un degradado
+ *     violeta → azul con un brillo cian en el borde derecho; el texto blanco
+ *     tiene ≥ 4,6:1 en toda la zona donde puede quedar el texto.
+ *   · `accent` (cian) solo resalta: foco, cifras, la acción secundaria con borde.
+ *   · Los colores de estado (éxito, advertencia, error) comunican significado y
+ *     tienen tokens propios.
  *
  * Los componentes usan solo los tokens semánticos (surface-*, text-*, line-*,
  * brand, accent, success, warning, error); nunca valores sueltos.
  * Contraste verificado (WCAG 2.2 AA): texto ≥ 4,5:1 y bordes de controles
- * ≥ 3:1 sobre todas las superficies.
+ * ≥ 3:1 sobre todas las superficies (tabla en docs/adr/0010-renovacion-visual-noche-clinica.md).
  */
 
 /*
- * Fuentes de respaldo con métricas ajustadas. Mientras la fuente web descarga,
- * el texto se pinta con Arial/Georgia escaladas para ocupar el mismo espacio;
- * al llegar DM Sans / DM Serif no hay reflujo (CLS "Fuente web cargada").
- * size-adjust: ancho medido en Chromium sobre texto en español
- * (DM Sans ≈ 1,030 × Arial en regular y 1,020 en negrita; DM Serif ≈ 0,997 ×
- * Georgia). ascent/descent: tablas hhea de cada fuente divididas por size-adjust.
- * Android no incluye Arial: allí se usa system-ui sin ajuste.
+ * Fuente de respaldo con métricas ajustadas. Mientras Plus Jakarta Sans
+ * descarga, el texto se pinta con Arial escalada para ocupar el mismo espacio;
+ * al llegar la fuente web no hay reflujo (CLS «Fuente web cargada»).
+ * Medido en Chromium sobre texto en español (canvas.measureText):
+ *   regular: ancho 1,047 × Arial; negrita: 1,008 × Arial Bold.
+ * ascent/descent: métricas de la fuente (1,04 / 0,22 em) divididas por size-adjust.
+ * En Linux (también en CI) no hay Arial, pero sí Liberation Sans, que tiene las
+ * mismas métricas: sin ella el texto se reacomodaba al llegar la fuente (CLS).
+ * Android no incluye ninguna de las dos: allí se usa system-ui sin ajuste.
  */
 @font-face {
-  font-family: 'DM Sans Fallback';
-  src: local('Arial');
-  size-adjust: 102.5%;
-  ascent-override: 96.8%;
-  descent-override: 30.2%;
+  font-family: 'Plus Jakarta Sans Fallback';
+  src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('LiberationSans');
+  font-weight: 200 500;
+  size-adjust: 104.7%;
+  ascent-override: 99.4%;
+  descent-override: 21%;
   line-gap-override: 0%;
 }
 
 @font-face {
-  font-family: 'DM Serif Display Fallback';
-  src: local('Georgia');
-  size-adjust: 99.7%;
-  ascent-override: 103.9%;
-  descent-override: 33.6%;
+  font-family: 'Plus Jakarta Sans Fallback';
+  src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('LiberationSans-Bold');
+  font-weight: 600 800;
+  size-adjust: 100.8%;
+  ascent-override: 103.2%;
+  descent-override: 21.8%;
   line-gap-override: 0%;
 }
 
@@ -54,63 +59,71 @@
   --color-transparent: transparent;
   --color-current: currentColor;
 
-  /* ─── Escala brand: azul del logo (#3B75FF) ─── */
-  --color-brand-50: #eef3ff;
-  --color-brand-100: #dbe6ff;
-  --color-brand-200: #b9cdff;
-  --color-brand-300: #8eadff;
-  --color-brand-400: #6690ff;
-  --color-brand-500: #3b75ff;
-  --color-brand-600: #2f62e6;
-  --color-brand-700: #2554cf;
-  --color-brand-800: #1f44a8;
-  --color-brand-900: #1833db;
-  --color-brand-950: #0f1d4a;
+  /* ─── Escala brand: azul de la marca (#1D69FC) ─── */
+  --color-brand-50: #eef4ff;
+  --color-brand-100: #dbe7ff;
+  --color-brand-200: #b8cfff;
+  --color-brand-300: #8db0ff;
+  --color-brand-400: #5b8bff;
+  --color-brand-500: #3876fd;
+  --color-brand-600: #1d69fc;
+  --color-brand-700: #1857d9;
+  --color-brand-800: #1546ad;
+  --color-brand-900: #0b388f;
+  --color-brand-950: #0c1f4f;
 
-  /* ─── Escala accent: cian del logo (#17EEFF) ─── */
-  --color-accent-50: #e8fdff;
-  --color-accent-100: #c6f9ff;
-  --color-accent-200: #8ef1fd;
-  --color-accent-300: #4fe6fb;
-  --color-accent-400: #17d4f0;
-  --color-accent-500: #0eb7d4;
-  --color-accent-600: #0b93ad;
-  --color-accent-700: #0b748a;
-  --color-accent-800: #0d5d6f;
-  --color-accent-900: #0f4c5c;
-  --color-accent-950: #062f3a;
+  /* ─── Escala accent: cian de la marca (#00E9FC) ─── */
+  --color-accent-50: #e6fdff;
+  --color-accent-100: #c2faff;
+  --color-accent-200: #8cf4fe;
+  --color-accent-300: #67f0ff;
+  --color-accent-400: #22e4f7;
+  --color-accent-500: #00c9e0;
+  --color-accent-600: #00a2b8;
+  --color-accent-700: #057f91;
+  --color-accent-800: #0a6574;
+  --color-accent-900: #0c4d5a;
+  --color-accent-950: #062a3d;
 
-  /* ─── Escala night: grafito neutro (superficies y texto; el color lo pone la marca) ─── */
-  --color-night-50: #f7f7f8;
-  --color-night-100: #ececef;
-  --color-night-200: #d4d4d8;
-  --color-night-300: #a1a1aa;
-  --color-night-400: #71717a;
-  --color-night-500: #52525b;
-  --color-night-600: #3f3f46;
-  --color-night-700: #27272a;
-  --color-night-800: #1c1c1f;
-  --color-night-850: #141416;
-  --color-night-900: #0e0e10;
-  --color-night-950: #09090b;
+  /* ─── Escala violet: violeta de la marca (#5843FC), solo en degradados y halos ─── */
+  --color-violet-300: #a99bff;
+  --color-violet-400: #8b7bff;
+  --color-violet-500: #5843fc;
+  --color-violet-600: #4a34e6;
+  --color-violet-950: #170f4a;
+
+  /* ─── Escala navy: superficies, líneas y texto ─── */
+  --color-navy-50: #f2f6ff;
+  --color-navy-100: #dae6fe;
+  --color-navy-200: #c1ceec;
+  --color-navy-300: #9aadd6;
+  --color-navy-400: #6680c2;
+  --color-navy-500: #3d5596;
+  --color-navy-600: #2a4386;
+  --color-navy-750: #1c2f63;
+  --color-navy-800: #182a5c;
+  --color-navy-850: #10204a;
+  --color-navy-900: #0a1738;
+  --color-navy-950: #061230;
+  --color-navy-975: #030a1f;
 
   /* ─── Tokens semánticos (los que usan los componentes) ─── */
-  --color-surface: var(--color-night-950);          /* fondo de la página */
-  --color-surface-card: var(--color-night-850);     /* tarjetas, paneles */
-  --color-surface-muted: var(--color-night-900);    /* bandas, cabeceras de sección */
-  --color-surface-hover: var(--color-night-800);    /* hover de superficies */
-  --color-surface-strong: var(--color-night-700);   /* rellenos de énfasis, esqueletos */
+  --color-surface: var(--color-navy-975);           /* fondo de la página */
+  --color-surface-card: var(--color-navy-900);      /* tarjetas, paneles */
+  --color-surface-muted: var(--color-navy-950);     /* bandas, cabeceras de sección */
+  --color-surface-hover: var(--color-navy-850);     /* hover de superficies */
+  --color-surface-strong: var(--color-navy-800);    /* rellenos de énfasis, esqueletos */
 
-  --color-line: var(--color-night-700);             /* separadores */
-  --color-line-strong: var(--color-night-600);      /* bordes de tarjetas destacadas */
-  --color-line-input: var(--color-night-400);       /* bordes de controles (≥ 3:1) */
+  --color-line: var(--color-navy-750);              /* separadores */
+  --color-line-strong: var(--color-navy-600);       /* bordes de tarjetas destacadas */
+  --color-line-input: var(--color-navy-400);        /* bordes de controles (≥ 3:1) */
 
-  --color-text-primary: var(--color-white);
-  --color-text-secondary: var(--color-night-200);
-  --color-text-muted: var(--color-night-300);
-  --color-text-inverse: var(--color-night-950);
+  --color-text-primary: var(--color-navy-50);
+  --color-text-secondary: var(--color-navy-200);
+  --color-text-muted: var(--color-navy-300);
+  --color-text-inverse: var(--color-navy-975);
 
-  --color-brand: var(--color-brand-600);            /* acción principal (blanco ≥ 5,2:1) */
+  --color-brand: var(--color-brand-600);            /* acción principal (blanco 4,7:1) */
   --color-brand-hover: var(--color-brand-700);
   --color-brand-soft: var(--color-brand-950);
   --color-link: var(--color-brand-300);
@@ -119,55 +132,52 @@
   --color-accent-hover: var(--color-accent-300);
   --color-accent-soft: var(--color-accent-950);
 
-  --color-success: #34d399;
-  --color-success-soft: #0c2e27;
-  --color-warning: #fbbf24;
-  --color-warning-soft: #2e2410;
-  --color-error: #f87171;
-  --color-error-strong: #dc2626;                    /* fondo de acción destructiva (blanco ≥ 4,8:1) */
-  --color-error-soft: #33141c;
+  --color-success: #3ddc97;
+  --color-success-soft: #062a26;
+  --color-warning: #ffc857;
+  --color-warning-soft: #2a2008;
+  --color-error: #ff8a8a;
+  --color-error-strong: #dc2626;                    /* fondo de acción destructiva (blanco 4,8:1) */
+  --color-error-soft: #2a0f1f;
   --color-info: var(--color-brand-300);
   --color-info-soft: var(--color-brand-950);
 
-  /* ─── Tipografía: 2 familias, ambas con font-display: swap (@fontsource) ─── */
-  --font-sans: 'DM Sans Variable', 'DM Sans Fallback', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-serif: 'DM Serif Display', 'DM Serif Display Fallback', Georgia, serif;
+  /* ─── Tipografía: una sola familia variable (200–800), font-display: swap ─── */
+  --font-sans: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans Fallback', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans Fallback', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   /* Escala tipográfica: se suman a xs (12) · sm (14) · base (16) · lg (18) · xl (20) · 2xl (24) · 3xl (30) … */
-  --text-caption: 0.8125rem;            /* 13px: etiquetas en mayúsculas */
+  --text-caption: 0.75rem;              /* 12px: etiquetas en mayúsculas con tracking */
   --text-caption--line-height: 1.4;
-  --text-logo: 1.75rem;                 /* 28px: logotipo */
+  --text-logo: 1.5rem;                  /* 24px: logotipo de la barra */
   --text-logo--line-height: 1;
-  --text-logo-lg: 2rem;                 /* 32px: logotipo en pie de página */
+  --text-logo-lg: 2rem;                 /* 32px: logotipo de las pantallas de acceso */
   --text-logo-lg--line-height: 1;
-  --leading-display: 0.92;
-  --text-superscript: 0.5em;
-  --text-stat: clamp(1.75rem, 3.2vw, 2.75rem); /* cifras de la portada */
+  --text-stat: clamp(2.25rem, 3.4vw, 3.25rem);       /* cifras de las tarjetas de vidrio */
   --text-stat--line-height: 1;
-  --text-hero: clamp(2.75rem, 10vw, 9rem);   /* titular de la portada */
-  --text-hero--line-height: 0.92;
+  --text-hero: clamp(3rem, 7.6vw, 7rem);             /* titular de la portada */
+  --text-hero--line-height: 0.95;
 
   /* ─── Radios (concéntricos: exterior = interior + relleno) ─── */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
-  --radius-2xl: 1.5rem;
-  --radius-3xl: 2rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.75rem;
   --radius-full: 9999px;
 
-  /* ─── Sombras: negras y en capas; el botón principal lleva un halo azul del logo ─── */
-  --shadow-card: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 1px 2px rgb(0 0 0 / 0.5), 0 8px 24px -12px rgb(0 0 0 / 0.6);
-  --shadow-elevated: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 16px 40px -12px rgb(0 0 0 / 0.75), 0 4px 12px rgb(0 0 0 / 0.4);
-  --shadow-button: 0 1px 0 rgb(255 255 255 / 0.18) inset, 0 1px 2px rgb(0 0 0 / 0.4), 0 6px 20px -6px rgb(59 117 255 / 0.55);
-  --shadow-glow: 0 0 16px rgb(23 212 240 / 0.25);
-  --drop-shadow-glow: 0 0 20px rgb(23 212 240 / 0.6);
-  --drop-shadow-soft: 0 0 20px rgb(255 255 255 / 0.35);
+  /* ─── Sombras: profundidad azul marino; la acción principal brilla con la marca ─── */
+  --shadow-card: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 1px 2px rgb(1 4 14 / 0.6), 0 12px 32px -16px rgb(1 4 14 / 0.8);
+  --shadow-elevated: 0 1px 0 rgb(255 255 255 / 0.06) inset, 0 24px 60px -20px rgb(1 4 14 / 0.9), 0 6px 18px rgb(1 4 14 / 0.45);
+  --shadow-button: 0 1px 0 rgb(255 255 255 / 0.25) inset, 0 10px 28px -10px rgb(29 105 252 / 0.75), 0 0 0 1px rgb(120 165 255 / 0.25);
+  --shadow-glow: 0 0 24px rgb(0 233 252 / 0.28);
+  --shadow-glow-brand: 0 0 0 1px rgb(91 139 255 / 0.35), 0 12px 40px -12px rgb(29 105 252 / 0.6);
 
   /* ─── Movimiento: microinteracciones de 150–250 ms, solo transform y opacity ─── */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --animate-fade-in: fade-in 320ms var(--ease-out);
-  --animate-skeleton: skeleton-pulse 1.5s ease-in-out infinite;
+  --animate-skeleton: skeleton-pulse 1.6s ease-in-out infinite;
   --animate-slide-in: slide-in-right 220ms var(--ease-out);
   --animate-slide-out: slide-out-right 180ms ease-in;
 }
@@ -178,6 +188,7 @@
   html {
     scroll-behavior: smooth;
     color-scheme: dark;
+    background-color: var(--color-surface);
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
   }
@@ -193,15 +204,11 @@
   }
 
   h1, h2 {
-    font-family: var(--font-serif);
-    font-weight: 400;
-    letter-spacing: -0.01em;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
     text-wrap: balance;
-  }
-
-  /* DM Serif Display solo existe en peso 400: nunca sintetizar una negrita falsa. */
-  .font-serif, h1, h2 {
-    font-synthesis-weight: none;
   }
 
   h3, h4, figcaption, label, legend {
@@ -241,7 +248,7 @@
   }
 
   option {
-    background-color: var(--color-surface-card);
+    background-color: var(--color-navy-900);
     color: var(--color-text-primary);
   }
 
@@ -274,12 +281,16 @@
   border-radius: var(--radius-xl);
   border: 1px solid var(--color-line-input);
   background-color: var(--color-surface-card);
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.03), rgb(255 255 255 / 0));
   padding: 0.75rem 1rem;
   font-size: 1rem;
   line-height: 1.5;
   color: var(--color-text-primary);
-  &:hover:not(:disabled) { border-color: var(--color-text-muted); }
-  &:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 3px rgb(23 212 240 / 0.3); }
+  transition-property: border-color, box-shadow, background-color;
+  transition-duration: 180ms;
+  transition-timing-function: var(--ease-out);
+  &:hover:not(:disabled) { border-color: var(--color-navy-300); }
+  &:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 4px rgb(0 233 252 / 0.18), 0 0 24px -6px rgb(0 233 252 / 0.5); }
   &:disabled { opacity: 0.6; cursor: not-allowed; }
   &[aria-invalid="true"] { border-color: var(--color-error); }
 }
@@ -307,7 +318,7 @@
   transition-duration: 220ms;
   transition-timing-function: var(--ease-out);
   @media (hover: hover) and (pointer: fine) {
-    &:hover { transform: translateY(-4px); box-shadow: var(--shadow-elevated); }
+    &:hover { transform: translateY(-4px); box-shadow: var(--shadow-elevated), 0 0 0 1px rgb(103 240 255 / 0.18); }
   }
 }
 
@@ -319,6 +330,225 @@
 @media (hover: hover) and (pointer: fine) {
   .group:hover .icono-realce { transform: scale(1.08) rotate(-4deg); }
 }
+
+/* ─── Piezas de la identidad visual ─── */
+
+/* Vidrio: panel translúcido con borde de luz y brillo superior. Sin colores nuevos. */
+@utility vidrio {
+  background-color: rgb(12 26 66 / 0.55);
+  background-image: linear-gradient(180deg, rgb(120 160 255 / 0.10) 0%, rgb(120 160 255 / 0.02) 42%, rgb(0 0 0 / 0) 100%);
+  border: 1px solid rgb(126 160 255 / 0.18);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07), 0 24px 60px -28px rgb(1 4 14 / 0.9);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+/* Variante opaca, para listas largas: el mismo aspecto sin el costo del desenfoque. */
+@utility tarjeta {
+  background-color: var(--color-surface-card);
+  background-image: linear-gradient(180deg, rgb(120 160 255 / 0.07) 0%, rgb(120 160 255 / 0) 45%);
+  border: 1px solid rgb(126 160 255 / 0.14);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), var(--shadow-card);
+}
+
+/* Borde de luz en degradado (cian → violeta → azul) dibujado con una máscara:
+ * no ocupa espacio y respeta el radio del elemento. */
+@utility borde-luz {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(140deg, rgb(103 240 255 / 0.85), rgb(88 67 252 / 0.55) 45%, rgb(29 105 252 / 0.25) 75%, rgb(103 240 255 / 0.45));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+/* Las piezas siguientes viven en la capa `components`: las utilidades de Tailwind
+ * (p. ej., un tamaño de texto o `shadow-none`) pueden ajustarlas en cada uso, y las
+ * reglas de alto contraste, fuera de toda capa, siempre ganan. */
+@layer components {
+
+/* Texto con el degradado de la marca. Todos sus tonos superan 7:1 sobre el azul marino. */
+.texto-degradado {
+  background: linear-gradient(100deg, var(--color-accent-300) 0%, var(--color-brand-300) 55%, var(--color-violet-300) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Acción principal: degradado violeta → azul y brillo cian en el borde derecho.
+ * El texto queda sobre la zona violeta-azul (blanco ≥ 4,7:1); el cian solo toca
+ * el último 20 % del botón, donde va la flecha. */
+.boton-primario {
+  background-color: var(--color-brand);
+  background-image: linear-gradient(100deg, #5a46f8 0%, #2f5af7 45%, #1d69fc 80%, #12a4f7 100%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28), inset -14px 0 22px -14px rgb(0 233 252 / 0.85), 0 10px 30px -10px rgb(29 105 252 / 0.8), 0 0 0 1px rgb(120 165 255 / 0.3);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .boton-primario:hover:not(:disabled):not([aria-disabled='true']) {
+    background-image: linear-gradient(100deg, #4f3ae6 0%, #2752e6 45%, #1857d9 80%, #0f95e6 100%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.3), inset -16px 0 26px -14px rgb(0 233 252 / 0.95), 0 14px 38px -10px rgb(29 105 252 / 0.95), 0 0 0 1px rgb(103 240 255 / 0.45);
+  }
+}
+
+/* Acción secundaria con borde cian (como «Iniciar sesión» del tablero de marca). */
+.boton-contorno {
+  background-color: rgb(3 10 31 / 0.55);
+  border: 1.5px solid rgb(34 228 247 / 0.75);
+  box-shadow: inset 0 0 18px -8px rgb(0 233 252 / 0.45), 0 0 18px -8px rgb(0 233 252 / 0.6);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .boton-contorno:hover:not(:disabled):not([aria-disabled='true']) {
+    background-color: rgb(6 42 61 / 0.75);
+    border-color: var(--color-accent-300);
+    box-shadow: inset 0 0 22px -8px rgb(0 233 252 / 0.6), 0 0 26px -6px rgb(0 233 252 / 0.7);
+  }
+}
+
+/* Íconos de línea pintados con el degradado de la marca (el <linearGradient> vive en RootLayout). */
+.icono-degradado svg,
+svg.icono-degradado {
+  stroke: url(#degradado-icono);
+}
+
+/* Logo dentro de su placa de vidrio con borde luminoso (Logo Principal del tablero). */
+.placa-logo {
+  background:
+    radial-gradient(120% 120% at 30% 15%, rgb(29 105 252 / 0.35), rgb(3 10 31 / 0) 60%),
+    linear-gradient(160deg, #0d2160, #050d29);
+  box-shadow: 0 0 0 1px rgb(103 240 255 / 0.45), inset 0 0 12px rgb(0 233 252 / 0.25), 0 0 22px -4px rgb(29 105 252 / 0.7), 0 0 44px -12px rgb(88 67 252 / 0.6);
+}
+
+/* Separador luminoso: línea con el degradado de la marca que se desvanece en los extremos. */
+.linea-luz {
+  height: 1px;
+  background: linear-gradient(90deg, rgb(103 240 255 / 0), rgb(103 240 255 / 0.55) 30%, rgb(91 139 255 / 0.55) 60%, rgb(139 123 255 / 0));
+}
+
+/* Etiqueta en mayúsculas con tracking (rótulos de las tarjetas de cifras). */
+.rotulo {
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ─── Fondo de las pantallas: azul marino con auroras de la marca y una retícula tenue.
+ * Las capas son seudoelementos fijos: el compositor las mueve sin repintar al desplazarse. */
+.fondo-app {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--color-surface);
+}
+
+.fondo-app::before,
+.fondo-app::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.fondo-app::before {
+  background:
+    radial-gradient(52rem 34rem at 8% -10%, rgb(88 67 252 / 0.20), transparent 70%),
+    radial-gradient(46rem 30rem at 96% 2%, rgb(0 233 252 / 0.11), transparent 70%),
+    radial-gradient(70rem 40rem at 50% 115%, rgb(29 105 252 / 0.16), transparent 70%);
+}
+
+.fondo-app::after {
+  background-image:
+    linear-gradient(rgb(126 160 255 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(126 160 255 / 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 20%, transparent 80%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 20%, transparent 80%);
+}
+
+/* Banda de cabecera de las pantallas internas: vidrio sobre la aurora y borde inferior luminoso. */
+.banda-cabecera {
+  position: relative;
+  background:
+    radial-gradient(40rem 16rem at 0% 0%, rgb(88 67 252 / 0.16), transparent 70%),
+    radial-gradient(36rem 14rem at 100% 0%, rgb(0 233 252 / 0.09), transparent 70%),
+    linear-gradient(180deg, rgb(10 23 56 / 0.85), rgb(6 18 48 / 0.55));
+  border-bottom: 1px solid rgb(126 160 255 / 0.12);
+}
+
+.banda-cabecera::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, rgb(103 240 255 / 0), rgb(103 240 255 / 0.5) 25%, rgb(91 139 255 / 0.45) 60%, rgb(139 123 255 / 0));
+  pointer-events: none;
+}
+
+/* Fondo de la portada: azul marino con el halo de la marca detrás del logo. */
+.cielo-portada {
+  background:
+    radial-gradient(60rem 40rem at 50% 42%, rgb(29 105 252 / 0.20), transparent 68%),
+    radial-gradient(40rem 30rem at 15% 10%, rgb(88 67 252 / 0.16), transparent 70%),
+    radial-gradient(44rem 30rem at 88% 85%, rgb(0 233 252 / 0.09), transparent 70%),
+    var(--color-surface);
+}
+
+/* El video del logo tiene fondo negro: en modo «pantalla» el negro desaparece y
+ * solo queda la luz del logo sobre el azul marino (sin recuadro visible). */
+.video-luz {
+  mix-blend-mode: screen;
+}
+
+/* Aro de vidrio detrás del logo (el «círculo de cristal» de la escena). */
+.aro-vidrio {
+  border-radius: 9999px;
+  background: radial-gradient(circle at 50% 50%, rgb(29 105 252 / 0.12), rgb(3 10 31 / 0) 62%);
+  box-shadow: inset 0 0 0 1px rgb(126 160 255 / 0.3), inset 0 0 70px -16px rgb(103 240 255 / 0.45), 0 0 80px -30px rgb(29 105 252 / 0.6);
+}
+
+.aro-vidrio::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from 200deg, rgb(103 240 255 / 0), rgb(103 240 255 / 0.95) 18%, rgb(91 139 255 / 0.4) 40%, rgb(139 123 255 / 0) 60%, rgb(103 240 255 / 0) 80%, rgb(139 123 255 / 0.5) 92%, rgb(103 240 255 / 0) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Un degradado radial ya es difuso: no hace falta `filter: blur`, que en celulares
+ * cuesta mucho con elementos tan grandes. El color se pasa en --aurora. */
+.aurora {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, var(--aurora, rgb(29 105 252 / 0.3)), transparent);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.aurora-a { animation: aurora-a 22s ease-in-out infinite alternate; }
+.aurora-b { animation: aurora-b 26s ease-in-out infinite alternate; }
+
+[data-pausado='true'] .aurora { animation-play-state: paused; }
+
+} /* fin de @layer components */
 
 /* ─── Animaciones ─── */
 
@@ -349,7 +579,7 @@
  * (sistema o widget) las reglas del final de este archivo la anulan. */
 
 @keyframes entrada-sube {
-  from { opacity: 0; transform: translateY(14px); filter: blur(6px); }
+  from { opacity: 0; transform: translateY(18px); filter: blur(8px); }
   to { opacity: 1; transform: none; filter: none; }
 }
 
@@ -359,35 +589,103 @@
 }
 
 @keyframes entrada-baja {
-  from { opacity: 0; transform: translateY(-8px); }
+  from { opacity: 0; transform: translateY(-12px); }
   to { opacity: 1; transform: none; }
 }
 
+/* El punto de «Disponible 24/7» se enciende con un recorte circular. */
+@keyframes entrada-punto {
+  from { clip-path: circle(0 at 50% 50%); }
+  to { clip-path: circle(75% at 50% 50%); }
+}
+
+/* La escena del logo aparece desde una leve profundidad. Sin opacidad: el póster
+ * es el elemento LCP y un elemento con opacidad 0 no cuenta como pintado; con
+ * escala y desenfoque se ve desde el primer cuadro (ADR-0007). */
+@keyframes entrada-escena {
+  from { transform: scale(0.92); filter: blur(14px); }
+  to { transform: none; filter: none; }
+}
+
 .entrada {
-  animation: entrada-sube 700ms var(--ease-out) both;
+  animation: entrada-sube 760ms var(--ease-out) both;
   animation-delay: var(--retraso, 0ms);
 }
 
 .entrada-palabra {
-  animation: entrada-palabra 800ms var(--ease-out) both;
+  animation: entrada-palabra 900ms var(--ease-out) both;
   animation-delay: var(--retraso, 0ms);
 }
 
 .entrada-barra {
-  animation: entrada-baja 600ms var(--ease-out) both;
+  animation: entrada-baja 620ms var(--ease-out) both;
+  animation-delay: var(--retraso, 0ms);
+}
+
+.entrada-punto {
+  animation: entrada-punto 520ms var(--ease-out) both;
+  animation-delay: var(--retraso, 0ms);
+}
+
+.entrada-escena {
+  animation: entrada-escena 1100ms var(--ease-out) both;
+  animation-delay: var(--retraso, 0ms);
+}
+
+/* Celulares: menos trabajo de pintura en la primera carga (LCP) y en equipos
+ * modestos. El vidrio pierde el desenfoque de fondo (se compensa con un fondo más
+ * opaco), las auroras quedan quietas, la entrada no anima desenfoques y la escena
+ * del logo no se anima porque su póster es el elemento LCP. */
+@keyframes entrada-sube-ligera {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (width < 64rem) {
+  .vidrio {
+    background-color: rgb(12 26 66 / 0.82);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .aurora {
+    animation: none;
+    will-change: auto;
+  }
+
+  .entrada {
+    animation-name: entrada-sube-ligera;
+  }
+
+  .entrada-escena {
+    animation: none;
+  }
 }
 
 /* Revelado al desplazarse: el script solo oculta lo que aún no se ve; la
  * transición vive en el estado "visible" para que ocultar sea instantáneo. */
 [data-revelar][data-estado='oculto'] {
   opacity: 0;
-  transform: translateY(18px);
-  filter: blur(6px);
+  transform: translateY(22px);
+  filter: blur(8px);
 }
 
 [data-revelar][data-estado='visible'] {
-  transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out), filter 700ms var(--ease-out);
+  transition: opacity 760ms var(--ease-out), transform 760ms var(--ease-out), filter 760ms var(--ease-out);
   transition-delay: var(--retraso, 0ms);
+}
+
+/* ─── Auroras de la portada: derivan muy despacio; se detienen con «Pausar»
+ * (data-pausado) y no se mueven con movimiento reducido. ─── */
+
+@keyframes aurora-a {
+  from { transform: translate3d(-4%, -2%, 0) scale(1); }
+  to { transform: translate3d(5%, 4%, 0) scale(1.12); }
+}
+
+@keyframes aurora-b {
+  from { transform: translate3d(4%, 3%, 0) scale(1.08); }
+  to { transform: translate3d(-5%, -3%, 0) scale(0.96); }
 }
 
 /* ─── Efectos ligados al desplazamiento (portada) ───
@@ -401,7 +699,7 @@
 }
 
 @keyframes portada-alejar {
-  to { transform: scale(0.88); opacity: 0.3; }
+  to { transform: scale(0.86); opacity: 0.25; }
 }
 
 @keyframes portada-subir {
@@ -414,17 +712,23 @@
     animation-timeline: scroll(root);
     animation-range: 0 48px;
   }
+}
 
-  .portada-alejar {
-    animation: portada-alejar linear both;
-    animation-timeline: scroll(root);
-    animation-range: 0 700px;
-  }
+/* Solo cuando la portada cabe completa en la pantalla (escritorio): en un celular
+ * es más alta que la pantalla y desvanecerla escondería las cifras mientras se leen. */
+@supports (animation-timeline: scroll()) {
+  @media (width >= 64rem) and (height >= 40rem) {
+    .portada-alejar {
+      animation: portada-alejar linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 700px;
+    }
 
-  .portada-subir {
-    animation: portada-subir linear both;
-    animation-timeline: scroll(root);
-    animation-range: 0 500px;
+    .portada-subir {
+      animation: portada-subir linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 520px;
+    }
   }
 }
 
@@ -456,84 +760,11 @@
   transition-delay: calc(80ms + var(--i, 0) * 50ms), calc(80ms + var(--i, 0) * 50ms), 0ms;
 }
 
-/* ─── Portada: negro puro, el mismo del video, para que no se vea su recuadro ─── */
-
-.velo-portada {
-  background:
-    linear-gradient(180deg, rgb(0 0 0 / 0.7) 0%, rgb(0 0 0 / 0) 22%, rgb(0 0 0 / 0) 48%, rgb(0 0 0 / 0.75) 78%, rgb(0 0 0 / 0.95) 100%),
-    linear-gradient(90deg, rgb(0 0 0 / 0.55) 0%, rgb(0 0 0 / 0) 55%);
-}
-
-/* En celular el logo queda arriba y el texto debajo: solo se oscurece la parte baja. */
-@media (width < 64rem) {
-  .velo-portada {
-    background: linear-gradient(180deg, rgb(0 0 0 / 0) 0%, rgb(0 0 0 / 0) 40%, rgb(0 0 0 / 0.6) 60%, rgb(0 0 0 / 0.9) 100%);
-  }
-}
-
-/* Fondo de las pantallas internas: grafito con un halo azul tenue del logo arriba. */
-.fondo-app {
-  background-color: var(--color-surface);
-  background-image:
-    radial-gradient(60rem 28rem at 50% -8rem, rgb(59 117 255 / 0.13), transparent 70%),
-    radial-gradient(40rem 20rem at 100% 0%, rgb(23 212 240 / 0.05), transparent 70%);
-  background-repeat: no-repeat;
-}
-
-/* Tarjeta con brillo superior sutil: da volumen sin colores nuevos. */
-.tarjeta-luz {
-  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.035), rgb(255 255 255 / 0) 40%);
-}
-
-/* ─── Gradientes de marca (del logo: azul → cian) ─── */
-
-.gradient-hero {
-  background: linear-gradient(180deg, var(--color-surface-muted) 0%, var(--color-surface) 100%);
-}
-
-.gradient-text-accent {
-  background: linear-gradient(135deg, var(--color-accent-300) 0%, var(--color-accent-400) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.gradient-text-primary {
-  background: linear-gradient(135deg, var(--color-brand-400) 0%, var(--color-accent-400) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ─── Subrayado animado de los enlaces de navegación ─── */
-
-.nav-link-underline {
-  position: relative;
-}
-
-.nav-link-underline::after {
-  content: '';
-  position: absolute;
-  bottom: 8px;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background-color: currentColor;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 200ms var(--ease-out);
-}
-
-.nav-link-underline:hover::after,
-.nav-link-underline:focus-visible::after {
-  transform: scaleX(1);
-}
-
 /* ─── Barras de desplazamiento ─── */
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -542,11 +773,12 @@
 
 ::-webkit-scrollbar-thumb {
   background: var(--color-line-strong);
+  border: 2px solid var(--color-surface);
   border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-night-500);
+  background: var(--color-navy-500);
 }
 
 /* ─── Movimiento reducido: preferencia del sistema y opción del widget ─── */
@@ -563,10 +795,11 @@
 }
 
 /* Sin desplazamientos al pasar el mouse ni efectos ligados al scroll con
- * movimiento reducido (sistema o widget); la barra conserva su fondo. */
+ * movimiento reducido (sistema o widget); la barra conserva su fondo y las
+ * auroras quedan quietas. */
 @media (prefers-reduced-motion: reduce) {
   .levitar:hover, .group:hover .icono-realce { transform: none !important; }
-  .portada-alejar, .portada-subir, .barra-fondo { animation: none !important; }
+  .portada-alejar, .portada-subir, .barra-fondo, .aurora { animation: none !important; }
 }
 
 html.reduce-motion .levitar:hover,
@@ -576,7 +809,8 @@ html.reduce-motion .group:hover .icono-realce {
 
 html.reduce-motion .portada-alejar,
 html.reduce-motion .portada-subir,
-html.reduce-motion .barra-fondo {
+html.reduce-motion .barra-fondo,
+html.reduce-motion .aurora {
   animation: none !important;
 }
 
@@ -594,10 +828,12 @@ html.reduce-motion ::after {
 
 /* ─── Alto contraste (opción del widget de accesibilidad) ───
  * Reasigna los tokens semánticos a blanco y negro puros; el resto de la
- * interfaz se adapta sola porque solo usa esos tokens. */
+ * interfaz se adapta sola porque solo usa esos tokens. Las piezas decorativas
+ * (auroras, vidrio, degradados, brillos) se apagan. */
 
 html.high-contrast {
   color-scheme: light;
+  background-color: #ffffff;
 
   --color-surface: #ffffff;
   --color-surface-card: #ffffff;
@@ -634,18 +870,79 @@ html.high-contrast {
   --color-info-soft: #ffffff;
 }
 
-html.high-contrast .fondo-app,
-html.high-contrast .tarjeta-luz {
-  background-image: none;
+html.high-contrast option {
+  background-color: #ffffff;
+  color: #000000;
 }
 
-html.high-contrast .gradient-text-primary,
-html.high-contrast .gradient-text-accent {
+html.high-contrast .fondo-app::before,
+html.high-contrast .fondo-app::after,
+html.high-contrast .banda-cabecera::after,
+html.high-contrast .borde-luz::before,
+html.high-contrast .aro-vidrio::before,
+html.high-contrast .aurora,
+html.high-contrast .linea-luz,
+html.high-contrast .decorativo {
+  display: none;
+}
+
+/* Placas con borde de luz (íconos, avatares, marcos de fotos): blanco y borde negro. */
+html.high-contrast .borde-luz {
+  background: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: none;
+}
+
+/* La ilustración del panel de acceso se funde con `lighten`, que sobre blanco la borraría. */
+html.high-contrast .mix-blend-lighten {
+  mix-blend-mode: normal;
+}
+
+html.high-contrast .fondo-app,
+html.high-contrast .banda-cabecera,
+html.high-contrast .cielo-portada,
+html.high-contrast .aro-vidrio,
+html.high-contrast .control-campo {
+  background: #ffffff;
+  box-shadow: none;
+}
+
+html.high-contrast .vidrio,
+html.high-contrast .tarjeta,
+html.high-contrast .placa-logo {
+  background: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html.high-contrast .banda-cabecera {
+  border-bottom: 2px solid #000000;
+}
+
+html.high-contrast .texto-degradado {
   background: none;
   -webkit-background-clip: initial;
   -webkit-text-fill-color: initial;
   background-clip: initial;
   color: #000000;
+}
+
+html.high-contrast .icono-degradado svg,
+html.high-contrast svg.icono-degradado {
+  stroke: currentColor;
+}
+
+/* En alto contraste la escena del logo se muestra tal cual, sin fundirla con el
+ * fondo; por eso se ajusta a su columna: más ancha, su fondo negro taparía el texto. */
+html.high-contrast .video-luz {
+  mix-blend-mode: normal;
+}
+
+html.high-contrast .portada-alejar {
+  width: 100%;
+  max-width: 100%;
 }
 
 html.high-contrast input,
@@ -659,10 +956,22 @@ html.high-contrast .button {
   box-shadow: none;
 }
 
-/* Botones con relleno de marca: texto blanco legible también en alto contraste. */
+/* Botones con relleno de marca: azul puro y texto blanco también en alto contraste. */
+html.high-contrast .boton-primario {
+  background: #0000ee;
+  box-shadow: none;
+}
+
+html.high-contrast .boton-contorno {
+  background: #ffffff;
+  border: 2px solid #0000ee;
+  box-shadow: none;
+}
+
 html.high-contrast .bg-brand,
 html.high-contrast .bg-accent,
-html.high-contrast .bg-error-strong {
+html.high-contrast .bg-error-strong,
+html.high-contrast .boton-primario {
   color: #ffffff;
 }
 
@@ -676,7 +985,7 @@ html.high-contrast .accessibility-widget-panel {
 }
 
 html.high-contrast .accessibility-trigger-btn {
-  background-color: #000000;
+  background: #000000;
   color: #ffffff;
   border: 3px solid #ffffff;
   box-shadow: 0 0 0 3px #000000;

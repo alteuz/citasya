@@ -140,10 +140,10 @@ export function DashboardPage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="bg-surface-muted border-b border-line">
+      <div className="banda-cabecera">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-2xl md:text-3xl text-text-primary">
-            ¡Hola, {firstName}!
+          <h1 className="text-3xl md:text-4xl text-text-primary">
+            ¡Hola, <span className="texto-degradado">{firstName}</span>!
           </h1>
           <p className="text-text-secondary mt-1">
             Gestiona tus citas médicas desde aquí.
@@ -252,7 +252,7 @@ export function DashboardPage() {
 
           {/* Empty state */}
           {!isLoadingAppointments && upcomingAppointments.length === 0 && (
-            <div className="bg-surface-card border border-line rounded-2xl p-10 text-center">
+            <div className="tarjeta rounded-2xl p-10 text-center">
               <IconBadge icon={CalendarDays} size="lg" className="mb-5" />
               <h3 className="text-lg font-semibold text-text-primary mb-2">
                 No tienes citas próximas
@@ -273,7 +273,7 @@ export function DashboardPage() {
               {upcomingAppointments.slice(0, 3).map((apt) => (
                 <div
                   key={apt.id}
-                  className="bg-surface-card border border-line rounded-2xl p-5 sm:p-6 hover:border-line-strong flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+                  className="tarjeta rounded-2xl p-5 sm:p-6 hover:border-line-strong flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
                 >
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-xl bg-accent-soft text-accent border border-accent/20 flex items-center justify-center shrink-0">
@@ -355,7 +355,7 @@ export function DashboardPage() {
               )}
             </div>
 
-            <div className="bg-surface-card border border-line rounded-2xl p-6">
+            <div className="tarjeta rounded-2xl p-6">
               {profileError && (
                 <div className="mb-4 px-4 py-3 bg-error-soft text-error text-sm font-medium rounded-xl border border-error/30">
                   {profileError}
@@ -503,11 +503,11 @@ interface QuickActionCardProps {
 
 function QuickActionCard({ icon, title, description, href, ctaText, variant }: QuickActionCardProps) {
   return (
-    <div className="bg-surface-card border border-line rounded-2xl p-6 hover:border-line-strong hover:shadow-elevated hover:-translate-y-0.5 transicion h-full tarjeta-luz">
-      <IconBadge icon={icon} tone="brand" size="sm" className="mb-4" />
+    <div className="tarjeta levitar group rounded-3xl p-6 hover:border-accent/30 h-full flex flex-col items-start">
+      <IconBadge icon={icon} tone="brand" size="md" className="icono-realce mb-5" />
       <h3 className="text-lg font-semibold text-text-primary mb-1">{title}</h3>
-      <p className="text-sm text-text-secondary mb-4">{description}</p>
-      <EnlaceBoton to={href} variant={variant} size="sm">
+      <p className="text-sm text-text-secondary mb-5">{description}</p>
+      <EnlaceBoton to={href} variant={variant} size="sm" className="mt-auto">
         {ctaText}
         <ArrowRight size={16} aria-hidden="true" />
       </EnlaceBoton>

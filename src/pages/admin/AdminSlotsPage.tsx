@@ -104,7 +104,7 @@ export function AdminSlotsPage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="bg-surface-muted border-b border-line">
+      <div className="banda-cabecera">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <Link to="/admin" className="inline-flex items-center gap-1 min-h-11 -ml-1 px-1 rounded-lg text-sm text-text-muted hover:text-text-primary font-medium mb-3">
             <ArrowLeft size={16} aria-hidden="true" /> Volver al panel
@@ -141,7 +141,7 @@ export function AdminSlotsPage() {
         {selectedDoctor && (
           <>
             {/* Generate Form */}
-            <div className="bg-surface-card border border-line rounded-2xl p-6 mb-8">
+            <div className="tarjeta rounded-2xl p-6 mb-8">
               <h2 className="font-sans text-lg font-semibold text-text-primary mb-4">Generar slots en lote</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
@@ -220,13 +220,13 @@ export function AdminSlotsPage() {
                 {[1, 2].map((i) => <Skeleton key={i} height="100px" rounded="xl" />)}
               </div>
             ) : slots.length === 0 ? (
-              <div className="bg-surface-card border border-line rounded-2xl p-8 text-center text-text-muted">
+              <div className="tarjeta rounded-2xl p-8 text-center text-text-muted">
                 No hay slots para este médico. Genera nuevos slots arriba.
               </div>
             ) : (
               <div className="space-y-6">
                 {Array.from(slotsByDate.entries()).map(([date, dateSlots]) => (
-                  <div key={date} className="bg-surface-card border border-line rounded-2xl p-4">
+                  <div key={date} className="tarjeta rounded-2xl p-4">
                     <h3 className="text-sm font-semibold text-text-primary mb-3">
                       {formatDateLong(date)} ({dateSlots.length} slots)
                     </h3>

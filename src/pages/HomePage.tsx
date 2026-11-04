@@ -1,17 +1,29 @@
 import { useState, useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { Link } from 'react-router';
-import { ArrowRight, Building2, CalendarClock, ChevronDown, CircleCheck, Monitor, Pause, Play, Search, X } from 'lucide-react';
+import {
+  ALargeSmall, ArrowRight, Building2, CalendarClock, ChevronDown, CircleCheck, CirclePause,
+  Contrast, MapPin, Monitor, Pause, Play, Ruler, Search, ShieldCheck, Smartphone, Stethoscope,
+  Video, Volume2, X, type LucideIcon,
+} from 'lucide-react';
 import videoPortada from '@/assets/portada-720.mp4';
 import { useAuthContext } from '@/hooks/useAuthContext';
 import { Footer } from '@/components/layout/Footer';
+import { FotoDiferida } from '@/components/marca/FotoDiferida';
+import { Logo } from '@/components/marca/Logo';
+import { EnlaceBoton } from '@/components/ui/EnlaceBoton';
+import { estilosBoton } from '@/components/ui/estilosBoton';
 import { IconBadge } from '@/components/ui/IconBadge';
+import { VALORES_MARCA } from '@/lib/marca';
 import { POSTER_PORTADA } from '@/lib/portada';
 
 // ─── Movimiento ───────────────────────────────────────────────────────────────
 // Toda la animación de la portada es CSS (index.css), sin librerías:
 //   · entrada (clases `entrada*`): corre aunque el JavaScript no haya cargado;
+//     la barra cae escalonada, el punto se enciende, cada palabra del titular
+//     sube dentro de su máscara y las tarjetas de vidrio suben una tras otra;
 //   · efectos ligados al desplazamiento (`portada-alejar`, `portada-subir`,
 //     `barra-fondo`): líneas de tiempo de scroll que corren en el compositor;
+//   · auroras del fondo: derivan despacio y se detienen con «Pausar»;
 //   · menú móvil y revelado de secciones: transiciones CSS.
 // El JavaScript solo decide estados (abrir menú, revelar, contar cifras).
 // Todo se apaga con "Reducir movimiento" del widget o con la preferencia del
@@ -26,9 +38,9 @@ const EVENTOS_INTERACCION = ['pointermove', 'pointerdown', 'keydown', 'scroll', 
 // Cifras reales de la base de datos: EPS activas (habilitadas en Bogotá), sedes
 // IPS del REPS y especialidades. Consulta del 15-oct-2026: 9, 32 y 12.
 const CIFRAS = [
-  { valor: 9, etiqueta: 'EPS habilitadas' },
-  { valor: 32, etiqueta: 'Sedes en Bogotá' },
-  { valor: 12, etiqueta: 'Especialidades' },
+  { valor: 9, etiqueta: 'EPS habilitadas', detalle: 'Activas', icono: ShieldCheck },
+  { valor: 32, etiqueta: 'Sedes en Bogotá', detalle: 'IPS', icono: MapPin },
+  { valor: 12, etiqueta: 'Especialidades', detalle: 'Médicas', icono: Stethoscope },
 ] as const;
 
 const PASOS = [
@@ -49,6 +61,16 @@ const PASOS = [
   },
 ] as const;
 
+// Opciones reales del widget de accesibilidad (AccessibilityWidget) y de la app instalable.
+const AJUSTES: readonly { readonly icono: LucideIcon; readonly texto: string }[] = [
+  { icono: ALargeSmall, texto: 'Texto más grande' },
+  { icono: Contrast, texto: 'Alto contraste' },
+  { icono: Volume2, texto: 'Lector de voz' },
+  { icono: Ruler, texto: 'Guía de lectura' },
+  { icono: CirclePause, texto: 'Reducir movimiento' },
+  { icono: Smartphone, texto: 'Instalable en el celular' },
+];
+
 const NAV_LINKS = [
   { label: 'Inicio', path: '/' },
   { label: 'Agendar cita', path: '/buscar' },
@@ -56,15 +78,6 @@ const NAV_LINKS = [
   { label: 'EPS', path: '/directorio-eps' },
   { label: 'Ayuda', path: '#ayuda' },
 ] as const;
-
-const Logo = () => (
-  <div className="flex items-center gap-2.5">
-    <img src="/logo.png" alt="" className="h-10 w-10 object-contain shrink-0" />
-    <span className="font-serif text-2xl tracking-tight text-white">
-      Citas<span className="text-accent">YA</span>
-    </span>
-  </div>
-);
 
 export function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -194,48 +207,39 @@ export function HomePage() {
   const fondoInerte = isMenuOpen || undefined;
 
   return (
-    <div className="relative w-full bg-black text-white overflow-x-hidden font-sans">
+    <div
+      className="fondo-app relative w-full text-text-primary overflow-x-hidden font-sans"
+      data-pausado={String(videoPausado)}
+    >
 
-      {/* ─── Video de fondo: mismo negro que la página, sin recuadro visible.
-           Al desplazarse se aleja y se apaga un poco (CSS; no con movimiento reducido). ─── */}
-      <div aria-hidden="true" className="portada-alejar fixed inset-0 z-[1] pointer-events-none origin-top lg:origin-center">
-        <video
-          ref={videoRef}
-          poster={POSTER_PORTADA}
-          src={videoActivo ? videoPortada : undefined}
-          preload="none"
-          loop
-          muted
-          playsInline
-          tabIndex={-1}
-          className="absolute inset-0 w-full h-full object-contain max-lg:top-10 max-lg:bottom-auto max-lg:h-[44svh]"
-        />
-      </div>
-      <div className="fixed inset-0 z-[2] pointer-events-none velo-portada" />
-
-      {/* ─── Barra de navegación fija: gana fondo al desplazarse ─── */}
+      {/* ─── Barra de navegación fija: cae escalonada al entrar y gana fondo al desplazarse ─── */}
       <header className="fixed inset-x-0 top-0 z-40" inert={fondoInerte}>
-        <div aria-hidden="true" className="barra-fondo absolute inset-0 bg-black/70 backdrop-blur-xl border-b border-white/10" />
+        <div aria-hidden="true" className="barra-fondo absolute inset-0 bg-surface/75 backdrop-blur-xl">
+          <div className="linea-luz absolute inset-x-0 bottom-0 opacity-70" />
+        </div>
         <nav
           aria-label="Navegación principal"
-          className="entrada-barra relative w-full max-w-7xl mx-auto flex items-center justify-between gap-6 px-5 sm:px-8 py-4"
+          className="relative w-full max-w-7xl mx-auto flex items-center justify-between gap-6 px-5 sm:px-8 py-4"
         >
-          <Link to="/" className="rounded-xl" aria-label="CitasYA, ir al inicio">
+          <Link to="/" className="entrada-barra rounded-xl" aria-label="CitasYA, ir al inicio">
             <Logo />
           </Link>
 
-          <div className="hidden lg:flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-md p-1">
-            {NAV_LINKS.map((link) => enlace(link, "inline-flex items-center min-h-10 px-4 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-white/[0.08] transicion cursor-pointer whitespace-nowrap"))}
+          <div
+            className="entrada-barra hidden lg:flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-md p-1 shadow-[inset_0_1px_0_rgb(255_255_255/0.05)]"
+            style={retraso(90)}
+          >
+            {NAV_LINKS.map((link) => enlace(link, "inline-flex items-center min-h-10 px-4 rounded-full text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/[0.08] transicion cursor-pointer whitespace-nowrap"))}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="entrada-barra flex items-center gap-2" style={retraso(180)}>
             {!isLoading && (
               <div className="hidden lg:flex items-center gap-2">
                 {isAuthenticated ? (
                   <>
                     <Link
                       to="/dashboard"
-                      className="inline-flex items-center min-h-11 px-4 rounded-full text-sm font-medium text-white/80 hover:text-white transicion"
+                      className="inline-flex items-center min-h-11 px-4 rounded-full text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/[0.06] transicion"
                     >
                       Mi Panel
                     </Link>
@@ -249,18 +253,12 @@ export function HomePage() {
                   </>
                 ) : (
                   <>
-                    <Link
-                      to="/iniciar-sesion"
-                      className="inline-flex items-center min-h-11 px-4 rounded-full text-sm font-medium text-white/80 hover:text-white transicion"
-                    >
+                    <EnlaceBoton to="/iniciar-sesion" variant="accent" size="sm" className="px-5 whitespace-nowrap">
                       Iniciar Sesión
-                    </Link>
-                    <Link
-                      to="/registrarse"
-                      className="inline-flex items-center min-h-11 px-5 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/85 presionable"
-                    >
+                    </EnlaceBoton>
+                    <EnlaceBoton to="/registrarse" variant="primary" size="sm" className="px-5 whitespace-nowrap">
                       Registrarse
-                    </Link>
+                    </EnlaceBoton>
                   </>
                 )}
               </div>
@@ -285,17 +283,30 @@ export function HomePage() {
         </nav>
       </header>
 
-      {/* ─── Portada (alto de pantalla); sube y se desvanece al desplazarse (CSS) ─── */}
-      <div className="portada-subir relative z-20 min-h-svh flex flex-col pt-[4.75rem]" inert={fondoInerte}>
-        {/* Pausa del video de fondo: el movimiento dura más de 5 s, así que debe poder detenerse (WCAG 2.2.2). */}
+      {/* ─── Portada (alto de pantalla): texto | escena del logo | cifras; sube y se desvanece al desplazarse (CSS) ─── */}
+      {/* El fondo azul marino es opaco a propósito: la escena se mezcla en modo
+          «pantalla» con lo que hay pintado dentro de esta capa, y así el negro del
+          video desaparece sobre el azul en vez de verse como un recuadro. */}
+      <div className="portada-subir cielo-portada relative z-20 min-h-svh flex flex-col pt-[4.75rem]" inert={fondoInerte}>
+        {/* Auroras de la marca y retícula tenue (decorativas; se detienen con «Pausar»).
+            Se ubican desde arriba y en rem: si la altura de la portada cambia al llegar
+            la fuente web, no se mueven (un `top` en % o un `bottom` sí contarían como
+            desplazamiento de diseño, CLS). */}
+        <div aria-hidden="true" className="decorativo absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+          <div className="aurora aurora-a -left-[18rem] -top-[20rem] h-[48rem] w-[48rem] [--aurora:rgb(88_67_252/0.34)]" />
+          <div className="aurora aurora-b -right-[14rem] top-[11rem] h-[40rem] w-[40rem] [--aurora:rgb(0_233_252/0.16)]" />
+          <div className="aurora aurora-a left-[16%] top-[30rem] h-[42rem] w-[66rem] [--aurora:rgb(29_105_252/0.3)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgb(126_160_255/0.05)_1px,transparent_1px),linear-gradient(90deg,rgb(126_160_255/0.05)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_75%_60%_at_50%_30%,#000_20%,transparent_80%)]" />
+        </div>
+        {/* Pausa de la animación de fondo: el movimiento dura más de 5 s, así que debe poder detenerse (WCAG 2.2.2). */}
         {!reducir && (
-          <div className="relative w-full max-w-7xl mx-auto px-5 sm:px-8 flex justify-end">
+          <div className="absolute inset-x-0 top-[4.75rem] z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 flex justify-end pointer-events-none [&>*]:pointer-events-auto">
             <button
               type="button"
               onClick={() => setVideoPausado((p) => !p)}
               aria-pressed={videoPausado}
               aria-label="Pausar la animación de fondo"
-              className="entrada inline-flex items-center gap-2 min-h-11 px-3.5 rounded-full border border-white/15 bg-black/40 backdrop-blur-md text-xs font-medium text-white/75 hover:text-white hover:bg-white/[0.08] transicion cursor-pointer"
+              className="entrada vidrio inline-flex items-center gap-2 min-h-11 px-4 rounded-full text-xs font-semibold text-text-secondary hover:text-text-primary transicion cursor-pointer"
               style={retraso(900)}
             >
               {videoPausado ? <Play size={14} aria-hidden="true" /> : <Pause size={14} aria-hidden="true" />}
@@ -304,69 +315,98 @@ export function HomePage() {
           </div>
         )}
 
-        <div className="flex-1 w-full max-w-7xl mx-auto px-5 sm:px-8 pt-[24svh] lg:pt-0 pb-8 md:pb-12 flex flex-col justify-end">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-end lg:gap-12">
-            {/* Titular original: mayúsculas, a la derecha, una palabra por línea.
-                Los espacios entre palabras son nodos de texto reales: el lector
-                de pantalla lee «Agenda Sin Filas.» y no una sola palabra. */}
-            <h1 className="lg:order-2 flex flex-col items-end font-serif uppercase text-right text-hero text-white">
+        <div className="flex-1 w-full max-w-7xl mx-auto px-5 sm:px-8 pt-4 pb-10 lg:pt-10 lg:pb-16 grid content-center items-center gap-x-6 gap-y-6 lg:gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)_minmax(0,0.6fr)]">
+          {/* Escena: el logo de vidrio en video. El fondo negro del video desaparece
+              con el modo «pantalla» y solo queda su luz sobre el azul marino. La mezcla
+              ocurre dos veces: el video sobre el aro y el halo (dentro de la escena), y
+              la escena entera sobre la portada. */}
+          <div
+            aria-hidden="true"
+            className="portada-alejar video-luz relative order-1 lg:order-2 justify-self-center w-[min(70vw,33svh)] lg:w-[min(122%,70svh)] aspect-square"
+          >
+            <div className="aro-vidrio absolute inset-[9%]" />
+            <div className="decorativo absolute inset-[16%] rounded-full bg-[radial-gradient(closest-side,rgb(29_105_252/0.55),rgb(88_67_252/0.18)_60%,transparent)]" />
+            <video
+              ref={videoRef}
+              poster={POSTER_PORTADA}
+              src={videoActivo ? videoPortada : undefined}
+              preload="none"
+              loop
+              muted
+              playsInline
+              tabIndex={-1}
+              width={720}
+              height={720}
+              className="video-luz entrada-escena relative h-full w-full object-contain"
+            />
+          </div>
+
+          {/* Texto y cifras por encima de la escena (z-10): la escena es más ancha que su
+              columna y, en alto contraste (sin mezcla), su fondo negro taparía el texto. */}
+          <div className="relative z-10 order-2 lg:order-1 flex flex-col items-start">
+            <div
+              className="entrada inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.05] backdrop-blur-md pl-3 pr-3.5 py-1.5 text-xs font-semibold tracking-wide text-text-secondary"
+              style={retraso(250)}
+            >
+              <span className="entrada-punto relative flex h-2 w-2" aria-hidden="true" style={retraso(330)}>
+                <span className="absolute inline-flex h-full w-full rounded-full bg-accent opacity-60 motion-safe:animate-ping" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-accent shadow-[0_0_10px_rgb(0_233_252/0.9)]" />
+              </span>
+              Disponible 24/7 · Bogotá
+            </div>
+
+            {/* Titular: cada palabra sube dentro de su máscara. Los espacios entre
+                palabras son nodos de texto reales: el lector de pantalla lee
+                «Agenda Sin Filas.» y no una sola palabra. */}
+            <h1 className="mt-5 lg:mt-6 flex flex-row flex-wrap gap-x-[0.26em] lg:flex-col lg:items-start font-display font-extrabold text-hero tracking-[-0.045em] text-text-primary">
               <Palabra ms={150}>Agenda</Palabra>{' '}
-              <Palabra ms={270} className="italic text-accent">Sin</Palabra>{' '}
+              <Palabra ms={270} className="texto-degradado">Sin</Palabra>{' '}
               <Palabra ms={390}>Filas.</Palabra>
             </h1>
 
-            <div className="lg:order-1 flex flex-col items-start">
-              <div
-                className="entrada inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] backdrop-blur-md px-3 py-1.5 text-xs font-medium text-white/80"
-                style={retraso(250)}
+            <p className="entrada mt-6 max-w-md text-base md:text-lg leading-relaxed text-text-secondary" style={retraso(460)}>
+              Plataforma centralizada para gestionar tus citas con tu EPS en Bogotá. Rápido, seguro y accesible.
+            </p>
+
+            <div className="entrada mt-8 w-full flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3" style={retraso(560)}>
+              <EnlaceBoton to="/buscar" variant="primary" size="md" className="group whitespace-nowrap min-h-13 px-7">
+                Agendar cita
+                <ArrowRight size={20} aria-hidden="true" className="transition-transform duration-200 ease-out group-hover:translate-x-1" />
+              </EnlaceBoton>
+              <a
+                href="#como-funciona"
+                onClick={(evento) => { evento.preventDefault(); irASeccion('#como-funciona'); }}
+                className={estilosBoton({ variant: 'accent', size: 'md', className: 'group whitespace-nowrap min-h-13 px-7' })}
               >
-                <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
-                  <span className="absolute inline-flex h-full w-full rounded-full bg-accent opacity-60 motion-safe:animate-ping" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
-                </span>
-                Disponible 24/7 · Bogotá
-              </div>
-
-              <p className="entrada mt-5 max-w-md text-base md:text-lg leading-relaxed text-white/70" style={retraso(350)}>
-                Plataforma centralizada para gestionar tus citas con tu EPS en Bogotá. Rápido, seguro y accesible.
-              </p>
-
-              <div className="entrada mt-7 w-full flex flex-col sm:flex-row sm:items-center gap-3" style={retraso(450)}>
-                <Link
-                  to="/buscar"
-                  className="group inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-full bg-brand text-white text-base font-semibold shadow-button hover:bg-brand-hover presionable"
-                >
-                  Agendar cita
-                  <ArrowRight size={18} aria-hidden="true" className="transition-transform duration-200 ease-out group-hover:translate-x-0.5" />
-                </Link>
-                <a
-                  href="#como-funciona"
-                  onClick={(evento) => { evento.preventDefault(); irASeccion('#como-funciona'); }}
-                  className="group inline-flex items-center justify-center gap-1.5 min-h-12 px-5 rounded-full text-base font-medium text-white/80 hover:text-white hover:bg-white/[0.06] transicion"
-                >
-                  Cómo funciona
-                  <ChevronDown size={18} aria-hidden="true" className="transition-transform duration-200 ease-out group-hover:translate-y-0.5" />
-                </a>
-              </div>
-
-              {/* Cifras reales: cuentan desde cero al aparecer */}
-              <dl
-                data-cifras
-                className="entrada mt-8 w-full grid grid-cols-3 gap-3 pr-16 lg:pr-0 border-t border-white/10 pt-5"
-                style={retraso(550)}
-              >
-                {CIFRAS.map((cifra) => (
-                  <div key={cifra.etiqueta} className="flex flex-col-reverse justify-end gap-1">
-                    <dt className="text-xs sm:text-sm text-white/60 leading-snug">{cifra.etiqueta}</dt>
-                    <dd className="font-serif text-stat text-white tabular-nums">
-                      <span className="sr-only">{cifra.valor}</span>
-                      <Contador valor={cifra.valor} reducir={reducir} />
-                    </dd>
-                  </div>
-                ))}
-              </dl>
+                Cómo funciona
+                <ChevronDown size={20} aria-hidden="true" className="transition-transform duration-200 ease-out group-hover:translate-y-0.5" />
+              </a>
             </div>
           </div>
+
+          {/* Cifras reales en tarjetas de vidrio: suben una tras otra y cuentan desde cero */}
+          <dl
+            data-cifras
+            className="entrada relative z-10 order-3 grid grid-cols-3 gap-2.5 sm:gap-4 lg:grid-cols-1 lg:justify-self-end lg:w-full lg:max-w-[15rem]"
+            style={retraso(620)}
+          >
+            {CIFRAS.map((cifra, i) => (
+              <div key={cifra.etiqueta} className="entrada vidrio rounded-[1.25rem] p-3 sm:p-5" style={retraso(700 + i * 120)}>
+                {/* En el celular la etiqueta va en minúsculas y sin tracking: en mayúsculas espaciadas no cabe en un tercio de pantalla. */}
+                <dt className="rotulo flex items-center gap-1.5 text-[0.6875rem] leading-tight max-sm:normal-case max-sm:tracking-normal max-sm:font-semibold sm:text-xs text-text-muted [overflow-wrap:anywhere]">
+                  <cifra.icono size={14} aria-hidden="true" className="hidden sm:block shrink-0 text-accent" />
+                  {cifra.etiqueta}
+                </dt>
+                <dd className="mt-3 sm:mt-5 flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
+                  <span className="font-display font-light text-[2rem] sm:text-stat leading-none tracking-[-0.04em] text-text-primary tabular-nums">
+                    <span className="sr-only">{cifra.valor}</span>
+                    <Contador valor={cifra.valor} reducir={reducir} />
+                  </span>
+                  <span className="rotulo text-[0.625rem] sm:text-xs text-accent">{cifra.detalle}</span>
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </div>
 
@@ -378,9 +418,10 @@ export function HomePage() {
         aria-label="Menú de navegación"
         data-abierto={isMenuOpen}
         inert={!isMenuOpen}
-        className="menu-movil fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col px-5 pt-5 pb-8 sm:px-8 overflow-y-auto"
+        className="menu-movil fixed inset-0 z-50 bg-surface/95 backdrop-blur-xl flex flex-col px-5 pt-5 pb-8 sm:px-8 overflow-y-auto"
       >
-        <div className="w-full flex items-center justify-between">
+        <div aria-hidden="true" className="decorativo pointer-events-none absolute -top-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-[radial-gradient(closest-side,rgb(88_67_252/0.3),transparent)]" />
+        <div className="relative w-full flex items-center justify-between">
           <Logo />
           <button
             ref={cerrarMenuRef}
@@ -393,53 +434,109 @@ export function HomePage() {
           </button>
         </div>
 
-        <div className="flex flex-col mt-12">
-          {enlacesMenu.map((link, i) => enlace(link, "text-left font-serif text-4xl py-2.5 text-white/90 hover:text-white cursor-pointer", { 'data-item': true, style: { '--i': i } as CSSProperties }, () => setIsMenuOpen(false)))}
+        <div className="relative flex flex-col mt-12">
+          {enlacesMenu.map((link, i) => enlace(link, "text-left font-display text-4xl font-bold tracking-[-0.03em] py-2.5 text-text-secondary hover:text-text-primary cursor-pointer", { 'data-item': true, style: { '--i': i } as CSSProperties }, () => setIsMenuOpen(false)))}
           {isAuthenticated && (
             <button
               type="button"
               data-item
               style={{ '--i': enlacesMenu.length } as CSSProperties}
               onClick={() => { setIsMenuOpen(false); void logout(); }}
-              className="text-left font-serif text-4xl py-2.5 text-error cursor-pointer"
+              className="text-left font-display text-4xl font-bold tracking-[-0.03em] py-2.5 text-error cursor-pointer"
             >
               Cerrar Sesión
             </button>
           )}
         </div>
 
-        <Link
+        <EnlaceBoton
           to="/buscar"
           onClick={() => setIsMenuOpen(false)}
-          className="mt-auto inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-full bg-brand text-white text-base font-semibold shadow-button hover:bg-brand-hover presionable"
+          variant="primary"
+          size="lg"
+          className="relative mt-auto"
         >
-          Agendar cita <ArrowRight size={18} aria-hidden="true" />
-        </Link>
+          Agendar cita <ArrowRight size={20} aria-hidden="true" />
+        </EnlaceBoton>
       </div>
 
+      {/* ─── Valores de la marca: tres placas de vidrio ─── */}
+      <section aria-label="Por qué CitasYA" inert={fondoInerte} className="relative z-20 px-5 sm:px-8 pb-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {VALORES_MARCA.map((valor, i) => (
+            <article
+              key={valor.titulo}
+              data-revelar
+              style={retraso(i * 90)}
+              className="levitar group vidrio rounded-3xl p-5 sm:p-6 flex items-center gap-4"
+            >
+              <IconBadge icon={valor.icono} tone="brand" size="md" className="icono-realce" />
+              <div>
+                <h2 className="font-sans text-lg font-semibold tracking-[-0.01em] text-text-primary">{valor.titulo}</h2>
+                <p className="text-sm text-text-muted">{valor.texto}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       {/* ─── ¿Cómo funciona? ─── */}
-      <section id="como-funciona" inert={fondoInerte} className="relative z-20 bg-black border-t border-white/10 py-24 md:py-32 px-5 sm:px-8">
+      <section id="como-funciona" inert={fondoInerte} className="relative z-20 py-24 md:py-32 px-5 sm:px-8 scroll-mt-16">
         <div className="max-w-7xl mx-auto">
-          <div data-revelar className="max-w-3xl">
-            <p className="text-sm font-medium text-accent">¿Qué es CitasYA?</p>
-            <h2 className="mt-3 text-4xl md:text-5xl text-white">Cómo funciona la plataforma</h2>
-            <p className="mt-6 text-base md:text-lg leading-relaxed text-white/65">
-              <strong className="font-semibold text-white">CitasYA</strong> es tu puerta de entrada inteligente a la salud en Bogotá. Somos una plataforma centralizada que conecta a los ciudadanos directamente con sus Entidades Promotoras de Salud (EPS), eliminando las filas físicas y telefónicas. Facilitamos la búsqueda de médicos, la consulta de especialidades y el agendamiento o reprogramación de citas en un entorno 100% digital, accesible e inclusivo para todas las edades.
-            </p>
+          <div className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16 items-center">
+            <div data-revelar>
+              <p className="rotulo text-xs text-accent">¿Qué es CitasYA?</p>
+              <h2 className="mt-4 text-4xl md:text-5xl text-text-primary">
+                Cómo funciona la <span className="texto-degradado">plataforma</span>
+              </h2>
+              <p className="mt-6 text-base md:text-lg leading-relaxed text-text-secondary">
+                <strong className="font-semibold text-text-primary">CitasYA</strong> es tu puerta de entrada inteligente a la salud en Bogotá. Somos una plataforma centralizada que conecta a los ciudadanos directamente con sus Entidades Promotoras de Salud (EPS), eliminando las filas físicas y telefónicas. Facilitamos la búsqueda de médicos, la consulta de especialidades y el agendamiento o reprogramación de citas en un entorno 100% digital, accesible e inclusivo para todas las edades.
+              </p>
+            </div>
+
+            {/* Foto con el tratamiento de la marca y dos placas de vidrio (decorativas). */}
+            <figure data-revelar style={retraso(120)} className="relative mx-2 sm:mx-6 lg:mx-0">
+              <div className="borde-luz relative overflow-hidden rounded-[2rem] shadow-[0_40px_90px_-40px_rgb(29_105_252/0.65)]">
+                <FotoDiferida
+                  src="/imagenes/consulta-1200.webp"
+                  srcSet="/imagenes/consulta-640.webp 640w, /imagenes/consulta-1200.webp 1200w"
+                  sizes="(min-width: 1024px) 36rem, 92vw"
+                  width={1200}
+                  height={675}
+                  alt="Una médica conversa con un paciente mayor en su consultorio."
+                />
+                <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(180deg,rgb(3_10_31/0)_45%,rgb(3_10_31/0.7))]" />
+              </div>
+              <div aria-hidden="true" className="vidrio absolute -bottom-6 left-4 sm:-left-6 rounded-2xl pl-3 pr-5 py-3 flex items-center gap-3">
+                <span className="boton-primario grid h-10 w-10 place-items-center rounded-xl text-white">
+                  <CircleCheck size={20} />
+                </span>
+                <span>
+                  <span className="block text-sm font-semibold text-text-primary">Cita agendada</span>
+                  <span className="block text-xs text-text-muted">La ves en tu panel personal</span>
+                </span>
+              </div>
+              <div aria-hidden="true" className="vidrio absolute -top-5 right-4 sm:-right-6 rounded-2xl px-4 py-2.5 flex items-center gap-2.5 text-sm font-semibold text-text-primary">
+                <Video size={18} className="text-accent" />
+                Presencial o telemedicina
+              </div>
+            </figure>
           </div>
 
-          <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+          <div className="relative mt-24 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            {/* Línea de luz que une los tres pasos (decorativa) */}
+            <div aria-hidden="true" className="linea-luz absolute hidden md:block top-[3.75rem] left-[12%] right-[12%]" />
             {PASOS.map((paso, i) => (
-              <article key={paso.titulo} data-revelar style={retraso(i * 90)} className="h-full">
-                <div className="levitar group relative h-full rounded-3xl border border-white/10 bg-white/[0.03] tarjeta-luz p-7 hover:border-white/20 hover:bg-white/[0.05]">
+              <article key={paso.titulo} data-revelar style={retraso(i * 90)} className="relative h-full">
+                <div className="levitar group vidrio relative h-full rounded-3xl p-7">
                   <div className="flex items-start justify-between">
-                    <IconBadge icon={paso.icono} tone="brand" size="sm" className="icono-realce" />
-                    <span className="font-serif text-2xl text-white/25 tabular-nums" aria-hidden="true">0{i + 1}</span>
+                    <IconBadge icon={paso.icono} tone="brand" size="md" className="icono-realce" />
+                    <span className="font-display text-5xl font-extralight tracking-[-0.04em] text-white/20 tabular-nums" aria-hidden="true">0{i + 1}</span>
                   </div>
-                  <h3 className="mt-6 text-lg font-semibold text-white">
+                  <h3 className="mt-6 text-lg font-semibold text-text-primary">
                     <span className="sr-only">Paso {i + 1}: </span>{paso.titulo}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-white/60">{paso.texto}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-text-muted">{paso.texto}</p>
                 </div>
               </article>
             ))}
@@ -447,23 +544,75 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* ─── Para todos: accesibilidad ─── */}
+      <section aria-labelledby="titulo-para-todos" inert={fondoInerte} className="relative z-20 py-24 md:py-32 px-5 sm:px-8">
+        <div className="max-w-7xl mx-auto grid gap-14 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-16 items-center">
+          <figure data-revelar className="relative order-2 lg:order-1 mx-2 sm:mx-6 lg:mx-0">
+            <div className="borde-luz relative overflow-hidden rounded-[2rem] shadow-[0_40px_90px_-40px_rgb(88_67_252/0.6)]">
+              <FotoDiferida
+                src="/imagenes/para-todos-1200.webp"
+                srcSet="/imagenes/para-todos-640.webp 640w, /imagenes/para-todos-1200.webp 1200w"
+                sizes="(min-width: 1024px) 34rem, 92vw"
+                width={1200}
+                height={980}
+                alt="Una mujer mayor sonríe mientras usa su celular en casa."
+              />
+              <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(200deg,rgb(3_10_31/0)_50%,rgb(3_10_31/0.6))]" />
+            </div>
+            <div aria-hidden="true" className="vidrio absolute -bottom-7 right-4 sm:-right-6 w-60 rounded-2xl p-4">
+              <p className="rotulo text-[0.625rem] text-text-muted">Ajustes de accesibilidad</p>
+              <div className="mt-3 space-y-2.5">
+                {['Texto más grande', 'Alto contraste'].map((texto, i) => (
+                  <div key={texto} className="flex items-center justify-between gap-3 text-sm font-medium text-text-primary">
+                    {texto}
+                    <span className={`relative h-5 w-9 rounded-full ${i === 0 ? 'boton-primario' : 'bg-surface-strong'}`}>
+                      <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white ${i === 0 ? 'right-0.5' : 'left-0.5'}`} />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </figure>
+
+          <div data-revelar className="order-1 lg:order-2">
+            <p className="rotulo text-xs text-accent">Para todos</p>
+            <h2 id="titulo-para-todos" className="mt-4 text-4xl md:text-5xl text-text-primary">
+              Diseñado para <span className="texto-degradado">todas las edades</span>
+            </h2>
+            <p className="mt-6 text-base md:text-lg leading-relaxed text-text-secondary">
+              Letra más grande, alto contraste y lectura en voz alta: ajusta CitasYA a tu manera con el botón de accesibilidad, en la esquina inferior derecha de la pantalla.
+            </p>
+            <ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {AJUSTES.map(({ icono: Icono, texto }) => (
+                <li key={texto} className="tarjeta flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-text-primary">
+                  <span aria-hidden="true" className="icono-degradado grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-brand-soft text-link">
+                    <Icono size={18} strokeWidth={1.75} />
+                  </span>
+                  {texto}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
       {/* ─── Ayuda y soporte ─── */}
-      <section id="ayuda" inert={fondoInerte} className="relative z-20 bg-black border-t border-white/10 py-24 md:py-32 px-5 sm:px-8">
+      <section id="ayuda" inert={fondoInerte} className="relative z-20 py-24 md:py-32 px-5 sm:px-8 scroll-mt-16">
         <div className="max-w-7xl mx-auto">
           <div data-revelar className="max-w-3xl">
-            <p className="text-sm font-medium text-accent">Soporte directo</p>
-            <h2 className="mt-3 text-4xl md:text-5xl text-white">Centro de Ayuda</h2>
+            <p className="rotulo text-xs text-accent">Soporte directo</p>
+            <h2 className="mt-4 text-4xl md:text-5xl text-text-primary">Centro de Ayuda</h2>
           </div>
 
           <div className="mt-14 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-            <article data-revelar className="group rounded-3xl border border-white/10 bg-white/[0.03] tarjeta-luz p-7 md:p-8 flex flex-col gap-5 hover:border-white/20 transicion">
-              <IconBadge icon={Monitor} tone="brand" size="sm" className="icono-realce" />
-              <h3 className="text-xl font-semibold text-white">Soporte técnico de la página</h3>
-              <p className="text-sm leading-relaxed text-white/65">
+            <article data-revelar className="group vidrio rounded-3xl p-7 md:p-8 flex flex-col gap-5 hover:border-accent/30 transicion">
+              <IconBadge icon={Monitor} tone="brand" size="md" className="icono-realce" />
+              <h3 className="text-xl font-semibold text-text-primary">Soporte técnico de la página</h3>
+              <p className="text-sm leading-relaxed text-text-secondary">
                 Si experimentas problemas técnicos con el funcionamiento de CitasYA, como errores al iniciar sesión, problemas al agendar o fallas en el visualizador, repórtalos al equipo del proyecto:
               </p>
-              <div className="mt-auto rounded-2xl border border-white/10 bg-black/40 p-4">
-                <p className="text-xs text-white/60">Reportes del proyecto (repositorio público)</p>
+              <div className="mt-auto rounded-2xl border border-white/10 bg-surface/60 p-4">
+                <p className="text-xs text-text-muted">Reportes del proyecto (repositorio público)</p>
                 <a href="https://github.com/alteuz/citasya/issues" target="_blank" rel="noopener noreferrer" className="inline-flex items-center min-h-11 text-base font-semibold text-accent hover:text-accent-hover underline-offset-4 hover:underline break-all">
                   github.com/alteuz/citasya/issues
                   <span className="sr-only"> (se abre en una pestaña nueva)</span>
@@ -471,19 +620,16 @@ export function HomePage() {
               </div>
             </article>
 
-            <article data-revelar style={retraso(90)} className="group rounded-3xl border border-white/10 bg-white/[0.03] tarjeta-luz p-7 md:p-8 flex flex-col gap-5 hover:border-white/20 transicion">
-              <IconBadge icon={Building2} tone="brand" size="sm" className="icono-realce" />
-              <h3 className="text-xl font-semibold text-white">Asuntos de tu EPS</h3>
-              <p className="text-sm leading-relaxed text-white/65">
+            <article data-revelar style={retraso(90)} className="group vidrio rounded-3xl p-7 md:p-8 flex flex-col gap-5 hover:border-accent/30 transicion">
+              <IconBadge icon={Building2} tone="brand" size="md" className="icono-realce" />
+              <h3 className="text-xl font-semibold text-text-primary">Asuntos de tu EPS</h3>
+              <p className="text-sm leading-relaxed text-text-secondary">
                 Si tu consulta está relacionada con autorizaciones de servicios, reclamos, entrega de medicamentos o peticiones directamente relacionadas con tu EPS, comunícate con sus canales oficiales. En el directorio están los datos de las 9 EPS habilitadas en Bogotá y sus sedes de atención.
               </p>
-              <Link
-                to="/directorio-eps"
-                className="mt-auto inline-flex items-center gap-2 min-h-11 self-start rounded-full border border-white/15 px-5 text-sm font-semibold text-accent hover:text-accent-hover hover:border-white/30 transicion"
-              >
+              <EnlaceBoton to="/directorio-eps" variant="accent" size="sm" className="mt-auto self-start px-5">
                 Ver el directorio de EPS
                 <ArrowRight size={16} aria-hidden="true" />
-              </Link>
+              </EnlaceBoton>
             </article>
           </div>
         </div>
@@ -544,9 +690,11 @@ function useRevelarAlDesplazar(reducir: boolean) {
 }
 
 // ─── Palabra del titular: sube desde detrás de una máscara (CSS) ─────────────
+// El relleno inferior de la máscara deja ver los descendentes (la «g» de
+// «Agenda») y el margen negativo lo compensa para no separar las líneas.
 function Palabra({ children, ms, className = '' }: { readonly children: ReactNode; readonly ms: number; readonly className?: string }) {
   return (
-    <span className="block overflow-hidden pb-[0.04em] pr-[0.08em] -mr-[0.08em]">
+    <span className="block overflow-hidden pb-[0.18em] -mb-[0.14em] pr-[0.08em] -mr-[0.08em]">
       <span className={`entrada-palabra block ${className}`} style={retraso(ms)}>{children}</span>
     </span>
   );

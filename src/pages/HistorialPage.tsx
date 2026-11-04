@@ -57,7 +57,7 @@ export function HistorialPage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="bg-surface-muted border-b border-line">
+      <div className="banda-cabecera">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
           <Link
             to="/dashboard"
@@ -97,7 +97,7 @@ export function HistorialPage() {
 
         {/* Empty */}
         {!isLoading && !error && appointments.length === 0 && (
-          <div className="bg-surface-card border border-line rounded-2xl p-10 text-center">
+          <div className="tarjeta rounded-2xl p-10 text-center">
             <IconBadge icon={CalendarDays} size="lg" className="mb-5" />
             <h2 className="font-sans text-lg font-semibold text-text-primary mb-2">
               No tienes citas registradas
@@ -120,7 +120,7 @@ export function HistorialPage() {
                 Próximas citas <span className="text-text-muted font-normal">({proximas.length})</span>
               </h2>
               {proximas.length === 0 ? (
-                <div className="bg-surface-card border border-line rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="tarjeta rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <p className="text-text-secondary">No tienes citas próximas.</p>
                   <EnlaceBoton to="/buscar" variant="primary" size="sm">
                     Agendar una cita
@@ -184,7 +184,7 @@ function TarjetaCita({ cita: apt, ahora, isCancelling, onCancel }: TarjetaCitaPr
   const admiteCambios = puedeModificarse(apt, ahora);
 
   return (
-    <div className="bg-surface-card border border-line rounded-2xl p-5 sm:p-6 hover:border-line-strong">
+    <div className="tarjeta rounded-2xl p-5 sm:p-6 hover:border-line-strong">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 mb-2">

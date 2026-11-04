@@ -58,7 +58,7 @@ export function FamiliaPage() {
 
   return (
     <div className="animate-fade-in">
-      <div className="bg-surface-muted border-b border-line">
+      <div className="banda-cabecera">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
           <Link
             to="/dashboard"
@@ -126,7 +126,7 @@ export function FamiliaPage() {
         )}
 
         {!isLoading && !error && familiares.length === 0 && !edicion && (
-          <div className="bg-surface-card border border-line rounded-2xl p-10 text-center">
+          <div className="tarjeta rounded-2xl p-10 text-center">
             <IconBadge icon={Users} size="lg" className="mb-5" />
             <h2 className="font-sans text-lg font-semibold text-text-primary mb-2">Aún no has registrado familiares</h2>
             <p className="text-text-secondary max-w-md mx-auto">
@@ -142,7 +142,7 @@ export function FamiliaPage() {
             </h2>
             <ul className="space-y-4">
               {familiares.map((familiar) => (
-                <li key={familiar.id} className="bg-surface-card border border-line rounded-2xl p-5 sm:p-6">
+                <li key={familiar.id} className="tarjeta rounded-2xl p-5 sm:p-6">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5">
                     <div className="min-w-0">
                       <h3 className="text-lg font-semibold text-text-primary">{familiar.nombreCompleto}</h3>

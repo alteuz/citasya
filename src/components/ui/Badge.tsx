@@ -10,15 +10,15 @@ interface BadgeProps {
 }
 
 const VARIANT_CLASSES = {
-  default: 'bg-surface-hover text-text-secondary border border-line',
-  active: 'bg-brand text-white border border-brand',
-  accent: 'bg-accent-soft text-accent border border-accent/30',
+  default: 'bg-surface-hover/80 text-text-secondary border border-line-strong',
+  active: 'boton-primario text-white border border-transparent',
+  accent: 'bg-accent-soft text-accent border border-accent/35',
 } as const;
 
 const CLICKABLE_HOVER = {
   default: 'hover:bg-surface-strong hover:text-text-primary',
-  active: 'hover:bg-brand-hover',
-  accent: 'hover:border-accent/60',
+  active: '',
+  accent: 'hover:border-accent/70',
 } as const;
 
 export function Badge({

@@ -146,7 +146,7 @@ export function ReschedulePage() {
   if (step === 'success') {
     return (
       <div className="mx-auto max-w-lg px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
-        <div className="bg-surface-card border border-line rounded-2xl p-8 text-center">
+        <div className="tarjeta rounded-2xl p-8 text-center">
           <IconBadge icon={CalendarCheck} tone="success" size="lg" className="mb-5" />
           <h1 className="text-2xl text-text-primary mb-2">
             ¡Cita reprogramada!
@@ -186,7 +186,7 @@ export function ReschedulePage() {
           Confirmar reprogramación
         </h1>
 
-        <div className="bg-surface-card border border-line rounded-2xl p-6 space-y-6">
+        <div className="tarjeta rounded-2xl p-6 space-y-6">
           {/* Alerta de cambio */}
           <div className="bg-accent-soft border border-accent/30 text-accent text-sm font-medium px-4 py-3 rounded-xl flex items-start gap-3">
              <span aria-hidden="true" className="text-accent">ℹ️</span>
@@ -235,7 +235,7 @@ export function ReschedulePage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="bg-surface-muted border-b border-line">
+      <div className="banda-cabecera">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
           <Link
             to="/dashboard/historial"
@@ -245,7 +245,7 @@ export function ReschedulePage() {
           </Link>
 
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-brand-soft text-accent border border-accent/20 font-bold text-xl flex items-center justify-center shrink-0">
+            <div className="borde-luz w-16 h-16 rounded-[1.375rem] bg-[linear-gradient(160deg,#0f2463,#071232)] text-accent font-bold text-xl shadow-[inset_0_0_16px_rgb(29_105_252/0.3),0_10px_30px_-12px_rgb(29_105_252/0.7)] flex items-center justify-center shrink-0">
               {initials}
             </div>
             <div>
@@ -270,7 +270,7 @@ export function ReschedulePage() {
         </h2>
 
         {availableDates.length === 0 ? (
-          <div className="bg-surface-card border border-line rounded-2xl p-8 text-center mb-8">
+          <div className="tarjeta rounded-2xl p-8 text-center mb-8">
             <IconBadge icon={CalendarX} size="md" className="mb-4" />
             <p className="text-text-secondary">No hay horarios disponibles en los próximos 14 días para este médico.</p>
           </div>
@@ -290,10 +290,10 @@ export function ReschedulePage() {
                     role="option"
                     aria-selected={isSelected}
                     onClick={() => { setSelectedDate(date); setSelectedSlot(null); }}
-                    className={`flex flex-col items-center px-4 py-3 rounded-xl border-2 min-w-18 shrink-0 presionable cursor-pointer ${
+                    className={`flex flex-col items-center px-4 py-3 rounded-2xl border-2 min-w-18 shrink-0 presionable cursor-pointer ${
                       isSelected
-                        ? 'border-accent bg-accent-soft text-accent'
-                        : 'border-line-input text-text-secondary hover:border-text-muted hover:text-text-primary'
+                        ? 'border-accent bg-accent-soft text-accent shadow-[0_0_22px_-6px_rgb(0_233_252/0.7)]'
+                        : 'border-line-input bg-surface-card/60 text-text-secondary hover:border-accent/60 hover:text-text-primary'
                     }`}
                   >
                     <span className="text-xs font-medium uppercase">{dayName}</span>
@@ -310,7 +310,7 @@ export function ReschedulePage() {
             </h2>
 
             {currentSlots.length === 0 ? (
-              <div className="bg-surface-card border border-line rounded-xl p-6 text-center">
+              <div className="tarjeta rounded-xl p-6 text-center">
                 <p className="text-text-secondary">No hay horarios disponibles para esta fecha.</p>
               </div>
             ) : (
@@ -322,10 +322,10 @@ export function ReschedulePage() {
                       key={slot.id}
                       type="button"
                       onClick={() => handleSelectSlot(slot)}
-                      className={`min-h-12 py-3 px-2 rounded-xl border-2 text-sm font-medium tabular-nums presionable cursor-pointer ${
+                      className={`min-h-12 py-3 px-2 rounded-2xl border-2 text-sm font-semibold tabular-nums presionable cursor-pointer ${
                         isSelected
-                          ? 'border-brand bg-brand text-white shadow-button'
-                          : 'border-line-input text-text-secondary hover:border-accent/60 hover:bg-accent-soft hover:text-text-primary'
+                          ? 'border-transparent boton-primario text-white'
+                          : 'border-line-input bg-surface-card/60 text-text-secondary hover:border-accent/60 hover:bg-accent-soft hover:text-text-primary'
                       }`}
                     >
                       {formatTime(slot.startTime)}

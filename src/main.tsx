@@ -2,11 +2,9 @@ import { StrictMode } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { App } from './App';
 import { router } from './router';
-// Fuentes alojadas en el mismo dominio (sin CSS de terceros que bloquee el
+// Fuente alojada en el mismo dominio (sin CSS de terceros que bloquee el
 // renderizado ni solicitudes a Google con la IP del paciente).
-import '@fontsource-variable/dm-sans/wght.css';
-import '@fontsource/dm-serif-display/400.css';
-import '@fontsource/dm-serif-display/400-italic.css';
+import '@fontsource-variable/plus-jakarta-sans/wght.css';
 import './index.css';
 
 const rootElement = document.getElementById('app');

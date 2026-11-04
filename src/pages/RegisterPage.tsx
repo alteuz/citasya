@@ -9,6 +9,8 @@ import { DoctorsService } from '@/services/doctors.service';
 import { problemaDeContrasena, vecesFiltrada } from '@/lib/contrasena';
 import { ArrowLeft, ArrowRight, CircleCheck, MailCheck } from 'lucide-react';
 import { IconBadge } from '@/components/ui/IconBadge';
+import { Logo } from '@/components/marca/Logo';
+import { PanelMarca } from '@/components/marca/PanelMarca';
 
 interface EpsOption {
   readonly id: string;
@@ -102,7 +104,7 @@ export function RegisterPage() {
   if (success) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 animate-fade-in">
-        <div className="w-full max-w-md text-center">
+        <div className="vidrio w-full max-w-md text-center rounded-3xl p-8 sm:p-10">
           <IconBadge icon={isAuthenticated ? CircleCheck : MailCheck} tone="success" size="lg" className="mb-6" />
           <h1 className="text-3xl text-text-primary mb-4">
             ¡Registro exitoso!
@@ -140,17 +142,15 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10 lg:py-14 grid gap-10 lg:grid-cols-2 lg:min-h-[calc(100svh-4.5rem)]">
+      <div className="flex items-center justify-center">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-3 mb-6 rounded-xl">
-            <img src="/logo.png" alt="" className="h-20 w-20 object-contain shrink-0" />
-            <span className="font-serif text-logo-lg tracking-tight font-normal text-text-primary">
-              Citas<span className="text-accent">YA</span>
-            </span>
+          <Link to="/" className="inline-flex items-center mb-6 rounded-xl">
+            <Logo tamano="lg" />
           </Link>
-          <h1 className="text-3xl text-text-primary mb-2">
+          <h1 className="text-3xl sm:text-4xl text-text-primary mb-2">
             Crear cuenta
           </h1>
           <p className="text-text-secondary">
@@ -158,8 +158,8 @@ export function RegisterPage() {
           </p>
           {/* Step indicator */}
           <div className="flex items-center justify-center gap-2 mt-4" aria-hidden="true">
-            <div className={`h-2 w-10 rounded-full transicion ${step >= 1 ? 'bg-accent' : 'bg-surface-strong'}`} />
-            <div className={`h-2 w-10 rounded-full transicion ${step >= 2 ? 'bg-accent' : 'bg-surface-strong'}`} />
+            <div className={`h-2 w-12 rounded-full transicion ${step >= 1 ? 'bg-[linear-gradient(90deg,var(--color-accent-400),var(--color-brand-500))] shadow-[0_0_12px_rgb(0_233_252/0.5)]' : 'bg-surface-strong'}`} />
+            <div className={`h-2 w-12 rounded-full transicion ${step >= 2 ? 'bg-[linear-gradient(90deg,var(--color-accent-400),var(--color-brand-500))] shadow-[0_0_12px_rgb(0_233_252/0.5)]' : 'bg-surface-strong'}`} />
           </div>
           <p className="text-xs text-text-muted mt-2">Paso {step} de 2</p>
         </div>
@@ -167,7 +167,7 @@ export function RegisterPage() {
         {/* Form */}
         <form
           onSubmit={(e) => { void handleSubmit(e); }}
-          className="bg-surface-card border border-line rounded-2xl shadow-elevated p-6 sm:p-8 space-y-5"
+          className="vidrio rounded-3xl p-6 sm:p-8 space-y-5"
           noValidate
         >
           {/* Error global */}
@@ -347,6 +347,8 @@ export function RegisterPage() {
           </p>
         </form>
       </div>
+      </div>
+      <PanelMarca />
     </div>
   );
 }

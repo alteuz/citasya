@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { EnlaceBoton } from '@/components/ui/EnlaceBoton';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/Button';
+import { Logo } from '@/components/marca/Logo';
 import { useAuthContext } from '@/hooks/useAuthContext';
 
 interface NavLink {
@@ -41,7 +42,9 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 h-16 flex items-center bg-surface/75 backdrop-blur-xl backdrop-saturate-150 border-b border-line/70">
+      <header className="sticky top-0 z-50 h-16 lg:h-[4.5rem] flex items-center bg-surface/70 backdrop-blur-xl backdrop-saturate-150">
+      {/* Borde inferior de luz: la línea de la marca que se desvanece en los extremos. */}
+      <div aria-hidden="true" className="linea-luz absolute inset-x-0 bottom-0 opacity-70" />
       <nav
         aria-label="Navegación principal"
         className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-6"
@@ -49,33 +52,26 @@ export function Navbar() {
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-3 shrink-0 rounded-xl"
+            className="flex items-center shrink-0 rounded-xl"
             onClick={closeMobileMenu}
           >
-            <img
-              src="/logo.png"
-              alt=""
-              className="h-10 w-10 object-contain shrink-0"
-            />
-            <span className="font-serif text-2xl tracking-tight text-text-primary">
-              Citas<span className="text-accent">YA</span>
-            </span>
+            <Logo />
             <span className="sr-only">, ir al inicio</span>
           </Link>
 
           {/* Desktop Nav Links */}
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.03] p-1 shadow-[inset_0_1px_0_rgb(255_255_255/0.05)]">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
                 aria-current={location.pathname === link.href ? 'page' : undefined}
                 className={`
-                  inline-flex items-center min-h-11 px-3.5 rounded-full whitespace-nowrap
-                  text-sm font-medium transition-colors duration-150
+                  inline-flex items-center min-h-10 px-4 rounded-full whitespace-nowrap
+                  text-sm font-medium transicion
                   ${location.pathname === link.href
-                    ? 'text-text-primary bg-surface-hover'
-                    : 'text-text-muted hover:text-text-primary'}
+                    ? 'text-text-primary bg-white/[0.09] shadow-[inset_0_0_0_1px_rgb(126_160_255/0.28)]'
+                    : 'text-text-muted hover:text-text-primary hover:bg-white/[0.05]'}
                 `}
               >
                 {link.label}
@@ -91,10 +87,10 @@ export function Navbar() {
               <>
                 <Link
                   to="/dashboard"
-                  className="inline-flex items-center min-h-11 px-2 rounded-full text-sm font-medium text-text-secondary hover:text-text-primary transition-colors duration-150"
+                  className="inline-flex items-center min-h-11 pl-1 pr-3 rounded-full text-sm font-semibold text-text-secondary hover:text-text-primary hover:bg-white/[0.05] transicion"
                 >
-                  <span className="flex items-center gap-2">
-                    <span className="w-8 h-8 rounded-full bg-brand text-white text-xs font-semibold flex items-center justify-center ring-1 ring-white/15">
+                  <span className="flex items-center gap-2.5">
+                    <span className="boton-primario w-9 h-9 rounded-full text-white text-sm font-bold flex items-center justify-center">
                       {firstName.charAt(0).toUpperCase()}
                     </span>
                     {firstName}
@@ -103,7 +99,7 @@ export function Navbar() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="rounded-full font-medium"
+                  className="font-medium"
                   onClick={() => { void handleLogout(); }}
                 >
                   Salir
@@ -111,13 +107,10 @@ export function Navbar() {
               </>
             ) : (
               <>
-                <Link
-                  to="/iniciar-sesion"
-                  className="inline-flex items-center min-h-11 px-3.5 rounded-full text-sm font-medium text-text-secondary hover:text-text-primary transition-colors duration-150"
-                >
+                <EnlaceBoton to="/iniciar-sesion" variant="accent" size="sm" className="px-5 whitespace-nowrap">
                   Iniciar sesión
-                </Link>
-                <EnlaceBoton to="/registrarse" variant="primary" size="sm" className="rounded-full px-5">
+                </EnlaceBoton>
+                <EnlaceBoton to="/registrarse" variant="primary" size="sm" className="px-5 whitespace-nowrap">
                   Registrarse
                 </EnlaceBoton>
               </>
@@ -131,10 +124,10 @@ export function Navbar() {
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
             aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-            className="lg:hidden inline-flex items-center justify-center min-h-11 min-w-11 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface-hover presionable cursor-pointer"
+            className="lg:hidden inline-flex items-center justify-center min-h-11 min-w-11 rounded-full border border-white/10 bg-white/[0.05] text-text-secondary hover:text-text-primary hover:bg-white/[0.1] presionable cursor-pointer"
           >
             <svg
-              className="h-6 w-6"
+              className="h-5 w-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -143,7 +136,7 @@ export function Navbar() {
               {isMobileMenuOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h16M4 12h16M4 17h16" />
               )}
             </svg>
           </button>
@@ -155,7 +148,7 @@ export function Navbar() {
           <>
             {/* Backdrop */}
             <div
-              className="fixed inset-0 top-16 bg-black/60 backdrop-blur-sm z-40 lg:hidden animate-fade-in"
+              className="fixed inset-0 top-16 bg-surface/70 backdrop-blur-sm z-40 lg:hidden animate-fade-in"
               onClick={closeMobileMenu}
               aria-hidden="true"
             />
@@ -163,13 +156,13 @@ export function Navbar() {
             id="mobile-menu"
             role="navigation"
             aria-label="Menú móvil"
-            className="fixed right-0 top-16 bottom-0 w-[min(20rem,100vw)] bg-surface-muted border-l border-line shadow-elevated z-50 lg:hidden animate-slide-in overflow-y-auto"
+            className="fixed right-0 top-16 bottom-0 w-[min(20rem,100vw)] bg-surface-muted/95 backdrop-blur-xl border-l border-white/10 shadow-elevated z-50 lg:hidden animate-slide-in overflow-y-auto"
           >
               <div className="flex flex-col p-6 gap-2">
                 {/* Auth user header for mobile */}
                 {isAuthenticated && profile && (
-                  <div className="flex items-center gap-3 px-4 py-3 mb-2 bg-surface-card rounded-xl border border-line">
-                    <span className="w-9 h-9 shrink-0 rounded-full bg-brand text-white text-sm font-semibold flex items-center justify-center">
+                  <div className="tarjeta flex items-center gap-3 px-4 py-3 mb-2 rounded-2xl">
+                    <span className="boton-primario w-10 h-10 shrink-0 rounded-full text-white text-sm font-bold flex items-center justify-center">
                       {firstName.charAt(0).toUpperCase()}
                     </span>
                     <div>
@@ -185,10 +178,10 @@ export function Navbar() {
                     to={link.href}
                     onClick={closeMobileMenu}
                     className={`
-                      flex items-center min-h-12 px-4 py-3 rounded-xl text-base font-medium transition-colors duration-150
+                      flex items-center min-h-12 px-4 py-3 rounded-2xl text-base font-medium transicion
                       ${location.pathname === link.href
-                        ? 'bg-surface-hover text-text-primary font-semibold'
-                        : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'
+                        ? 'bg-white/[0.08] text-text-primary font-semibold shadow-[inset_0_0_0_1px_rgb(126_160_255/0.25)]'
+                        : 'text-text-secondary hover:bg-white/[0.05] hover:text-text-primary'
                       }
                     `}
                   >
@@ -201,10 +194,10 @@ export function Navbar() {
                     to="/dashboard"
                     onClick={closeMobileMenu}
                     className={`
-                      flex items-center min-h-12 px-4 py-3 rounded-xl text-base font-medium transition-colors duration-150
+                      flex items-center min-h-12 px-4 py-3 rounded-2xl text-base font-medium transicion
                       ${location.pathname === '/dashboard'
-                        ? 'bg-surface-hover text-text-primary font-semibold'
-                        : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'
+                        ? 'bg-white/[0.08] text-text-primary font-semibold shadow-[inset_0_0_0_1px_rgb(126_160_255/0.25)]'
+                        : 'text-text-secondary hover:bg-white/[0.05] hover:text-text-primary'
                       }
                     `}
                   >
@@ -212,7 +205,7 @@ export function Navbar() {
                   </Link>
                 )}
 
-                <hr className="my-3 border-line" />
+                <div aria-hidden="true" className="linea-luz my-3" />
 
                 {isAuthenticated ? (
                   <Button
@@ -225,19 +218,9 @@ export function Navbar() {
                   </Button>
                 ) : (
                   <>
-                    <Link
-                      to="/iniciar-sesion"
-                      onClick={closeMobileMenu}
-                      className={`
-                        flex items-center min-h-12 px-4 py-3 rounded-xl text-base font-medium transition-colors duration-150
-                        ${location.pathname === '/iniciar-sesion'
-                          ? 'bg-surface-hover text-text-primary font-semibold'
-                          : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'
-                        }
-                      `}
-                    >
+                    <EnlaceBoton to="/iniciar-sesion" onClick={closeMobileMenu} variant="accent" size="md" fullWidth>
                       Iniciar sesión
-                    </Link>
+                    </EnlaceBoton>
                     <EnlaceBoton to="/registrarse" onClick={closeMobileMenu} variant="primary" size="md" fullWidth className="mt-2">
                       Registrarse
                     </EnlaceBoton>
