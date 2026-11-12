@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { HistorialPage } from './HistorialPage';
@@ -120,5 +120,62 @@ describe('HistorialPage: citas pasadas y plazo de 24 horas', () => {
     expect(within(proximas).getByText('Dra. María Romero')).toBeInTheDocument();
     expect(within(proximas).getByText(/Faltan menos de 24 horas/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Cancelar' })).not.toBeInTheDocument();
+  });
+
+  // H-48: el cuadro nativo (window.prompt) tenía un botón «Cancelar» que significaba
+  // «no cancelar la cita». El diálogo propio nombra cada acción.
+  describe('diálogo de cancelación', () => {
+    const futura = programada('futura', 'Dr. Pedro Hernández', '2026-10-20', '08:30:00', '09:00:00');
+
+    beforeEach(() => {
+      vi.mocked(AppointmentsService.cancelAppointment).mockReset();
+      vi.mocked(AppointmentsService.getMyAppointments).mockResolvedValue({ success: true, data: [futura] });
+    });
+
+    const abrirDialogo = async (): Promise<HTMLElement> => {
+      renderPage();
+      await userEvent.click(await screen.findByRole('button', { name: 'Cancelar' }));
+      return screen.getByRole('dialog', { name: '¿Cancelar esta cita?' });
+    };
+
+    it('«Cancelar» pide confirmación y «No, volver» cierra sin cancelar nada', async () => {
+      const dialogo = await abrirDialogo();
+
+      expect(within(dialogo).getByText('Dr. Pedro Hernández')).toBeInTheDocument();
+      // El foco inicial queda en la opción que no cambia nada.
+      expect(within(dialogo).getByRole('button', { name: 'No, volver' })).toHaveFocus();
+
+      await userEvent.click(within(dialogo).getByRole('button', { name: 'No, volver' }));
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(AppointmentsService.cancelAppointment).not.toHaveBeenCalled();
+    });
+
+    it('«Sí, cancelar la cita» envía el motivo escrito y recarga la lista', async () => {
+      vi.mocked(AppointmentsService.cancelAppointment).mockResolvedValue({ success: true, data: null });
+      const dialogo = await abrirDialogo();
+
+      await userEvent.type(within(dialogo).getByLabelText('Motivo (opcional)'), 'Ya no puedo ir');
+      await userEvent.click(within(dialogo).getByRole('button', { name: 'Sí, cancelar la cita' }));
+
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+      expect(AppointmentsService.cancelAppointment).toHaveBeenCalledWith('futura', 'Ya no puedo ir');
+      expect(AppointmentsService.getMyAppointments).toHaveBeenCalledTimes(2);
+    });
+
+    it('sin motivo usa el texto por defecto, y un error del servidor se muestra dentro del diálogo', async () => {
+      vi.mocked(AppointmentsService.cancelAppointment).mockResolvedValue({
+        success: false,
+        error: 'Faltan menos de 24 horas: ya no se puede cancelar.',
+      });
+      const dialogo = await abrirDialogo();
+
+      await userEvent.click(within(dialogo).getByRole('button', { name: 'Sí, cancelar la cita' }));
+
+      expect(await within(dialogo).findByRole('alert')).toHaveTextContent('Faltan menos de 24 horas');
+      expect(AppointmentsService.cancelAppointment).toHaveBeenCalledWith('futura', 'Cancelado por el paciente');
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(AppointmentsService.getMyAppointments).toHaveBeenCalledTimes(1);
+    });
   });
 });

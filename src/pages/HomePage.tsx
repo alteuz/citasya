@@ -75,7 +75,7 @@ const NAV_LINKS = [
   { label: 'Inicio', path: '/' },
   { label: 'Agendar cita', path: '/buscar' },
   { label: 'Cómo funciona', path: '#como-funciona' },
-  { label: 'EPS', path: '/directorio-eps' },
+  { label: 'Directorio EPS', path: '/directorio-eps' },
   { label: 'Ayuda', path: '#ayuda' },
 ] as const;
 
@@ -199,8 +199,8 @@ export function HomePage() {
   const enlacesMenu = [
     ...NAV_LINKS,
     ...(isAuthenticated
-      ? [{ label: 'Mi Panel', path: '/dashboard' }]
-      : [{ label: 'Iniciar Sesión', path: '/iniciar-sesion' }, { label: 'Registrarse', path: '/registrarse' }]),
+      ? [{ label: 'Mi panel', path: '/dashboard' }]
+      : [{ label: 'Iniciar sesión', path: '/iniciar-sesion' }, { label: 'Registrarse', path: '/registrarse' }]),
   ];
 
   // Con el menú abierto, el resto de la página queda inerte (ni foco ni lector de pantalla).
@@ -221,7 +221,7 @@ export function HomePage() {
           aria-label="Navegación principal"
           className="relative w-full max-w-7xl mx-auto flex items-center justify-between gap-6 px-5 sm:px-8 py-4"
         >
-          <Link to="/" className="entrada-barra rounded-xl" aria-label="CitasYA, ir al inicio">
+          <Link to="/" className="entrada-barra inline-flex items-center min-h-11 rounded-xl" aria-label="CitasYA, ir al inicio">
             <Logo />
           </Link>
 
@@ -241,20 +241,20 @@ export function HomePage() {
                       to="/dashboard"
                       className="inline-flex items-center min-h-11 px-4 rounded-full text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/[0.06] transicion"
                     >
-                      Mi Panel
+                      Mi panel
                     </Link>
                     <button
                       type="button"
                       onClick={() => void logout()}
                       className="inline-flex items-center min-h-11 px-4 rounded-full text-sm font-medium text-error hover:bg-error/10 transicion cursor-pointer"
                     >
-                      Cerrar Sesión
+                      Salir
                     </button>
                   </>
                 ) : (
                   <>
                     <EnlaceBoton to="/iniciar-sesion" variant="accent" size="sm" className="px-5 whitespace-nowrap">
-                      Iniciar Sesión
+                      Iniciar sesión
                     </EnlaceBoton>
                     <EnlaceBoton to="/registrarse" variant="primary" size="sm" className="px-5 whitespace-nowrap">
                       Registrarse
@@ -444,7 +444,7 @@ export function HomePage() {
               onClick={() => { setIsMenuOpen(false); void logout(); }}
               className="text-left font-display text-4xl font-bold tracking-[-0.03em] py-2.5 text-error cursor-pointer"
             >
-              Cerrar Sesión
+              Salir
             </button>
           )}
         </div>

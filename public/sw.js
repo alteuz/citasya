@@ -5,7 +5,7 @@
  * Proporciona experiencia offline básica mostrando una página de fallback.
  */
 
-const CACHE_NAME = 'citasya-v17';
+const CACHE_NAME = 'citasya-v18';
 // '/spa' es el shell vacío de la SPA (las rutas privadas sin conexión); '/'
 // ya es la portada prerenderizada.
 const STATIC_ASSETS = [

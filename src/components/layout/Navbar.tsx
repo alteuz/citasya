@@ -52,7 +52,7 @@ export function Navbar() {
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center shrink-0 rounded-xl"
+            className="flex items-center min-h-11 shrink-0 rounded-xl"
             onClick={closeMobileMenu}
           >
             <Logo />

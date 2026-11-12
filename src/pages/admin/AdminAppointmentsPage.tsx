@@ -5,6 +5,8 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { AdminService, type AdminAppointment } from '@/services/admin.service';
 import type { AppointmentStatus } from '@/types/database';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
+import { useAhora } from '@/hooks/useAhora';
+import { esProxima, estadoVisible, type EstadoVisible } from '@/lib/citas';
 import { ArrowLeft, Building2, CalendarClock, CircleCheck, CircleX, ClipboardList, Video, type LucideIcon } from 'lucide-react';
 
 const STATUS_TABS: Array<{ value: AppointmentStatus | 'all'; label: string; icon: LucideIcon }> = [
@@ -14,11 +16,13 @@ const STATUS_TABS: Array<{ value: AppointmentStatus | 'all'; label: string; icon
   { value: 'cancelled', label: 'Canceladas', icon: CircleX },
 ];
 
-const STATUS_BADGE: Record<AppointmentStatus, { label: string; className: string }> = {
+const STATUS_BADGE: Record<EstadoVisible, { label: string; className: string }> = {
   scheduled: { label: 'Programada', className: 'bg-info-soft text-info border border-info/30' },
   completed: { label: 'Completada', className: 'bg-success-soft text-success border border-success/30' },
   cancelled: { label: 'Cancelada', className: 'bg-error-soft text-error border border-error/30' },
   rescheduled: { label: 'Reprogramada', className: 'bg-warning-soft text-warning border border-warning/30' },
+  // Cita activa cuya hora ya terminó: la misma regla de las vistas del paciente (H-36, H-52).
+  pasada: { label: 'Pasada', className: 'bg-surface-muted text-text-secondary border border-line' },
 };
 
 export function AdminAppointmentsPage() {
@@ -29,8 +33,11 @@ export function AdminAppointmentsPage() {
     () => AdminService.getAllAppointments(activeTab === 'all' ? undefined : activeTab),
     [activeTab],
   );
-  const appointments: readonly AdminAppointment[] = data ?? [];
-
+  // Una cita programada cuya hora ya terminó no sigue «Programada» (H-52): en
+  // «Todas» se muestra como «Pasada» y sale de la pestaña «Programadas».
+  const ahora = useAhora();
+  const todas: readonly AdminAppointment[] = data ?? [];
+  const appointments = activeTab === 'scheduled' ? todas.filter((cita) => esProxima(cita, ahora)) : todas;
 
   return (
     <div className="animate-fade-in">
@@ -100,7 +107,7 @@ export function AdminAppointmentsPage() {
                 </thead>
                 <tbody>
                   {appointments.map((apt) => {
-                    const badge = STATUS_BADGE[apt.status];
+                    const badge = STATUS_BADGE[estadoVisible(apt, ahora)];
                     return (
                       <tr key={apt.id} className="border-b border-line last:border-b-0 hover:bg-surface-hover">
                         <td className="py-3 px-4">

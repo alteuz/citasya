@@ -38,9 +38,10 @@ export function LoginPage() {
   }, [email, password, login, navigate, from]);
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10 lg:py-14 grid gap-10 lg:grid-cols-2 lg:min-h-[calc(100svh-4.5rem)]">
-      <div className="flex items-center justify-center">
-      <div className="w-full max-w-md">
+    // grid-cols-1 y min-w-0: la columna no crece más que la pantalla (igual que en el registro).
+    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10 lg:py-14 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:min-h-[calc(100svh-4.5rem)]">
+      <div className="flex items-center justify-center min-w-0">
+      <div className="w-full max-w-md min-w-0">
         {/* Header */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center mb-6 rounded-xl">

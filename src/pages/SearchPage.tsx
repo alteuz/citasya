@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { DoctorsService, type DoctorSearchResult, type SpecialtyOption, type EpsOption } from '@/services/doctors.service';
 import { FamiliaService } from '@/services/familia.service';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
+import { useLlevarAlInicio } from '@/hooks/useLlevarAlInicio';
 import { useAuthContext } from '@/hooks/useAuthContext';
 import { etiquetaParentesco } from '@/lib/familia';
 import type { ServiceResult } from '@/types/common';
@@ -46,6 +47,8 @@ export function SearchPage() {
   const [hasSearched, setHasSearched] = useState(() => {
     return !!(searchParams.get('specialty') || searchParams.get('eps'));
   });
+  // Los resultados (y la vuelta a los filtros) se muestran desde arriba (H-55).
+  useLlevarAlInicio(hasSearched ? 'resultados' : 'filtros');
 
   // ¿Para quién es la cita? (RF-13). Solo aparece si el titular tiene familiares.
   // Al elegir a una persona, la EPS por defecto es la suya.
@@ -236,17 +239,13 @@ export function SearchPage() {
               <span className="font-semibold px-2.5 py-1 bg-accent-soft text-accent border border-accent/30 rounded-full text-xs">
                 {specialties.find(s => s.id === selectedSpecialty)?.name || 'Cualquier especialidad'}
               </span>
-              <span className="text-text-secondary">•</span>
               <span className="font-semibold px-2.5 py-1 bg-accent-soft text-accent border border-accent/30 rounded-full text-xs">
                 {epsList.find(e => e.id === epsEfectiva)?.name || 'Cualquier EPS'}
               </span>
               {familiarElegido && (
-                <>
-                  <span className="text-text-secondary">•</span>
-                  <span className="inline-flex items-center gap-1 font-semibold px-2.5 py-1 bg-accent-soft text-accent border border-accent/30 rounded-full text-xs">
-                    <UserRound size={13} aria-hidden="true" /> Para: {familiarElegido.nombreCompleto}
-                  </span>
-                </>
+                <span className="inline-flex items-center gap-1 font-semibold px-2.5 py-1 bg-accent-soft text-accent border border-accent/30 rounded-full text-xs">
+                  <UserRound size={13} aria-hidden="true" /> Para: {familiarElegido.nombreCompleto}
+                </span>
               )}
             </p>
           </div>
@@ -354,7 +353,7 @@ function DoctorCard({ doctor, consulta }: DoctorCardProps) {
           {initials}
         </div>
         <div className="min-w-0">
-          <h2 className="font-sans text-base font-semibold text-text-primary truncate">
+          <h2 className="font-sans text-base font-semibold text-text-primary [overflow-wrap:anywhere]">
             {doctor.fullName}
           </h2>
           <p className="text-sm text-accent font-medium">
@@ -368,7 +367,7 @@ function DoctorCard({ doctor, consulta }: DoctorCardProps) {
           <svg className="w-4 h-4 shrink-0 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
           </svg>
-          <span className="truncate">{doctor.epsName}</span>
+          <span className="min-w-0 [overflow-wrap:anywhere]">{doctor.epsName}</span>
         </div>
         <div className="flex items-center gap-2 text-sm text-text-secondary">
           <svg className="w-4 h-4 shrink-0 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">

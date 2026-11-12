@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
-import { act, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { AdminAppointmentsPage } from './AdminAppointmentsPage';
@@ -55,5 +55,41 @@ describe('AdminAppointmentsPage', () => {
 
     expect(screen.queryByText('Paciente Programada')).not.toBeInTheDocument();
     expect(screen.getByText('Paciente Cancelada')).toBeInTheDocument();
+  });
+});
+
+// H-52: en la vista del administrador, una cita programada cuya hora ya pasó seguía
+// apareciendo como «Programada». Ahora usa la misma regla que las vistas del paciente.
+describe('AdminAppointmentsPage: citas vencidas', () => {
+  beforeEach(() => {
+    vi.mocked(AdminService.getAllAppointments).mockReset();
+    // Solo se fija el reloj (no los temporizadores): 10-nov-2026, 10:00 en Bogotá.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-11-10T15:00:00Z'));
+  });
+  afterEach(() => vi.useRealTimers());
+
+  const vencida: AdminAppointment = { ...cita('c1', 'Paciente Vencida', 'scheduled'), slotDate: '2026-06-04' };
+  const futura: AdminAppointment = { ...cita('c2', 'Paciente Futura', 'scheduled'), slotDate: '2026-12-15' };
+  const fila = (paciente: string): HTMLElement => screen.getByText(paciente).closest('tr') as HTMLElement;
+
+  it('en «Todas», la cita vencida se muestra como «Pasada» y la futura como «Programada»', async () => {
+    vi.mocked(AdminService.getAllAppointments).mockResolvedValue({ success: true, data: [vencida, futura] });
+    render(<MemoryRouter><AdminAppointmentsPage /></MemoryRouter>);
+
+    expect(await screen.findByText('Paciente Vencida')).toBeInTheDocument();
+    expect(within(fila('Paciente Vencida')).getByText('Pasada')).toBeInTheDocument();
+    expect(within(fila('Paciente Futura')).getByText('Programada')).toBeInTheDocument();
+  });
+
+  it('la pestaña «Programadas» no incluye las citas vencidas', async () => {
+    vi.mocked(AdminService.getAllAppointments).mockResolvedValue({ success: true, data: [vencida, futura] });
+    render(<MemoryRouter><AdminAppointmentsPage /></MemoryRouter>);
+
+    await userEvent.click(screen.getByRole('button', { name: /programadas/i }));
+
+    expect(await screen.findByText('1 cita(s) encontrada(s)')).toBeInTheDocument();
+    expect(screen.getByText('Paciente Futura')).toBeInTheDocument();
+    expect(screen.queryByText('Paciente Vencida')).not.toBeInTheDocument();
   });
 });

@@ -14,6 +14,7 @@ import { ArrowRight, Building2, CalendarDays, CalendarPlus, ClipboardList, Info,
 import { IconBadge } from '@/components/ui/IconBadge';
 import { estilosBoton } from '@/components/ui/estilosBoton';
 import { EtiquetaPaciente } from '@/components/appointments/EtiquetaPaciente';
+import { DialogoCancelarCita } from '@/components/appointments/DialogoCancelarCita';
 import { FamiliaService } from '@/services/familia.service';
 import { etiquetaParentesco } from '@/lib/familia';
 
@@ -27,7 +28,8 @@ export function DashboardPage() {
   // Solo citas activas que aún no han terminado, de la más cercana a la más lejana (H-36).
   const ahora = useAhora();
   const upcomingAppointments: readonly AppointmentDetail[] = separarCitas(myAppointments ?? [], ahora).proximas;
-  const [cancellingAppointmentId, setCancellingAppointmentId] = useState<string | null>(null);
+  // La cita que la persona pidió cancelar: abre el diálogo de confirmación (H-48).
+  const [citaPorCancelar, setCitaPorCancelar] = useState<AppointmentDetail | null>(null);
 
   // EPS del perfil: los perfiles anteriores a que el registro la exigiera pueden no tenerla (H-37).
   const sinEps = Boolean(profile) && !profile?.epsId;
@@ -95,33 +97,6 @@ export function DashboardPage() {
     setIsSavingProfile(false);
   }, [user, profile, editFullName, editPhone, refreshProfile]);
 
-  const cancelAppointment = useCallback(async (appointmentId: string): Promise<void> => {
-    const userInput = window.prompt('¿Por qué deseas cancelar esta cita? (Opcional):');
-    
-    // Si presiona "Cancelar" en el prompt, cancelamos la acción
-    if (userInput === null) {
-      return;
-    }
-
-    // Si hace clic en "Aceptar" vacío, asignamos motivo por defecto
-    const reason = userInput.trim() === '' ? 'Cancelado por el paciente' : userInput.trim();
-
-    setCancellingAppointmentId(appointmentId);
-    try {
-      const result = await AppointmentsService.cancelAppointment(appointmentId, reason);
-      if (result.success) {
-        reloadAppointments();
-      } else {
-        alert(result.error);
-      }
-    } catch (error) {
-      console.error('Error cancelling appointment:', { appointmentId, error });
-      alert('Ocurrió un error inesperado al cancelar la cita.');
-    } finally {
-      setCancellingAppointmentId(null);
-    }
-  }, [reloadAppointments]);
-
   if (authLoading) {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -139,6 +114,8 @@ export function DashboardPage() {
 
   return (
     <div className="animate-fade-in">
+      <DialogoCancelarCita cita={citaPorCancelar} onCerrar={() => setCitaPorCancelar(null)} onCancelada={reloadAppointments} />
+
       {/* Header */}
       <div className="banda-cabecera">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -312,7 +289,6 @@ export function DashboardPage() {
                           variant="secondary"
                           size="sm"
                           fullWidth
-                          deshabilitado={cancellingAppointmentId === apt.id}
                           className="sm:w-auto"
                         >
                           Reprogramar
@@ -320,8 +296,7 @@ export function DashboardPage() {
                         <Button
                           variant="danger"
                           size="sm"
-                          isLoading={cancellingAppointmentId === apt.id}
-                          onClick={() => { void cancelAppointment(apt.id); }}
+                          onClick={() => setCitaPorCancelar(apt)}
                           className="w-full sm:w-auto"
                         >
                           Cancelar
@@ -524,7 +499,8 @@ function InfoItem({ label, value }: InfoItemProps) {
   return (
     <div>
       <dt className="text-xs font-medium text-text-muted uppercase tracking-wider">{label}</dt>
-      <dd className="text-base text-text-primary font-medium mt-0.5">{value}</dd>
+      {/* Un correo largo no tiene espacios donde partirse: sin esto desborda la tarjeta en un celular angosto. */}
+      <dd className="text-base text-text-primary font-medium mt-0.5 [overflow-wrap:anywhere]">{value}</dd>
     </div>
   );
 }
