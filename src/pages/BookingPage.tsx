@@ -9,6 +9,7 @@ import { AppointmentsService, type AppointmentDetail } from '@/services/appointm
 import type { AppointmentMode } from '@/types/database';
 import { AppointmentModeSelector } from '@/components/appointments/AppointmentModeSelector';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
+import { useLlevarAlInicio } from '@/hooks/useLlevarAlInicio';
 import { FamiliaService } from '@/services/familia.service';
 import { PARA_MI, opcionesDePaciente, pacientePorDefecto } from '@/lib/familia';
 import type { ServiceResult } from '@/types/common';
@@ -57,6 +58,8 @@ export function BookingPage() {
   // Booking state
   const [searchParams] = useSearchParams();
   const [step, setStep] = useState<BookingStep>('select');
+  // Cada paso (elegir horario → confirmar → cita agendada) se muestra desde arriba (H-55).
+  useLlevarAlInicio(step);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedSlot, setSelectedSlot] = useState<SlotResult | null>(null);
   
@@ -438,16 +441,18 @@ export function BookingPage() {
               </div>
             )}
 
-            {/* CTA */}
+            {/* CTA. La barra se queda abajo, donde también está el botón flotante de accesibilidad:
+                el espacio a la derecha evita que tape «Continuar» (desde xl la columna ya no llega
+                hasta él). Si el resumen y el botón no caben en una fila, el botón baja y ocupa el ancho. */}
             {selectedSlot && (
-              <div className="sticky bottom-4 bg-surface-card/95 backdrop-blur-md border border-line rounded-2xl p-4 shadow-elevated flex items-center justify-between gap-4">
-                <div>
+              <div className="sticky bottom-4 bg-surface-card/95 backdrop-blur-md border border-line rounded-2xl p-4 pr-20 xl:pr-4 shadow-elevated flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+                <div className="flex-[1_1_9rem] min-w-0">
                   <p className="text-sm font-medium text-text-primary">
                     {formatDateLong(selectedSlot.date)}, {formatTime(selectedSlot.startTime)} - {formatTime(selectedSlot.endTime)}
                   </p>
                   <p className="text-xs text-text-muted">{doctor.fullName} · {doctor.specialtyName}</p>
                 </div>
-                <Button variant="primary" size="md" onClick={handleConfirm}>
+                <Button variant="primary" size="md" onClick={handleConfirm} className="grow sm:grow-0">
                   Continuar
                   <ArrowRight size={16} aria-hidden="true" />
                 </Button>

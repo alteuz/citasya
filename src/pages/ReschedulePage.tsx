@@ -10,6 +10,7 @@ import type { AppointmentMode } from '@/types/database';
 import { AppointmentModeSelector } from '@/components/appointments/AppointmentModeSelector';
 import { EtiquetaPaciente } from '@/components/appointments/EtiquetaPaciente';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
+import { useLlevarAlInicio } from '@/hooks/useLlevarAlInicio';
 import type { ServiceResult } from '@/types/common';
 import { ArrowLeft, ArrowRight, CalendarCheck, CalendarX, TriangleAlert } from 'lucide-react';
 import { IconBadge } from '@/components/ui/IconBadge';
@@ -46,6 +47,8 @@ export function ReschedulePage() {
 
   // Booking state
   const [step, setStep] = useState<RescheduleStep>('select');
+  // Cada paso (elegir horario → confirmar → cita reprogramada) se muestra desde arriba (H-55).
+  useLlevarAlInicio(step);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedSlot, setSelectedSlot] = useState<SlotResult | null>(null);
   // Modalidad: la que elija el paciente o, por defecto, la de la cita original.
@@ -335,16 +338,17 @@ export function ReschedulePage() {
               </div>
             )}
 
-            {/* CTA */}
+            {/* CTA. Igual que en la reserva: deja libre el espacio del botón flotante de accesibilidad
+                y, si el resumen y el botón no caben en una fila, el botón baja y ocupa el ancho. */}
             {selectedSlot && (
-              <div className="sticky bottom-4 bg-surface-card/95 backdrop-blur-md border border-line rounded-2xl p-4 shadow-elevated flex items-center justify-between gap-4">
-                <div>
+              <div className="sticky bottom-4 bg-surface-card/95 backdrop-blur-md border border-line rounded-2xl p-4 pr-20 xl:pr-4 shadow-elevated flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+                <div className="flex-[1_1_9rem] min-w-0">
                   <p className="text-sm font-medium text-text-primary">
                     {formatDateLong(selectedSlot.date)}, {formatTime(selectedSlot.startTime)} - {formatTime(selectedSlot.endTime)}
                   </p>
                   <p className="text-xs text-text-muted">Nuevo horario seleccionado</p>
                 </div>
-                <Button variant="primary" size="md" onClick={handleConfirm}>
+                <Button variant="primary" size="md" onClick={handleConfirm} className="grow sm:grow-0">
                   Continuar
                   <ArrowRight size={16} aria-hidden="true" />
                 </Button>

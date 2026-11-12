@@ -77,7 +77,10 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div aria-hidden="true" className="linea-luz mt-12 opacity-60" />
-        <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+        {/* El botón flotante de accesibilidad queda fijo abajo a la derecha: en el celular la fila
+            deja ese espacio libre debajo y, en pantallas más anchas, a la derecha, para que no tape
+            el texto. Desde 2xl el contenido ya no llega hasta el botón. */}
+        <div className="pt-8 pb-16 sm:pb-0 sm:pr-20 2xl:pr-0 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-text-secondary">
             © {currentYear} {APP_NAME} — Bogotá, Colombia. Todos los derechos reservados.
           </p>

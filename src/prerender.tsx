@@ -17,6 +17,9 @@ import { rutas } from './rutas';
 
 // Ruta del póster de la portada: scripts/prerender.mjs lo precarga en el <head> de "/".
 export { POSTER_PORTADA } from './lib/portada';
+// Título de cada vista: scripts/prerender.mjs lo escribe en el <title> del HTML estático,
+// para que coincida con el que pone el navegador al hidratar (H-54).
+export { tituloDeRuta } from './lib/titulos';
 
 /**
  * Rutas públicas cuyo contenido inicial no depende del usuario. La portada

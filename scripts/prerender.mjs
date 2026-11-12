@@ -23,7 +23,7 @@ const DIST_SSR = resolve('dist-ssr');
 const MARCADOR = '<div id="app"></div>';
 const SHELL = 'spa.html';
 
-const { prerenderizar, RUTAS_PRERENDERIZADAS, POSTER_PORTADA } = await import(pathToFileURL(join(DIST_SSR, 'prerender.js')).href);
+const { prerenderizar, RUTAS_PRERENDERIZADAS, POSTER_PORTADA, tituloDeRuta } = await import(pathToFileURL(join(DIST_SSR, 'prerender.js')).href);
 
 // serve.json (servidor local y de CI) debe reescribir cada ruta prerenderizada
 // a su archivo antes del fallback de la SPA, y el fallback debe ir al shell; si
@@ -47,6 +47,12 @@ const plantilla = await readFile(join(DIST, 'index.html'), 'utf8');
 if (!plantilla.includes(MARCADOR)) {
   throw new Error(`dist/index.html no contiene ${MARCADOR}; no se puede insertar el prerenderizado.`);
 }
+// Cada página lleva su propio título (WCAG 2.4.2): el mismo que pone el navegador al hidratar.
+const TITULO = /<title>[^<]*<\/title>/;
+if (!TITULO.test(plantilla)) {
+  throw new Error('dist/index.html no tiene <title>; no se puede escribir el título de cada página.');
+}
+const escaparHtml = (texto) => texto.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 await writeFile(join(DIST, SHELL), plantilla);
 console.log(`shell de la SPA → dist/${SHELL}`);
 
@@ -55,7 +61,9 @@ for (const ruta of RUTAS_PRERENDERIZADAS) {
   if (!html.includes('<main')) {
     throw new Error(`El prerenderizado de ${ruta} no contiene <main>; revisa la ruta.`);
   }
-  let pagina = plantilla.replace(MARCADOR, `<div id="app">${html}</div>`);
+  let pagina = plantilla
+    .replace(TITULO, `<title>${escaparHtml(tituloDeRuta(ruta))}</title>`)
+    .replace(MARCADOR, `<div id="app">${html}</div>`);
   if (ruta === '/') {
     const precarga = `<link rel="preload" as="image" href="${POSTER_PORTADA}" type="image/webp" fetchpriority="high" />`;
     pagina = pagina.replace('</head>', `    ${precarga}\n  </head>`);

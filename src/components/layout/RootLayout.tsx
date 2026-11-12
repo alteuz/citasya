@@ -1,6 +1,8 @@
-import { useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router';
+import { useEffect, useRef } from 'react';
+import { Outlet, useLocation, useNavigationType } from 'react-router';
 import { AuthProvider } from '@/hooks/useAuth';
+import { llevarAlInicio } from '@/hooks/useLlevarAlInicio';
+import { tituloDeRuta } from '@/lib/titulos';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { PWAInstallPrompt } from '@/components/ui/PWAInstallPrompt';
@@ -8,7 +10,26 @@ import { AccessibilityWidget } from '@/components/ui/AccessibilityWidget';
 
 export function RootLayout() {
   const location = useLocation();
+  const tipoNavegacion = useNavigationType();
   const isHomePage = location.pathname === '/';
+
+  // Cada vista tiene su título de pestaña (WCAG 2.4.2, H-54).
+  useEffect(() => {
+    document.title = tituloDeRuta(location.pathname);
+  }, [location.pathname]);
+
+  // Al cambiar de vista, la página nueva empieza arriba y con el foco en su
+  // contenido (H-53). Antes conservaba el desplazamiento de la anterior: quien
+  // pulsaba un enlace del pie llegaba a la mitad de la página siguiente.
+  const anterior = useRef({ ruta: location.pathname, ancla: location.hash });
+  useEffect(() => {
+    const previo = anterior.current;
+    anterior.current = { ruta: location.pathname, ancla: location.hash };
+    if (location.hash) return; // las anclas las maneja el efecto siguiente
+    if (previo.ruta === location.pathname && previo.ancla === location.hash) return; // primera carga
+    if (tipoNavegacion === 'POP') return; // Atrás y Adelante: el navegador restaura la posición
+    llevarAlInicio();
+  }, [location.pathname, location.hash, tipoNavegacion]);
 
   // ─── SCROLL TO HASH ANCHORS ON ROUTE / HASH CHANGE ───
   useEffect(() => {

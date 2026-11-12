@@ -116,7 +116,7 @@ export function AdminFhirPage() {
               <dl className="mt-5 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
                 {RECURSOS.map((tipo) => (
                   <div key={tipo} className="rounded-xl bg-surface-muted px-3 py-2 min-w-0">
-                    <dt className="text-xs text-text-muted truncate" title={tipo}>{tipo}</dt>
+                    <dt className="text-xs text-text-muted [overflow-wrap:anywhere]">{tipo}</dt>
                     <dd className="text-lg font-semibold tabular-nums text-text-primary">{data.recursos[tipo] ?? 0}</dd>
                   </div>
                 ))}

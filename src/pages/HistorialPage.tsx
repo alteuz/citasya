@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { EnlaceBoton } from '@/components/ui/EnlaceBoton';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/Button';
@@ -10,6 +10,7 @@ import { estadoVisible, puedeModificarse, separarCitas, type EstadoVisible } fro
 import { ArrowLeft, ArrowRight, Building2, CalendarClock, CalendarDays, CircleCheck, CircleX, History, Info, RefreshCw, TriangleAlert, Video, type LucideIcon } from 'lucide-react';
 import { IconBadge } from '@/components/ui/IconBadge';
 import { EtiquetaPaciente } from '@/components/appointments/EtiquetaPaciente';
+import { DialogoCancelarCita } from '@/components/appointments/DialogoCancelarCita';
 
 const STATUS_CONFIG: Record<EstadoVisible, { label: string; color: string; icon: LucideIcon }> = {
   scheduled: { label: 'Programada', color: 'bg-info-soft text-info border border-info/30', icon: CalendarClock },
@@ -25,37 +26,13 @@ export function HistorialPage() {
   const ahora = useAhora();
   const appointments: readonly AppointmentDetail[] = data ?? [];
   const { proximas, historial } = separarCitas(appointments, ahora);
-  const [cancellingAppointmentId, setCancellingAppointmentId] = useState<string | null>(null);
-
-  const cancelAppointment = useCallback(async (appointmentId: string): Promise<void> => {
-    const userInput = window.prompt('¿Por qué deseas cancelar esta cita? (Opcional):');
-
-    // Si presiona "Cancelar" en el prompt, cancelamos la acción
-    if (userInput === null) {
-      return;
-    }
-
-    // Si hace clic en "Aceptar" vacío, asignamos motivo por defecto
-    const reason = userInput.trim() === '' ? 'Cancelado por el paciente' : userInput.trim();
-
-    setCancellingAppointmentId(appointmentId);
-    try {
-      const result = await AppointmentsService.cancelAppointment(appointmentId, reason);
-      if (result.success) {
-        reload();
-      } else {
-        alert(result.error);
-      }
-    } catch (err) {
-      console.error('Error cancelling appointment:', { appointmentId, error: err });
-      alert('Ocurrió un error inesperado al cancelar la cita.');
-    } finally {
-      setCancellingAppointmentId(null);
-    }
-  }, [reload]);
+  // La cita que la persona pidió cancelar: abre el diálogo de confirmación (H-48).
+  const [citaPorCancelar, setCitaPorCancelar] = useState<AppointmentDetail | null>(null);
 
   return (
     <div className="animate-fade-in">
+      <DialogoCancelarCita cita={citaPorCancelar} onCerrar={() => setCitaPorCancelar(null)} onCancelada={reload} />
+
       {/* Header */}
       <div className="banda-cabecera">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
@@ -134,8 +111,7 @@ export function HistorialPage() {
                       key={apt.id}
                       cita={apt}
                       ahora={ahora}
-                      isCancelling={cancellingAppointmentId === apt.id}
-                      onCancel={cancelAppointment}
+                      onCancel={setCitaPorCancelar}
                     />
                   ))}
                 </div>
@@ -153,8 +129,7 @@ export function HistorialPage() {
                       key={apt.id}
                       cita={apt}
                       ahora={ahora}
-                      isCancelling={cancellingAppointmentId === apt.id}
-                      onCancel={cancelAppointment}
+                      onCancel={setCitaPorCancelar}
                     />
                   ))}
                 </div>
@@ -172,11 +147,11 @@ export function HistorialPage() {
 interface TarjetaCitaProps {
   readonly cita: AppointmentDetail;
   readonly ahora: Date;
-  readonly isCancelling: boolean;
-  readonly onCancel: (appointmentId: string) => Promise<void>;
+  /** Pide confirmación antes de cancelar (abre el diálogo). */
+  readonly onCancel: (cita: AppointmentDetail) => void;
 }
 
-function TarjetaCita({ cita: apt, ahora, isCancelling, onCancel }: TarjetaCitaProps) {
+function TarjetaCita({ cita: apt, ahora, onCancel }: TarjetaCitaProps) {
   const estado = estadoVisible(apt, ahora);
   const config = STATUS_CONFIG[estado];
   const esProximaActiva = estado === 'scheduled' || estado === 'rescheduled';
@@ -234,16 +209,12 @@ function TarjetaCita({ cita: apt, ahora, isCancelling, onCancel }: TarjetaCitaPr
         </div>
 
         {admiteCambios && (
-          <div className="flex gap-2">
-            <EnlaceBoton to={`/reprogramar/${apt.id}`} variant="secondary" size="sm" deshabilitado={isCancelling}>
+          // flex-wrap: con el texto «Muy grande» en un celular angosto los dos botones no caben en una fila.
+          <div className="flex flex-wrap gap-2">
+            <EnlaceBoton to={`/reprogramar/${apt.id}`} variant="secondary" size="sm">
               Reprogramar
             </EnlaceBoton>
-            <Button
-              variant="danger"
-              size="sm"
-              isLoading={isCancelling}
-              onClick={() => { void onCancel(apt.id); }}
-            >
+            <Button variant="danger" size="sm" onClick={() => onCancel(apt)}>
               Cancelar
             </Button>
           </div>
