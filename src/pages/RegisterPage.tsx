@@ -314,7 +314,8 @@ export function RegisterPage() {
                 }
               />
 
-              <div className="flex gap-3">
+              {/* flex-wrap: con el texto «Muy grande» en un celular los dos botones no caben en una fila. */}
+              <div className="flex flex-wrap gap-3">
                 <Button
                   type="button"
                   variant="secondary"
