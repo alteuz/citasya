@@ -4,87 +4,125 @@
 <meta charset="utf-8">
 <title>Gráficos del README de CitasYA</title>
 <!--
-  Fuente de los gráficos del README (banner y tarjetas de resultados).
-  Se renderizan a PNG con: node docs/img/fuente/renderizar.mjs
-  Tipografías y colores de la propia aplicación (DM Serif Display, DM Sans; navy y turquesa).
+  Fuente de los gráficos del README: banner, tarjetas de resultados, LCP por página y capturas.
+  Se renderizan con: node docs/img/fuente/renderizar.mjs (genera los PNG y los convierte a WebP).
+  Identidad «noche clínica» (ADR-0010): Plus Jakarta Sans; azul marino #0B388F, azul #1D69FC,
+  cian #00E9FC, violeta #5843FC y hielo #DAE6FE.
+  Cifras: línea base del 22-sep-2026 y medición de cierre del 12-nov-2026 en producción
+  (Lighthouse 12.8, mediana de 3 corridas; axe-core 4.11 en 7 vistas).
 -->
 <style>
-  @font-face { font-family: 'DM Serif Display'; src: url('../../../node_modules/@fontsource/dm-serif-display/files/dm-serif-display-latin-400-normal.woff2') format('woff2'); }
-  @font-face { font-family: 'DM Sans'; font-weight: 100 1000; src: url('../../../node_modules/@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2') format('woff2'); }
-  :root { --navy-950: #0f0e2e; --navy-900: #1a1852; --navy-800: #252367; --lav: #cdc7f0; --teal: #2dd4bf; --teal-2: #14b8a6; }
+  @font-face { font-family: 'Plus Jakarta Sans'; font-weight: 200 800;
+    src: url('../../../node_modules/@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2') format('woff2'); }
+  :root {
+    --fondo-1: #050c26; --fondo-2: #081a52; --marino: #0B388F; --azul: #1D69FC; --cian: #00E9FC;
+    --violeta: #5843FC; --hielo: #DAE6FE; --tenue: #9fb2e0; --borde: rgba(218, 230, 254, .14);
+  }
   * { box-sizing: border-box; margin: 0; }
-  body { background: transparent; font-family: 'DM Sans', sans-serif; }
+  body { background: transparent; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; }
   .lienzo { padding: 8px; display: inline-block; }
 
   /* ── Banner ── */
   #banner {
     width: 1280px; height: 460px; border-radius: 28px; overflow: hidden; position: relative;
     background:
-      radial-gradient(600px 380px at 82% 20%, rgba(45, 212, 191, .22), transparent 70%),
-      radial-gradient(520px 420px at 0% 100%, rgba(99, 102, 241, .28), transparent 70%),
-      linear-gradient(135deg, var(--navy-950) 0%, var(--navy-900) 55%, var(--navy-800) 100%);
-    color: #fff;
+      radial-gradient(560px 380px at 84% 18%, rgba(0, 233, 252, .20), transparent 70%),
+      radial-gradient(560px 440px at 0% 100%, rgba(88, 67, 252, .32), transparent 70%),
+      linear-gradient(135deg, var(--fondo-1) 0%, var(--fondo-2) 58%, var(--marino) 100%);
   }
   #banner::before {
     content: ''; position: absolute; inset: 0;
-    background-image: radial-gradient(rgba(255,255,255,.07) 1.2px, transparent 1.2px);
+    background-image: radial-gradient(rgba(218,230,254,.08) 1.2px, transparent 1.2px);
     background-size: 22px 22px;
     mask-image: linear-gradient(90deg, #000 0%, transparent 60%);
   }
-  .izq { position: absolute; left: 60px; top: 50px; width: 680px; }
+  .izq { position: absolute; left: 60px; top: 52px; width: 690px; }
   .marca { display: flex; align-items: center; gap: 22px; }
-  .marca img { width: 86px; filter: drop-shadow(0 6px 18px rgba(45,212,191,.35)); }
-  .marca h1 { font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 92px; line-height: 1; letter-spacing: -1px; }
-  .marca h1 span { color: var(--teal); }
-  .lema { margin-top: 24px; font-size: 31px; font-weight: 600; line-height: 1.25; letter-spacing: -.2px; }
-  .sub { margin-top: 14px; font-size: 19px; color: var(--lav); line-height: 1.45; }
+  .marca .placa { width: 104px; height: 104px; border-radius: 26px; display: grid; place-items: center;
+                  background: linear-gradient(150deg, rgba(29,105,252,.30), rgba(11,56,143,.25));
+                  box-shadow: inset 0 0 0 1px rgba(0,233,252,.35), 0 10px 30px rgba(0,233,252,.18); }
+  .marca .placa img { width: 64px; }
+  .marca h1 { font-size: 88px; font-weight: 800; line-height: 1; letter-spacing: -2.5px; }
+  .marca h1 span { background: linear-gradient(90deg, var(--azul), var(--cian)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lema { margin-top: 26px; font-size: 31px; font-weight: 700; line-height: 1.25; letter-spacing: -.4px; }
+  .sub { margin-top: 14px; font-size: 19px; color: var(--hielo); opacity: .85; line-height: 1.45; }
   .chips { margin-top: 28px; display: flex; flex-wrap: nowrap; gap: 9px; }
-  .chip { font-size: 14px; font-weight: 600; padding: 8px 13px; white-space: nowrap; border-radius: 999px;
-          background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16); color: #eceaff; }
-  .chip b { color: var(--teal); font-weight: 700; }
+  .chip { font-size: 14px; font-weight: 700; padding: 8px 13px; white-space: nowrap; border-radius: 999px;
+          background: rgba(218,230,254,.07); border: 1px solid var(--borde); color: var(--hielo); }
+  .chip b { color: var(--cian); }
 
-  .telefonos { position: absolute; right: 30px; top: 34px; width: 560px; height: 420px; }
-  .tel { position: absolute; width: 178px; height: 362px; border-radius: 30px; padding: 7px;
-         background: linear-gradient(160deg, #3a3870, #12112e); box-shadow: 0 24px 50px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.12); }
+  .telefonos { position: absolute; right: 30px; top: 30px; width: 560px; height: 420px; }
+  .tel { position: absolute; width: 178px; height: 368px; border-radius: 30px; padding: 7px;
+         background: linear-gradient(160deg, #2a4fae, #071233); box-shadow: 0 24px 50px rgba(0,0,0,.5), inset 0 0 0 1px rgba(0,233,252,.25); }
   .tel img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 24px; display: block; }
-  .tel::after { content: ''; position: absolute; top: 14px; left: 50%; width: 46px; height: 7px; margin-left: -23px; border-radius: 99px; background: #0b0a22; }
   .t1 { left: 18px;  top: 46px; transform: rotate(-8deg); }
-  .t2 { left: 190px; top: 14px; z-index: 2; width: 192px; height: 392px; }
-  .t3 { left: 374px; top: 46px; transform: rotate(8deg); }
+  .t2 { left: 186px; top: 12px; z-index: 2; width: 196px; height: 404px; }
+  .t3 { left: 372px; top: 46px; transform: rotate(8deg); }
 
   /* ── Tarjetas de resultados ── */
   #metricas { width: 1280px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
-  .tarjeta { border-radius: 22px; padding: 26px 26px 22px; color: #fff; position: relative; overflow: hidden;
-             background: linear-gradient(150deg, var(--navy-900), var(--navy-950)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
-  .tarjeta::after { content: ''; position: absolute; right: -40px; top: -40px; width: 140px; height: 140px; border-radius: 50%;
-                    background: radial-gradient(circle, rgba(45,212,191,.28), transparent 70%); }
-  .etiqueta { font-size: 15px; font-weight: 600; color: var(--lav); text-transform: uppercase; letter-spacing: .8px; }
+  .tarjeta { border-radius: 22px; padding: 26px 26px 22px; position: relative; overflow: hidden;
+             background: linear-gradient(150deg, var(--fondo-2), var(--fondo-1)); box-shadow: inset 0 0 0 1px var(--borde); }
+  .tarjeta::after { content: ''; position: absolute; right: -40px; top: -40px; width: 150px; height: 150px; border-radius: 50%;
+                    background: radial-gradient(circle, rgba(0,233,252,.22), transparent 70%); }
+  .etiqueta { font-size: 14.5px; font-weight: 700; color: var(--tenue); text-transform: uppercase; letter-spacing: .9px; }
   .valores { margin-top: 16px; display: flex; align-items: baseline; gap: 14px; }
-  .antes { font-size: 30px; font-weight: 600; color: #8f8ab8; text-decoration: line-through; text-decoration-thickness: 2px; }
-  .flecha { font-size: 24px; color: #8f8ab8; }
-  .ahora { font-family: 'DM Serif Display', serif; font-size: 66px; line-height: 1; color: var(--teal); }
-  .ahora small { font-family: 'DM Sans', sans-serif; font-size: 24px; font-weight: 600; margin-left: 2px; }
-  .detalle { margin-top: 12px; font-size: 14.5px; color: #b9b4e0; line-height: 1.4; }
+  .antes { white-space: nowrap; font-size: 30px; font-weight: 600; color: #6f80b3; text-decoration: line-through; text-decoration-thickness: 2px; }
+  .flecha { font-size: 24px; color: #6f80b3; }
+  .ahora { font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -2px;
+           background: linear-gradient(90deg, var(--cian), #6fb2ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .ahora small { font-size: 24px; font-weight: 700; margin-left: 3px; letter-spacing: 0; }
+  .detalle { margin-top: 12px; font-size: 14.5px; color: var(--hielo); opacity: .8; line-height: 1.45; }
+
+  /* ── LCP por página ── */
+  #lcp { width: 1280px; border-radius: 22px; padding: 30px 40px 26px; background: linear-gradient(150deg, var(--fondo-2), var(--fondo-1));
+         box-shadow: inset 0 0 0 1px var(--borde); }
+  #lcp h2 { font-size: 22px; font-weight: 800; letter-spacing: -.3px; }
+  #lcp .nota { margin-top: 4px; font-size: 14.5px; color: var(--tenue); }
+  .grafico { position: relative; height: 330px; margin: 30px 0 0 44px; border-left: 1px solid var(--borde); border-bottom: 1px solid rgba(218,230,254,.35); }
+  .eje { position: absolute; left: -44px; width: 34px; text-align: right; font-size: 13px; color: var(--tenue); transform: translateY(50%); }
+  .guia { position: absolute; left: 0; right: 0; border-top: 1px solid rgba(218,230,254,.07); }
+  .umbral { position: absolute; left: 0; right: 0; border-top: 2px dashed #ff7a8a; }
+  .umbral span { position: absolute; right: 0; top: -24px; font-size: 13.5px; font-weight: 700; color: #ff9aa6; }
+  .grupos { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(5, 1fr); }
+  .grupo { position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 14px; }
+  .barra { width: 66px; border-radius: 8px 8px 0 0; position: relative; }
+  .barra b { position: absolute; left: 50%; transform: translateX(-50%); top: -24px; font-size: 14px; font-weight: 700; white-space: nowrap; }
+  .barra.base { background: linear-gradient(180deg, #5b6c9c, #3a4774); }
+  .barra.base b { color: #b9c4e6; }
+  .barra.hoy { background: linear-gradient(180deg, var(--cian), var(--azul)); box-shadow: 0 0 18px rgba(0,233,252,.35); }
+  .barra.hoy b { color: var(--cian); }
+  .rotulo { position: absolute; bottom: -30px; left: 0; right: 0; text-align: center; font-size: 14.5px; font-weight: 600; color: var(--hielo); }
+  .leyenda { margin-top: 48px; display: flex; justify-content: center; gap: 30px; font-size: 14.5px; color: var(--hielo); }
+  .leyenda i { display: inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 8px; vertical-align: -2px; }
+
+  /* ── Capturas ── */
+  #capturas { width: 1280px; border-radius: 22px; padding: 34px 34px 26px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px;
+              background: linear-gradient(150deg, var(--fondo-2), var(--fondo-1)); box-shadow: inset 0 0 0 1px var(--borde); }
+  .captura .marco { border-radius: 26px; padding: 6px; background: linear-gradient(160deg, #2a4fae, #071233);
+                    box-shadow: 0 16px 34px rgba(0,0,0,.45), inset 0 0 0 1px rgba(0,233,252,.25); }
+  .captura img { display: block; width: 100%; aspect-ratio: 390 / 760; object-fit: cover; object-position: top; border-radius: 21px; }
+  .captura p { margin-top: 14px; text-align: center; font-size: 16px; font-weight: 700; color: var(--hielo); }
 </style>
 </head>
 <body>
 
 <div class="lienzo"><div id="banner">
   <div class="izq">
-    <div class="marca"><img src="logo.png" alt=""><h1>Citas<span>YA</span></h1></div>
+    <div class="marca"><div class="placa"><img src="logo.png" alt=""></div><h1>Citas<span>YA</span></h1></div>
     <p class="lema">Agenda tu cita médica en Bogotá,<br>sin filas ni esperas telefónicas.</p>
     <p class="sub">Aplicación web progresiva accesible para consultar y agendar<br>citas con tu EPS, pensada para las personas mayores.</p>
     <div class="chips">
       <span class="chip"><b>♿</b> WCAG 2.1 AA</span>
       <span class="chip"><b>⚡</b> PWA + SSG</span>
-      <span class="chip"><b>🛡</b> Gates de calidad en CI</span>
+      <span class="chip"><b>🛡</b> 7 gates de calidad en CI</span>
       <span class="chip"><b>🔗</b> HL7 FHIR R4</span>
     </div>
   </div>
   <div class="telefonos">
     <div class="tel t1"><img src="movil-directorio.jpg" alt=""></div>
-    <div class="tel t2"><img src="movil-buscar.jpg" alt=""></div>
-    <div class="tel t3"><img src="movil-registro.jpg" alt=""></div>
+    <div class="tel t2"><img src="movil-portada.jpg" alt=""></div>
+    <div class="tel t3"><img src="movil-disponibilidad.jpg" alt=""></div>
   </div>
 </div></div>
 
@@ -101,15 +139,50 @@
   </div>
   <div class="tarjeta">
     <div class="etiqueta">Rendimiento móvil</div>
-    <div class="valores"><span class="antes">67</span><span class="flecha">→</span><span class="ahora">96</span></div>
-    <div class="detalle">Peor página (inicio); 99 en las<br>páginas prerenderizadas</div>
+    <div class="valores"><span class="antes">67</span><span class="flecha">→</span><span class="ahora">99</span></div>
+    <div class="detalle">Peor de las 5 páginas públicas;<br>100 en escritorio</div>
   </div>
   <div class="tarjeta">
     <div class="etiqueta">Carga en el celular (LCP)</div>
-    <div class="valores"><span class="antes">11,3 s</span><span class="flecha">→</span><span class="ahora">1,58<small>s</small></span></div>
-    <div class="detalle">Páginas prerenderizadas, 4G lenta.<br>Inicio: 11,5 s → 2,55 s</div>
+    <div class="valores"><span class="antes">11,5 s</span><span class="flecha">→</span><span class="ahora">1,73<small>s</small></span></div>
+    <div class="detalle">Peor página, 4G lenta emulada.<br>Meta de la hipótesis: ≤ 2,5 s</div>
   </div>
 </div></div>
 
+<div class="lienzo"><div id="lcp">
+  <h2>LCP móvil por página (segundos)</h2>
+  <p class="nota">Producción, Lighthouse 12.8, mediana de 3 corridas · Moto G Power emulado, 4G lenta, CPU 4×</p>
+  <div class="grafico" id="grafico"></div>
+  <div class="leyenda">
+    <span><i style="background:#4a5886"></i>Línea base (22-sep-2026)</span>
+    <span><i style="background:linear-gradient(180deg,#00E9FC,#1D69FC)"></i>Cierre (12-nov-2026)</span>
+  </div>
+</div></div>
+
+<div class="lienzo"><div id="capturas">
+  <div class="captura"><div class="marco"><img src="movil-portada.jpg" alt=""></div><p>a) Inicio</p></div>
+  <div class="captura"><div class="marco"><img src="movil-resultados.jpg" alt=""></div><p>b) Resultados de búsqueda</p></div>
+  <div class="captura"><div class="marco"><img src="movil-disponibilidad.jpg" alt=""></div><p>c) Fecha y hora</p></div>
+  <div class="captura"><div class="marco"><img src="movil-directorio.jpg" alt=""></div><p>d) Directorio de EPS</p></div>
+</div></div>
+
+<script>
+  // LCP móvil por página: línea base (22-sep-2026) y medición de cierre (12-nov-2026).
+  const datos = [['Inicio', 11.48, 1.73], ['Iniciar sesión', 11.33, 1.58], ['Registro', 10.13, 1.58],
+                 ['Directorio EPS', 3.37, 1.58], ['Búsqueda', 10.13, 1.58]];
+  const max = 12, g = document.getElementById('grafico');
+  const coma = v => v.toFixed(2).replace('.', ',');
+  for (let v = 0; v <= max; v += 2) {
+    g.insertAdjacentHTML('beforeend', `<div class="guia" style="bottom:${v / max * 100}%"></div><div class="eje" style="bottom:${v / max * 100}%">${v}</div>`);
+  }
+  g.insertAdjacentHTML('beforeend', `<div class="umbral" style="bottom:${2.5 / max * 100}%"><span>meta ≤ 2,5 s</span></div>`);
+  const grupos = document.createElement('div'); grupos.className = 'grupos'; g.appendChild(grupos);
+  for (const [pagina, base, hoy] of datos) {
+    grupos.insertAdjacentHTML('beforeend', `<div class="grupo">
+      <div class="barra base" style="height:${base / max * 100}%"><b>${coma(base)}</b></div>
+      <div class="barra hoy" style="height:${hoy / max * 100}%"><b>${coma(hoy)}</b></div>
+      <div class="rotulo">${pagina}</div></div>`);
+  }
+</script>
 </body>
 </html>

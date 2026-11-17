@@ -47,13 +47,12 @@ En Colombia, pedir una cita médica suele implicar líneas telefónicas saturada
 ## 📊 Resultados
 
 <p align="center">
-  <img src="docs/img/resultados.webp" alt="Resultados antes y después: violaciones axe-core de 9 a 0; accesibilidad Lighthouse de 91 a 100; rendimiento móvil de 67 a 96; LCP móvil de 11,3 s a 1,58 s en las páginas prerenderizadas" width="100%">
+  <img src="docs/img/resultados.webp" alt="Resultados antes y después en la peor página: violaciones axe-core de 9 a 0; accesibilidad Lighthouse de 91 a 100; rendimiento móvil de 67 a 99; LCP móvil de 11,5 s a 1,73 s" width="100%">
 </p>
 
-<p align="center"><sub>Medición reproducible contra producción: Lighthouse 12.8 (3 corridas por página, mediana) y axe-core 4.11. Línea base del 22-sep-2026 frente al estado del 30-sep-2026.</sub></p>
+<p align="center"><sub>Medición reproducible contra producción: Lighthouse 12.8 (3 corridas por página, mediana) y axe-core 4.11. Línea base del 22-sep-2026 frente a la medición de cierre del 12-nov-2026.</sub></p>
 
-> [!NOTE]
-> La página de inicio todavía supera el LCP por 0,05 s (2,55 s frente a 2,5 s), porque su encabezado con video aún no se prerenderiza. Por eso el check de Lighthouse móvil es informativo. Cuando la página cumpla, pasará a ser obligatorio ([ADR-0003](docs/adr/0003-adopcion-progresiva-de-gates.md)).
+Las cinco páginas públicas cumplen todos los umbrales en móvil y en escritorio desde el 15-oct-2026, y los siguen cumpliendo después del módulo FHIR, la cuenta de cuidador y la renovación visual: cada cambio pasa por los mismos gates.
 
 <details>
 <summary><b>Ver la tabla completa y el gráfico por página</b></summary>
@@ -64,13 +63,14 @@ En Colombia, pedir una cita médica suele implicar líneas telefónicas saturada
 | Violaciones WCAG 2.1 A/AA críticas o serias | 2 | **0** | 0 |
 | Violaciones axe de cualquier tipo | 9 | **0** | — |
 | Lighthouse Accesibilidad (móvil / escritorio) | 91 / 91 | **100 / 100** | ≥ 98 |
-| Lighthouse Rendimiento (móvil / escritorio) | 67 / 90 | **96 / 100** | ≥ 85 / ≥ 95 |
-| LCP móvil | 11,48 s | **2,55 s** (inicio) · **1,58 s** (resto) | ≤ 2,5 s |
+| Lighthouse Rendimiento (móvil / escritorio) | 67 / 90 | **99 / 100** | ≥ 85 / ≥ 95 |
+| LCP móvil / escritorio | 11,48 s / 1,96 s | **1,73 s / 0,44 s** | ≤ 2,5 s |
 | Vulnerabilidades altas en producción | 6 | **0** | 0 |
+| Casos de interoperabilidad FHIR (IND-10) | 0 de 10 | **10 de 10** | 10 de 10 |
 
-<p align="center"><img src="docs/img/lcp.png" alt="Gráfico de barras del LCP móvil por página, antes y ahora" width="85%"></p>
+<p align="center"><img src="docs/img/lcp.webp" alt="Gráfico de barras del LCP móvil por página: en la línea base, entre 3,37 y 11,48 s; al cierre, 1,73 s en el inicio y 1,58 s en las otras cuatro páginas, todas bajo la meta de 2,5 s" width="100%"></p>
 
-Cada optimización se validó con un experimento A/B, incluido un resultado negativo documentado: diferir el cliente de Supabase redujo el JavaScript un 34 %, pero no el LCP. La solución fue el prerenderizado estático ([ADR-0006](docs/adr/0006-prerenderizado-estatico-rutas-publicas.md)).
+Cada optimización se validó con un experimento A/B, incluido un resultado negativo documentado: diferir el cliente de Supabase redujo el JavaScript un 34 %, pero no el LCP. La solución fue el prerenderizado estático ([ADR-0006](docs/adr/0006-prerenderizado-estatico-rutas-publicas.md) y [ADR-0007](docs/adr/0007-portada-prerenderizada-poster-y-animaciones-css.md)).
 
 </details>
 
@@ -86,23 +86,27 @@ Cada optimización se validó con un experimento A/B, incluido un resultado nega
     <td valign="top">🏥 <b>Directorio de EPS de Bogotá</b><br><sub>Sedes reales del REPS, con la procedencia de cada dato.</sub></td>
   </tr>
   <tr>
-    <td valign="top">♿ <b>Widget de accesibilidad</b><br><sub>Tamaño de texto, alto contraste, menos movimiento, guía de lectura y lectura por voz.</sub></td>
-    <td valign="top">✉️ <b>Notificaciones por correo</b><br><sub>Confirmación, cancelación y reprogramación.</sub></td>
+    <td valign="top">👨‍👩‍👧 <b>Mi familia</b><br><sub>Cuenta de cuidador: el titular pide las citas de sus familiares, cada uno con su propia EPS.</sub></td>
+    <td valign="top">🔗 <b>Interoperabilidad HL7 FHIR R4</b><br><sub>Cada reserva, reprogramación o cancelación se publica en un servidor FHIR, con el paciente seudonimizado.</sub></td>
   </tr>
   <tr>
-    <td valign="top">🛠️ <b>Panel de administración</b><br><sub>Profesionales, disponibilidad y citas, protegidos por RLS.</sub></td>
+    <td valign="top">♿ <b>Widget de accesibilidad</b><br><sub>Tamaño de texto, alto contraste, menos movimiento, guía de lectura y lectura por voz.</sub></td>
+    <td valign="top">✉️ <b>Notificaciones por correo</b><br><sub>Confirmación, cancelación y reprogramación. Para entregarlas a cualquier usuario falta verificar un dominio propio.</sub></td>
+  </tr>
+  <tr>
+    <td valign="top">🛠️ <b>Panel de administración</b><br><sub>Profesionales, disponibilidad, citas y estado de la publicación FHIR, protegidos por RLS.</sub></td>
     <td valign="top">📲 <b>PWA instalable</b><br><sub>Funciona como una app desde la pantalla de inicio del celular.</sub></td>
   </tr>
 </table>
 
 <p align="center">
-  <img src="docs/img/capturas.jpg" alt="Cuatro vistas de CitasYA en un celular: inicio, búsqueda de médicos, directorio de EPS de Bogotá y registro" width="92%">
+  <img src="docs/img/capturas.webp" alt="Cuatro vistas de CitasYA en un celular: inicio, resultados de búsqueda, elección de fecha y hora, y directorio de EPS de Bogotá" width="100%">
 </p>
 
 ## 🏗️ Arquitectura
 
 <p align="center">
-  <img src="docs/img/arquitectura.png" alt="Diagrama de arquitectura: cliente PWA con HTML prerenderizado, CDN de Vercel, Supabase (Auth, PostgREST, Edge Function y PostgreSQL con RLS y funciones transaccionales) y pipeline de GitHub Actions" width="92%">
+  <img src="docs/img/arquitectura.png" alt="Diagrama de arquitectura: cliente PWA con HTML prerenderizado, CDN de Vercel, Supabase (Auth, PostgREST, funciones RPC, PostgreSQL con RLS, outbox FHIR y Edge Functions fhir-sync y send-email), servidor HL7 FHIR R4 y pipeline de GitHub Actions con 7 gates" width="92%">
 </p>
 
 | Capa | Decisiones clave |
@@ -110,7 +114,7 @@ Cada optimización se validó con un experimento A/B, incluido un resultado nega
 | **Frontend** | React 19 + React Router 7 con carga diferida por ruta. Las rutas públicas se **prerenderizan durante el build** y se **hidratan** en el navegador. Los componentes nunca tocan la base de datos: todo pasa por `src/services`. |
 | **Datos** | PostgreSQL 17 en Supabase con **RLS por tabla y por acción**. `reservar_cita`, `cancelar_cita` y `reprogramar_cita` son funciones transaccionales con `SELECT … FOR UPDATE` y errores tipados. La agenda se mantiene en una ventana móvil de 60 días con `pg_cron`. |
 | **Interoperabilidad** | HL7 FHIR R4. Un outbox transaccional en PostgreSQL y la Edge Function `fhir-sync` publican cada cita en un Bundle de transacción con `If-Match` sobre la franja. El paciente viaja seudonimizado (HMAC). Ver [ADR-0009](docs/adr/0009-interoperabilidad-fhir-outbox.md). |
-| **Entrega** | Archivos estáticos en la CDN de Vercel. |
+| **Entrega** | Archivos estáticos en la CDN de Vercel. Se despliega desde `main` después de integrar, y las pruebas E2E se repiten contra producción. |
 
 ## 🛡️ Calidad como gates de CI
 
@@ -184,9 +188,10 @@ La base de datos se crea con las migraciones de [`supabase/migrations`](supabase
 <summary><b>Pruebas</b></summary>
 <br>
 
-- **Unitarias:** 34, con Vitest.
-- **End-to-end:** 28, con Playwright en móvil y escritorio. Incluyen axe-core y verifican que las páginas prerenderizadas se vean sin JavaScript y se hidraten sin errores.
-- **Reglas de agendamiento:** 13, en [`supabase/tests/reglas_agendamiento.sql`](supabase/tests/reglas_agendamiento.sql). Corren dentro de una transacción que siempre se revierte.
+- **Unitarias:** 116 en 18 archivos, con Vitest (reglas de tiempo de las citas, contraseñas, familia, páginas y núcleo FHIR).
+- **End-to-end:** 32, con Playwright en móvil y escritorio. Incluyen axe-core y verifican que las páginas prerenderizadas se vean sin JavaScript y se hidraten sin errores.
+- **Reglas de la base de datos:** 38, en [`supabase/tests/reglas_agendamiento.sql`](supabase/tests/reglas_agendamiento.sql): reserva, plazos, familiares y outbox FHIR. Corren dentro de una transacción que siempre se revierte.
+- **Interoperabilidad:** 10 casos (TC-01 a TC-10), en [`fhir/pruebas`](fhir/pruebas), contra HAPI FHIR R4 en Docker (`npm run test:fhir`).
 
 </details>
 
@@ -200,10 +205,11 @@ La base de datos se crea con las migraciones de [`supabase/migrations`](supabase
 │   ├── components/   # Componentes de interfaz y de diseño
 │   ├── hooks/        # Sesión y consultas (useAuth, useServiceQuery)
 │   ├── services/     # Único punto de acceso a datos; errores tipados
-│   ├── lib/          # Cliente de Supabase diferido, contraseñas, entorno
+│   ├── lib/          # Cliente de Supabase diferido, reglas de las citas, contraseñas
 │   ├── rutas.tsx     # Definición única de rutas (navegador y SSG)
 │   └── prerender.tsx # Prerenderizado estático de las rutas públicas
-├── supabase/         # Migraciones, pruebas de reglas y datos REPS
+├── supabase/         # Migraciones, Edge Functions (fhir-sync, send-email), pruebas de reglas y datos REPS
+├── fhir/pruebas/     # Casos de interoperabilidad TC-01 a TC-10
 ├── e2e/              # Pruebas Playwright (accesibilidad y prerenderizado)
 ├── scripts/          # Prerenderizado y generación de la simulación
 ├── docs/             # ADR e imágenes del README (docs/img/fuente)
@@ -241,9 +247,11 @@ La base de datos se crea con las migraciones de [`supabase/migrations`](supabase
 ## 🗺️ Hoja de ruta
 
 - [x] **Sprint 1 — Optimizar.** Accesibilidad, rendimiento, seguridad, gates de CI y simulación con datos reales.
-- [ ] **Sprint 2 — Validar.** Pruebas de usabilidad (SUS) con personas de 60 años o más.
+- [x] **Sprint 2 — Validar.** Sesiones de usabilidad con 9 personas, 5 de ellas de 60 años o más: 32 de 35 tareas completadas sin ayuda directa en ese grupo. Resultados cualitativos; el cuestionario SUS no se registró.
 - [x] **Sprint 3 — Integrar.** Interoperabilidad HL7 FHIR R4 con HAPI FHIR: outbox transaccional, paciente seudonimizado e IND-10 en 10 de 10.
-- [ ] **Sprint 4 — Evaluar.** Comparativo final frente a la hipótesis del proyecto.
+- [x] **Sprint 4 — Evaluar.** Hipótesis técnica verificada y sostenida en producción (12-nov-2026); hipótesis de usabilidad sin evaluar por falta del SUS.
+
+**Trabajo futuro:** aplicar el SUS con la versión actual, verificar un dominio propio para el correo, desplegar automáticamente solo cuando pasen los 7 gates y representar al titular como `RelatedPerson` en FHIR.
 
 ## 🎓 Proyecto académico
 
